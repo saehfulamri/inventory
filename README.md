@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
+[![Tests](https://github.com/saehfulamri/inventory/actions/workflows/tests.yml/badge.svg)](https://github.com/saehfulamri/inventory/actions/workflows/tests.yml)
 
 Aplikasi web monolith Laravel untuk mengelola master produk, stok, pembelian/penerimaan barang, penjualan, pengguna, supplier, serta laporan operasional.
 
