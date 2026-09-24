@@ -51,6 +51,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>SKU</th>
                     <th>Barcode</th>
                     <th>Nama</th>
@@ -66,6 +67,13 @@
             <tbody>
                 @forelse ($products as $product)
                     <tr>
+                        <td>
+                            @if ($product->image_path)
+                                <img src="{{ $product->image_url }}" alt="Foto {{ $product->name }}" class="thumb" loading="lazy">
+                            @else
+                                <span class="thumb thumb--empty" aria-hidden="true">—</span>
+                            @endif
+                        </td>
                         <td>{{ $product->sku }}</td>
                         <td>{{ $product->barcode }}</td>
                         <td>{{ $product->name }}</td>
@@ -99,7 +107,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10">
+                        <td colspan="11">
                             <div class="empty-state">
                                 <p>Belum ada produk.</p>
                                 <p class="muted">Tambahkan produk pertama untuk mulai mengelola inventori.</p>

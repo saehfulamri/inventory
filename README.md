@@ -31,6 +31,8 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 | `07-task-backlog.md` | Task backlog dan roadmap. |
 | `08-changelog.md` | Catatan perubahan penting proyek. |
 | `09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
+| `10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
+| `11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
 
 ## Arsitektur
 
@@ -69,7 +71,10 @@ php artisan key:generate
 mysql -u root -p -e "CREATE DATABASE inventory CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 php artisan migrate
 
-# 5. Jalankan server development
+# 5. Symlink storage publik (diperlukan untuk fitur foto produk)
+php artisan storage:link
+
+# 6. Jalankan server development
 php artisan serve
 ```
 
@@ -112,4 +117,4 @@ Copyright (c) 2026 Saehful Amri.
 
 ## Status
 
-MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). Phase 10 tersisa: persiapan deployment, prosedur backup/restore, dan fitur opsional foto produk. Lihat `07-task-backlog.md` untuk progress per fase.
+MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`10-deployment.md`) & backup/restore (`11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. Lihat `07-task-backlog.md` dan `08-changelog.md` untuk detail.

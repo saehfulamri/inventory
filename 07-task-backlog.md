@@ -129,12 +129,12 @@
 - [x] TASK-088 Database migration review
 - [x] TASK-089 Seed production-safe defaults
 - [x] TASK-090 Environment/config review
-- [ ] TASK-091 Deployment preparation
-- [ ] TASK-092 Backup/restore procedure
+- [x] TASK-091 Deployment preparation
+- [x] TASK-092 Backup/restore procedure
 - [x] TASK-093 Update README
 - [x] TASK-094 Update changelog
 - [x] TASK-095 MVP release
-- [ ] TASK-096 Foto produk [P1 — opsional]: migrasi `image_path` pada `products`; upload + validasi tipe/ukuran + thumbnail; tampilkan di list/detail produk dan kart belanja kasir. Alternatif hemat biaya: simpan URL gambar (tanpa upload) jika upload dianggap terlalu berat.
+- [x] TASK-096 Foto produk [P1 — opsional]: migrasi `image_path` pada `products`; upload + validasi tipe/ukuran + thumbnail; tampilkan di list/detail produk dan kart belanja kasir. Alternatif hemat biaya: simpan URL gambar (tanpa upload) jika upload dianggap terlalu berat. *(Diimplementasikan: upload JPG/PNG/WEBP ≤ 2MB, thumbnail tampilan via CSS `object-fit`, tampil di list produk & keranjang POS. Foto lama otomatis dihapus saat diganti.)*
 
 ## AI Task Protocol
 

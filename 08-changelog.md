@@ -50,6 +50,23 @@ Format:
 - `07-task-backlog.md`: tandai selesai TASK-079–090 dan TASK-093–095 (dievaluasi ulang berdasarkan kondisi kode aktual; tersisa TASK-091 Deployment, TASK-092 Backup/restore, dan TASK-096 Foto produk).
 - `.env.example`: `APP_NAME` dari `Laravel` → `Sistem Inventori & Penjualan`.
 
+## 2026-09-24
+
+### Added
+- Fitur foto produk (TASK-096): kolom nullable `image_path` pada `products` (migrasi baru), upload JPG/PNG/WEBP ≤ 2 MB via Form Request (`nullable|image|mimes:jpeg,png,webp|max:2048`), file disimpan ke disk `public` (`storage/app/public/products/…`, nama acak + ekstensi asli), akses publik lewat `php artisan storage:link`. Thumbnail ditampilkan lewat CSS `object-fit` (tanpa dependency image-processing). Tampil di: daftar produk (kolom Foto), form create/edit (preview + upload), hasil pencarian & keranjang POS (via `image_url` di endpoint `GET /sales/products`). Foto lama otomatis dihapus saat diganti (`ProductImageService::replace`). Test: create dengan foto, tolak file non-gambar, ganti foto.
+- `10-deployment.md` (TASK-091): panduan deploy produksi — persyaratan server, contoh `.env` produksi, `migrate --force`, `storage:link`, build aset, cache produksi, contoh Nginx & Caddy, checklist keamanan go-live, proses update/rollback rilis.
+- `11-backup-restore.md` (TASK-092): prosedur backup database (`mysqldump --single-transaction` + gzip), backup storage & `.env`, skrip `backup.sh` + cron harian + rotasi, prosedur restore penuh/parsial dengan urutan kode→env→storage→database, verifikasi restore.
+
+### Changed
+- `07-task-backlog.md`: tandai selesai TASK-091, TASK-092, dan TASK-096 — Phase 10 (Quality & Release) kini tuntas; semua fase roadmap selesai.
+- `README.md`: indeks dokumentasi + `10-deployment.md` & `11-backup-restore.md`; instalasi development + langkah `php artisan storage:link` (diperlukan untuk foto produk); seksi Status diperbarui.
+- `05-database.md`: daftar kolom `products` + `image_path` (nullable, disimpan di disk `public`, bukan di DB).
+- `app/Models/Product.php`: tambah accessor `image_url` (URL publik foto produk dari `Storage::url`, atau null bila tidak ada foto).
+- `app/Services/ProductImageService.php` (baru): abstraksi penyimpanan/penghapusan foto — `store()`, `replace()`, `delete()` — dipakai `ProductController` (store/update).
+
+### Database
+- Baru: `2026_09_24_000001_add_image_path_to_products_table` — `products.image_path` (string, nullable, setelah `minimum_stock`).
+
 ## 2026-09-23
 
 ### Changed

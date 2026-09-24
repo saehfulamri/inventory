@@ -96,6 +96,7 @@ Contoh:
 - selling_price decimal(15,2)
 - stock decimal(15,3) atau integer sesuai karakteristik produk
 - minimum_stock decimal(15,3)
+- image_path nullable — path relatif foto produk di disk penyimpanan `public` (`storage/app/public/products/…`, diakses via `storage:link` → `/storage/products/...`); tidak menyimpan binary di DB
 - is_active
 - timestamps
 

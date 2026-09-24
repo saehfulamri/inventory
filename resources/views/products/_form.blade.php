@@ -1,4 +1,4 @@
-<form method="POST" action="{{ $action }}" class="form">
+<form method="POST" action="{{ $action }}" class="form" enctype="multipart/form-data">
     @csrf
     @method($method)
 
@@ -77,6 +77,18 @@
             <label for="minimum_stock">Stok Minimum</label>
             <input id="minimum_stock" type="number" name="minimum_stock" step="0.001" min="0" value="{{ old('minimum_stock', $product->minimum_stock) }}" required>
             @error('minimum_stock')
+                <span class="form__error">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form__group">
+            <label for="image_path">Foto Produk (opsional)</label>
+            @if ($product->image_path)
+                <img src="{{ $product->image_url }}" alt="Foto {{ $product->name }}" class="product-form__preview">
+            @endif
+            <input id="image_path" type="file" name="image_path" accept="image/jpeg,image/png,image/webp">
+            <p class="muted">Format JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
+            @error('image_path')
                 <span class="form__error">{{ $message }}</span>
             @enderror
         </div>

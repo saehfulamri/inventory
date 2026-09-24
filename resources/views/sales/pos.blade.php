@@ -160,6 +160,9 @@
                     const li = document.createElement('li');
                     li.className = 'product-item';
                     li.innerHTML =
+                        (product.image_url
+                            ? '<img src="' + product.image_url + '" alt="" class="product-item__thumb" loading="lazy">'
+                            : '<span class="product-item__thumb product-item__thumb--empty" aria-hidden="true"></span>') +
                         '<div class="product-item__info">' +
                         '<span class="product-item__name"></span>' +
                         '<span class="product-item__meta"></span>' +
@@ -181,7 +184,7 @@
                                     existing.qty += 1;
                                 }
                             } else {
-                                cart.push({ id: product.id, name: product.name, price: product.price, stock: product.stock, qty: 1 });
+                                cart.push({ id: product.id, name: product.name, price: product.price, stock: product.stock, image: product.image_url, qty: 1 });
                             }
 
                             renderResults(lastProducts);
@@ -211,7 +214,16 @@
                         '<td class="cart-line-total">Rp 0</td>' +
                         '<td><button type="button" class="btn btn--danger btn--sm cart-remove" aria-label="Hapus ' + item.name + '">Hapus</button></td>';
 
-                    row.cells[0].textContent = item.name;
+                    if (item.image) {
+                        const img = document.createElement('img');
+                        img.src = item.image;
+                        img.alt = '';
+                        img.className = 'cart-thumb';
+                        row.cells[0].appendChild(img);
+                        row.cells[0].appendChild(document.createTextNode(' '));
+                    }
+
+                    row.cells[0].appendChild(document.createTextNode(item.name));
                     row.querySelector('.cart-price').textContent = formatRupiah(item.price);
                     row.querySelector('.cart-line-total').textContent = formatRupiah(item.price * item.qty);
 

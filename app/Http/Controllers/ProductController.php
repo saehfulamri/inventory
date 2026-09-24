@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Services\CategoryService;
+use App\Services\ProductImageService;
 use App\Services\ProductService;
 use App\Services\UnitService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,6 +20,7 @@ class ProductController extends Controller
 
     public function __construct(
         protected ProductService $productService,
+        protected ProductImageService $productImageService,
         protected CategoryService $categoryService,
         protected UnitService $unitService,
     ) {}
@@ -47,6 +49,7 @@ class ProductController extends Controller
 
         $data = $request->validated();
         $data['is_active'] = $request->boolean('is_active');
+        $data['image_path'] = $this->productImageService->store($data['image_path'] ?? null);
 
         $this->productService->create($data);
 
@@ -66,6 +69,10 @@ class ProductController extends Controller
 
         $data = $request->validated();
         $data['is_active'] = $request->boolean('is_active');
+        $data['image_path'] = $this->productImageService->replace(
+            $data['image_path'] ?? null,
+            $product->image_path,
+        );
 
         $this->productService->update($product, $data);
 

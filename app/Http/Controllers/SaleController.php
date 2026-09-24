@@ -56,6 +56,7 @@ class SaleController extends Controller
             'name' => $product->name,
             'price' => (float) $product->selling_price,
             'stock' => (float) $product->stock,
+            'image_url' => $product->image_url,
         ]));
     }
 

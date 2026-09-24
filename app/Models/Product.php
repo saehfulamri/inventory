@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 /** @use HasFactory<ProductFactory> */
 #[Fillable([
@@ -20,11 +22,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'selling_price',
     'stock',
     'minimum_stock',
+    'image_path',
     'is_active',
 ])]
 class Product extends Model
 {
     use HasFactory;
+
+    /**
+     * URL publik foto produk, atau null bila produk tanpa foto.
+     */
+    protected function imageUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->image_path ? Storage::url($this->image_path) : null);
+    }
 
     public function casts(): array
     {

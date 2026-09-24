@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProductManagementTest extends TestCase
@@ -139,6 +141,78 @@ class ProductManagementTest extends TestCase
             ]))
             ->assertRedirect(route('products.create'))
             ->assertSessionHasErrors(['purchase_price', 'selling_price']);
+    }
+
+    public function test_admin_can_create_product_with_photo(): void
+    {
+        Storage::fake('public');
+
+        $category = $this->category();
+        $unit = $this->unit();
+
+        $this->actingAs($this->admin())
+            ->post(route('products.store'), $this->productPayload($category, $unit) + [
+                'image_path' => UploadedFile::fake()->image('kemasan.jpg', 800, 600),
+            ])
+            ->assertRedirect(route('products.index'))
+            ->assertSessionHas('success');
+
+        $product = Product::where('sku', 'SKU-FE-001')->firstOrFail();
+
+        $this->assertNotNull($product->image_path);
+        $this->assertStringStartsWith('products/', $product->image_path);
+        Storage::disk('public')->assertExists($product->image_path);
+
+        $this->actingAs($this->admin())
+            ->get(route('products.index'))
+            ->assertOk()
+            ->assertSee($product->image_url);
+    }
+
+    public function test_create_product_rejects_non_image_file(): void
+    {
+        Storage::fake('public');
+
+        $category = $this->category();
+        $unit = $this->unit();
+
+        $this->actingAs($this->admin())
+            ->from(route('products.create'))
+            ->post(route('products.store'), $this->productPayload($category, $unit) + [
+                'image_path' => UploadedFile::fake()->create('dokumen.txt', 10),
+            ])
+            ->assertRedirect(route('products.create'))
+            ->assertSessionHasErrors('image_path');
+
+        $this->assertDatabaseMissing('products', ['sku' => 'SKU-FE-001']);
+    }
+
+    public function test_admin_can_replace_product_photo(): void
+    {
+        Storage::fake('public');
+
+        $product = Product::factory()->create();
+
+        $this->actingAs($this->admin())
+            ->put(route('products.update', $product), [
+                'category_id' => $product->category_id,
+                'unit_id' => $product->unit_id,
+                'sku' => $product->sku,
+                'barcode' => $product->barcode,
+                'name' => $product->name,
+                'purchase_price' => $product->purchase_price,
+                'selling_price' => $product->selling_price,
+                'minimum_stock' => $product->minimum_stock,
+                'is_active' => 1,
+                'image_path' => UploadedFile::fake()->image('foto-baru.png', 400, 400),
+            ])
+            ->assertSessionHasNoErrors();
+
+        $product->refresh();
+
+        $this->assertNotNull($product->image_path);
+        $this->assertStringEndsWith('.png', $product->image_path);
+        Storage::disk('public')->assertExists($product->image_path);
     }
 
     public function test_admin_can_view_edit_form(): void
