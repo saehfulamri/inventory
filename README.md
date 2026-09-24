@@ -100,6 +100,10 @@ Test menggunakan SQLite in-memory (dikonfigurasi di `phpunit.xml`), sehingga tid
 php artisan test
 ```
 
+## Kontribusi
+
+Panduan lengkap untuk berkontribusi (setup, arsitektur, konvensi coding, alur git, checklist PR, dsb.) tersedia di [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Lisensi
 
 Proyek ini dirilis di bawah lisensi [MIT](LICENSE).

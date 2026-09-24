@@ -29,11 +29,11 @@ Format:
 ## 2026-09-24
 
 ### Added
-- Persiapan open source: lisensi MIT (`LICENSE`), workflow GitHub Actions (`.github/workflows/tests.yml` — Pint + PHPUnit di PHP 8.3 & 8.4, memakai SQLite in-memory tanpa service MySQL), badge lisensi/PHP/Laravel di README, dan daftar fitur utama.
+- Persiapan open source: lisensi MIT (`LICENSE`), workflow GitHub Actions (`.github/workflows/tests.yml` — Pint + PHPUnit di PHP 8.3 & 8.4, memakai SQLite in-memory tanpa service MySQL), badge lisensi/PHP/Laravel/Tests di README, daftar fitur utama, dan `CONTRIBUTING.md` (panduan kontribusi: setup, konvensi, alur git, checklist PR).
 
 ### Changed
-- `composer.json`: `name` diubah dari `laravel/laravel` → `amrishf/sistem-inventori`.
-- `README.md`: lisensi diubah dari privat/internal → MIT; tambah bagian "Fitur Utama", "Data Demo" (seeder + akun 4 role), "Lisensi", dan "Status" yang diperbarui.
+- `composer.json`: `name` dari `laravel/laravel` → `saehfulamri/inventory`.
+- `README.md`: lisensi dari privat/internal → MIT; tambah bagian "Fitur Utama", "Data Demo" (seeder + akun 4 role), "Kontribusi" (tautan ke `CONTRIBUTING.md`), "Lisensi", dan "Status" yang diperbarui.
 - `08-changelog.md`: koreksi klaim laporan — laporan penjualan hanya filter tanggal (bukan status/metode bayar), laporan stok tanpa indikator "expired" (fitur tidak ada), laporan pembelian tanpa filter supplier (belum di-wire), wording "sidebar" → "topbar", dan hapus duplikasi seksi Architecture.
 - Pint: perbaikan style 6 file; import tidak terpakai (`CategoryRepositoryInterface as CatInterfaceAlias`) di `AppServiceProvider` dihapus.
 
