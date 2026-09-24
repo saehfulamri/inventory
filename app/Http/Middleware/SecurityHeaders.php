@@ -37,21 +37,27 @@ class SecurityHeaders
 
         // Baseline CSP (aman untuk inline JS/CSS yang ada saat ini)
         if (! $response->headers->has('Content-Security-Policy')) {
-            $csp = implode('; ', [
+            $csp = [
                 "default-src 'self'",
                 "script-src 'self' 'unsafe-inline'",
                 "style-src 'self' 'unsafe-inline'",
-                "img-src 'self' data: blob:",
+                "img-src 'self' data:",
                 "font-src 'self' data:",
                 "connect-src 'self'",
                 "object-src 'none'",
                 "base-uri 'self'",
                 "form-action 'self'",
                 "frame-ancestors 'self'",
-                'upgrade-insecure-requests',
-            ]);
+            ];
 
-            $response->headers->set('Content-Security-Policy', $csp);
+            // Hanya untuk request HTTPS: upgrade-insecure-requests pada halaman
+            // HTTP (mis. development via php artisan serve) akan merusak aset
+            // karena browser mencoba memuat CSS/JS lewat HTTPS.
+            if ($request->isSecure()) {
+                array_unshift($csp, 'upgrade-insecure-requests');
+            }
+
+            $response->headers->set('Content-Security-Policy', implode('; ', $csp));
         }
 
         return $response;

@@ -48,6 +48,21 @@ class SecurityHeadersTest extends TestCase
         $this->assertStringContainsString("object-src 'none'", $csp);
         $this->assertStringContainsString("frame-ancestors 'self'", $csp);
         $this->assertStringContainsString("form-action 'self'", $csp);
+        // Over HTTP (development) upgrade-insecure-requests tidak dikirim agar
+        // aset CSS/JS di localhost tetap termuat.
+        $this->assertStringNotContainsString('upgrade-insecure-requests', $csp);
+    }
+
+    public function test_https_request_receives_upgrade_insecure_requests(): void
+    {
+        // Skema https pada URL membuat Symfony menetapkan HTTPS=on;
+        // withServerVariables(['HTTPS' => 'on']) tidak cukup karena
+        // ditimpa oleh skema URI http (=localhost dari APP_URL).
+        $response = $this->get('https://localhost'.route('login'));
+
+        $csp = $response->headers->get('Content-Security-Policy');
+
+        $this->assertNotEmpty($csp);
         $this->assertStringContainsString('upgrade-insecure-requests', $csp);
     }
 }
