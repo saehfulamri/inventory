@@ -11,7 +11,7 @@ Terima kasih sudah ingin berkontribusi! 🎉 Proyek ini adalah aplikasi monolith
 
 ## Persiapan Lingkungan Development
 
-Prasyarat: PHP ≥ 8.3, Composer, dan (opsional) Node.js & npm untuk frontend.
+Prasyarat: PHP ≥ 8.4, Composer, dan (opsional) Node.js & npm untuk frontend.
 
 ```sh
 # 1. Install dependensi

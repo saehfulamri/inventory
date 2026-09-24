@@ -1,7 +1,7 @@
 # Sistem Inventori & Penjualan (Mini Supermarket)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![Tests](https://github.com/saehfulamri/inventory/actions/workflows/tests.yml/badge.svg)](https://github.com/saehfulamri/inventory/actions/workflows/tests.yml)
 
@@ -41,7 +41,7 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 
 ## Prasyarat
 
-- PHP >= 8.2
+- PHP >= 8.4
 - Composer
 - MySQL 8+ / 9+
 - Node.js & npm (opsional, untuk Vite pada pengembangan frontend)

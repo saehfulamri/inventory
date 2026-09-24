@@ -36,6 +36,7 @@ Format:
 - `README.md`: lisensi dari privat/internal → MIT; tambah bagian "Fitur Utama", "Data Demo" (seeder + akun 4 role), "Kontribusi" (tautan ke `CONTRIBUTING.md`), "Lisensi", dan "Status" yang diperbarui.
 - `08-changelog.md`: koreksi klaim laporan — laporan penjualan hanya filter tanggal (bukan status/metode bayar), laporan stok tanpa indikator "expired" (fitur tidak ada), laporan pembelian tanpa filter supplier (belum di-wire), wording "sidebar" → "topbar", dan hapus duplikasi seksi Architecture.
 - Pint: perbaikan style 6 file; import tidak terpakai (`CategoryRepositoryInterface as CatInterfaceAlias`) di `AppServiceProvider` dihapus.
+- Persyaratan PHP dinaikkan ke 8.4 (kompatibel dengan lock file): `composer.json` `"php": "^8.4"`, matrix CI PHP 8.4 & 8.5, badge README dan prasyarat di README/CONTRIBUTING disesuaikan.
 
 ### Fixed
 - `resources/views/reports/purchases.blade.php`: kolom Total memakai `$purchase->total_amount` (sebelumnya `$purchase->grand_total` yang tidak ada pada model Purchase → selalu tampil Rp 0,00). Assertion nilai total ditambahkan di `ReportFeatureTest`.
