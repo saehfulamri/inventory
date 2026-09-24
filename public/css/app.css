@@ -1,0 +1,1123 @@
+/* ============================================================
+   Design tokens — mengikuti 09-design.md
+   Reference: Apple-inspired system, single Action Blue accent.
+   ============================================================ */
+:root {
+    /* Brand & accent (tunggal, non-negotiable) */
+    --color-primary: #0066cc; /* Action Blue */
+    --color-primary-focus: #0071e3; /* Focus Blue */
+    --color-primary-on-dark: #2997ff; /* Sky Link Blue — hanya di permukaan gelap */
+
+    /* Surface */
+    --color-canvas: #ffffff;
+    --color-parchment: #f5f5f7;
+    --color-surface-pearl: #fafafc;
+    --color-surface-black: #000000;
+    --color-surface-tile-1: #272729;
+    --color-surface-tile-2: #2a2a2c;
+
+    /* Text (ink-muted-80 #333 = muted utama di atas terang; #6e6e73 = sekunder di kartu putih) */
+    --color-ink: #1d1d1f;
+    --color-ink-muted-80: #333333;
+    --color-ink-muted-48: #7a7a7a; /* hanya untuk disabled / fine-print */
+    --color-muted-card: #6e6e73;
+    --color-body-on-dark: #ffffff;
+    --color-body-on-dark-muted: #cccccc;
+
+    /* Hairlines & borders */
+    --color-hairline: #e0e0e0;
+    --color-divider-soft: #f0f0f0;
+    --hairline-01: rgba(0, 0, 0, 0.08);
+
+    /* Status (isi gap form/validasi yang tidak diekspos DESIGN.md) */
+    --color-success: #14532d;
+    --color-success-bg: #e6f4ea;
+    --color-error: #a31532;
+    --color-error-bg: #fbeaea;
+    --color-warning: #8a5a00;
+    --color-warning-bg: #fcf3da;
+
+    /* Shape */
+    --radius-sm: 8px;
+    --radius-md: 11px;
+    --radius-lg: 18px;
+    --radius-pill: 9999px;
+
+    /* Type */
+    --font-sans:
+        system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", sans-serif;
+    --ls-tight: -0.01em;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-parchment);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.44;
+    letter-spacing: var(--ls-tight);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Keyboard focus (WCAG 2.4.7) — Focus Blue ring di semua interaktif */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+    border-color: var(--color-primary);
+}
+
+/* Skip link (WCAG 2.4.1) */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 12px 22px;
+    background: var(--color-primary);
+    color: var(--color-body-on-dark);
+    border-radius: 0 0 var(--radius-sm) 0;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.skip-link:focus-visible {
+    left: 0;
+}
+
+.container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* ============================================================
+   Global nav — global-nav: ultra-thin black bar, 44px
+   ============================================================ */
+.topbar {
+    background: var(--color-surface-black);
+    color: var(--color-body-on-dark);
+}
+
+.topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    gap: 16px;
+}
+
+.brand {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-body-on-dark);
+    text-decoration: none;
+    letter-spacing: var(--ls-tight);
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.topnav__links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.topnav__links a {
+    color: var(--color-body-on-dark);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: -0.01em;
+}
+
+.topnav__links a:hover {
+    color: var(--color-primary-on-dark);
+}
+
+.topnav__user {
+    color: var(--color-body-on-dark-muted);
+    font-size: 12px;
+}
+
+/* Nav action (dark-utility): tombol kecil di bar gelap */
+.btn--nav {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-body-on-dark);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn--nav:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.btn--nav:focus-visible {
+    outline-color: var(--color-primary-on-dark);
+}
+
+/* ============================================================
+   Main content — clean read, Apple whitespace
+   ============================================================ */
+main.container {
+    padding-top: 48px;
+    padding-bottom: 80px;
+}
+
+.page-title {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+}
+
+.muted {
+    color: var(--color-ink-muted-80);
+}
+
+.section-title {
+    margin: 32px 0 12px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: var(--ls-tight);
+}
+
+/* ============================================================
+   Buttons — primary = pill; ghost = pearl capsule; sm = compact
+   ============================================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 11px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.29;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: var(--ls-tight);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn--primary {
+    background: var(--color-primary);
+    color: var(--color-body-on-dark);
+}
+
+.btn--primary:hover {
+    background: var(--color-primary-focus);
+}
+
+/* Secondary / "ghost": pearl capsule, soft hairline ring */
+.btn--ghost {
+    background: var(--color-surface-pearl);
+    border: 1px solid var(--color-divider-soft);
+    color: var(--color-ink-muted-80);
+}
+
+.btn--ghost:hover {
+    border-color: var(--color-hairline);
+}
+
+/* Destructive (langka, untuk aksi destruktif) */
+.btn--danger {
+    background: var(--color-surface-pearl);
+    border: 1px solid var(--color-divider-soft);
+    color: var(--color-error);
+}
+
+.btn--danger:hover {
+    background: var(--color-error-bg);
+    border-color: var(--color-error);
+}
+
+.btn--block {
+    display: flex;
+    width: 100%;
+}
+
+/* Compact action untuk baris tabel — seperti dark-utility kecil */
+.btn--sm {
+    min-height: 32px;
+    padding: 6px 14px;
+    font-size: 14px;
+}
+
+/* ============================================================
+   Flash — di atas parchment, soft tint + hairline
+   ============================================================ */
+.flash {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--hairline-01);
+}
+
+.flash--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.flash--error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.flash__list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+/* ============================================================
+   Auth card — store-utility-card on parchment
+   ============================================================ */
+.auth-card {
+    max-width: 420px;
+    margin: 48px auto 0;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+}
+
+.auth-card__title {
+    margin: 0 0 20px;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   Forms — pill untuk search, md (11px) untuk field umum
+   ============================================================ */
+.form__group {
+    margin-bottom: 18px;
+}
+
+.form__group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: var(--ls-tight);
+}
+
+.form input[type="email"],
+.form input[type="password"],
+.form input[type="text"],
+.form input[type="number"],
+.form input[type="date"],
+.form select,
+.filters input[type="text"],
+.filters input[type="date"],
+.filters select {
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.29;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+}
+
+.form input[type="date"],
+.filters input[type="date"] {
+    color-scheme: light;
+}
+
+.form textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.44;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    resize: vertical;
+}
+
+/* Search grammar: keyword filter = pill */
+.filters input[type="text"] {
+    border-radius: var(--radius-pill);
+}
+
+.form input::placeholder,
+.form textarea::placeholder,
+.filters input::placeholder {
+    color: var(--color-ink-muted-48);
+}
+
+.stock-figure {
+    display: block;
+    min-height: 44px;
+    padding: 10px 0;
+    font-size: 17px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0;
+}
+
+.checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+}
+
+.form__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0 20px;
+}
+
+.form__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.form__error {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--color-error);
+}
+
+/* ============================================================
+   Page header & filters
+   ============================================================ */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.page-header .page-title {
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px 20px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.filters .form__group,
+.filters .form__actions {
+    margin-bottom: 0;
+    min-width: 200px;
+}
+
+/* ============================================================
+   Tables — white card, hairline, lg radius
+   ============================================================ */
+.table-wrap {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.table th,
+.table td {
+    text-align: left;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--hairline-01);
+    white-space: nowrap;
+}
+
+.table th {
+    background: var(--color-surface-pearl);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background: var(--color-surface-pearl);
+}
+
+/* Input kompak di dalam tabel (form penerimaan) */
+.table select,
+.table input[type="number"] {
+    padding: 0 10px;
+    height: 36px;
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    width: 100%;
+    min-width: 140px;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+}
+
+.table .item-subtotal {
+    font-variant-numeric: tabular-nums;
+}
+
+.table tfoot th {
+    border-top: 1px solid var(--hairline-01);
+    background: transparent;
+    text-align: right;
+}
+
+/* ============================================================
+   Badges — pill, soft tint
+   ============================================================ */
+.badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+}
+
+.badge--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.badge--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.badge--danger {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.badge--muted {
+    background: var(--color-surface-pearl);
+    color: var(--color-ink-muted-80);
+}
+
+/* ============================================================
+   Row actions & misc
+   ============================================================ */
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inline {
+    display: inline;
+}
+
+.text-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.text-link:hover {
+    color: var(--color-primary-focus);
+}
+
+/* ============================================================
+   Detail card — store-utility-card grammar
+   ============================================================ */
+.detail-card {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.detail-list {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 10px 20px;
+    margin: 0;
+}
+
+.detail-list dt {
+    font-weight: 600;
+    color: var(--color-muted-card);
+    font-size: 14px;
+}
+
+.detail-list dd {
+    margin: 0;
+    font-size: 15px;
+}
+
+.grand-total {
+    margin-left: auto;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+}
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.empty-state {
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--color-ink);
+}
+
+.empty-state p {
+    margin: 0 0 4px;
+}
+
+/* ============================================================
+   Pagination — pearl capsules, active = primary pill
+   ============================================================ */
+.pagination {
+    display: flex;
+    list-style: none;
+    gap: 6px;
+    justify-content: flex-end;
+    padding: 20px 0 0;
+    margin: 0;
+}
+
+.pagination li a,
+.pagination li span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--hairline-01);
+    background: var(--color-surface-pearl);
+    text-decoration: none;
+    color: var(--color-ink);
+    font-size: 14px;
+}
+
+.pagination li span {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-body-on-dark);
+}
+
+.pagination .disabled span {
+    background: var(--color-surface-pearl);
+    border-color: var(--hairline-01);
+    color: var(--color-ink-muted-48);
+}
+
+/* ============================================================
+   POS — cashier terminal: two-pane console
+   ============================================================ */
+.pos-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(340px, 420px);
+    gap: 24px;
+    align-items: start;
+}
+
+.pos-pane {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.pos-search .form__group {
+    margin-bottom: 12px;
+}
+
+.pos-search__row {
+    display: flex;
+    gap: 10px;
+}
+
+.pos-search__row input[type="search"] {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+}
+
+.product-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-pearl);
+}
+
+.product-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.product-item__name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.product-item__meta {
+    font-size: 13px;
+    color: var(--color-muted-card);
+    font-variant-numeric: tabular-nums;
+}
+
+.cart-summary {
+    margin: 16px 0;
+    padding: 14px 18px;
+    background: var(--color-surface-pearl);
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-sm);
+}
+
+.cart-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    padding: 4px 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.cart-summary__row strong {
+    font-size: 19px;
+}
+
+.cart-price,
+.cart-line-total {
+    font-variant-numeric: tabular-nums;
+}
+
+#paid-group[hidden] {
+    display: none;
+}
+
+/* ============================================================
+   Receipt
+   ============================================================ */
+.receipt {
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.receipt__header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 20px;
+}
+
+.receipt__brand {
+    font-size: 19px;
+}
+
+.receipt__meta {
+    font-size: 14px;
+    color: var(--color-ink-muted-80);
+}
+
+.receipt__totals {
+    margin: 16px 0 0;
+}
+
+.receipt__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
+
+.receipt__row dt {
+    margin: 0;
+    color: var(--color-muted-card);
+    font-weight: 600;
+}
+
+.receipt__row dd {
+    margin: 0;
+}
+
+.receipt__footer {
+    margin: 24px 0 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .topbar,
+    .print-hidden,
+    .flash {
+        display: none !important;
+    }
+
+    main.container {
+        padding-top: 0;
+    }
+
+    .receipt {
+        max-width: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .receipt__table thead {
+        background: none;
+    }
+}
+
+/* ============================================================
+   Dashboard — summary cards, chart, low-stock
+   ============================================================ */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+}
+
+.summary-card__label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-muted-card);
+}
+
+.summary-card__value {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.summary-card__meta {
+    font-size: 13px;
+    color: var(--color-ink-muted-80);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.dashboard-panel {
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.dashboard-panel .section-title {
+    margin: 0;
+}
+
+.dashboard-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.chart-summary {
+    margin: 0 0 16px;
+    font-size: 14px;
+}
+
+.chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.chart__col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.chart__value {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    line-height: 1.2;
+    color: var(--color-ink-muted-80);
+}
+
+.chart__track {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+    border-bottom: 1px solid var(--color-divider-soft);
+}
+
+.chart__bar {
+    display: block;
+    width: 60%;
+    max-width: 42px;
+    background: var(--color-primary);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.chart__label {
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    color: var(--color-muted-card);
+}
+
+.low-stock-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.low-stock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--color-surface-pearl);
+    border: 1px solid var(--hairline-01);
+    border-radius: var(--radius-sm);
+}
+
+.low-stock-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.low-stock-item__name {
+    font-weight: 600;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.low-stock-item__meta {
+    font-size: 13px;
+    color: var(--color-muted-card);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+    .page-title {
+        font-size: 24px;
+    }
+
+    main.container {
+        padding-top: 32px;
+        padding-bottom: 48px;
+    }
+
+    .topnav__user {
+        display: none;
+    }
+
+    .topnav__links {
+        gap: 12px;
+    }
+
+    .detail-list {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .detail-list dt {
+        margin-top: 8px;
+    }
+}
+
+/* ── Kartu laporan (reports) ─────────────────────────────────── */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-block: 16px; /* jarak antar-seksi (spacing basis 8px × 2) */
+}
+
+.report-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition:
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.report-card:hover,
+.report-card:focus-visible {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px var(--hairline-01);
+}
+
+.report-card:focus-visible {
+    outline: 2px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
+
+.report-card__title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-ink-muted-80);
+}
+
+.report-card__value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-ink);
+}
+
+.report-card__meta {
+    font-size: 12px;
+    color: var(--color-muted-card);
+}
+
+@media (max-width: 720px) {
+    .pos-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}
