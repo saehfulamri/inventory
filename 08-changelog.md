@@ -29,7 +29,7 @@ Format:
 ## 2026-09-24
 
 ### Added
-- Persiapan open source: lisensi MIT (`LICENSE`), workflow GitHub Actions (`.github/workflows/tests.yml` — Pint + PHPUnit di PHP 8.3 & 8.4, memakai SQLite in-memory tanpa service MySQL), badge lisensi/PHP/Laravel/Tests di README, daftar fitur utama, dan `CONTRIBUTING.md` (panduan kontribusi: setup, konvensi, alur git, checklist PR).
+- Persiapan open source: lisensi MIT (`LICENSE`), workflow GitHub Actions (`.github/workflows/tests.yml` — Pint + PHPUnit di PHP 8.3 & 8.4, memakai SQLite in-memory tanpa service MySQL), badge lisensi/PHP/Laravel/Tests di README, daftar fitur utama, `CONTRIBUTING.md` (panduan kontribusi: setup, konvensi, alur git, checklist PR), serta template issue (`bug_report`, `feature_request`) dan template Pull Request di `.github/`.
 
 ### Changed
 - `composer.json`: `name` dari `laravel/laravel` → `saehfulamri/inventory`.

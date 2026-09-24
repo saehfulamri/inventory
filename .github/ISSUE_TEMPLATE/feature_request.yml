@@ -1,0 +1,35 @@
+name: 💡 Fitur Baru / Peningkatan
+description: Usulkan fitur atau peningkatan baru.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih atas usulannya! Jelaskan kebutuhan dan solusi yang Anda bayangkan.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah / kebutuhan
+      description: Masalah apa yang ingin diselesaikan? Kaitkan dengan modul yang ada bila relevan.
+      placeholder: "Staf kesulitan memantau barang yang mendekati tanggal kedaluwarsa."
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Solusi yang diusulkan
+      description: Bagaimana kira-kira solusinya? Alur penggunaan, tampilan, dsb.
+      placeholder: "Tambahkan indikator keterangan expired di laporan stok..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatif yang dipertimbangkan (opsional)
+      description: Solusi lain yang sudah dipikirkan.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Kriteria penerimaan (opsional)
+      description: Kondisi yang Anda harap terpenuhi setelah fitur jadi.

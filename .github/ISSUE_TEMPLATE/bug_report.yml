@@ -1,0 +1,64 @@
+name: 🐛 Bug Report
+description: Laporkan bug untuk membantu kami memperbaiki.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih sudah melaporkan bug! Mohon isi informasi berikut sejelas mungkin.
+  - type: textarea
+    id: repro
+    attributes:
+      label: Langkah reproduksi
+      description: Urutan langkah yang menyebabkan bug muncul.
+      placeholder: |
+        1. Masuk sebagai Admin
+        2. Buka menu Penjualan
+        3. Tambahkan produk ke keranjang lalu checkout...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Hasil yang diharapkan
+      description: Apa yang seharusnya terjadi.
+      placeholder: "Stok produk berkurang dan tercatat sebagai stock movement SALE_OUT."
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Hasil aktual
+      description: Apa yang benar-benar terjadi.
+      placeholder: "Muncul pesan error: ... / Stok tidak berubah."
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role pengguna
+      description: Login sebagai role apa saat bug terjadi?
+      options:
+        - Admin
+        - Kasir
+        - Petugas Gudang
+        - Manager
+        - Belum login
+  - type: input
+    id: version
+    attributes:
+      label: Versi / commit
+      description: Tag atau commit yang dipakai (opsional).
+      placeholder: "v0.1.0"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Versi PHP, database, dan browser.
+      placeholder: |
+        - PHP: 8.4
+        - DB: MySQL 9
+        - Browser: Chrome 130
+    validations:
+      required: true
