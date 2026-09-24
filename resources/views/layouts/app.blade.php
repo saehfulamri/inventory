@@ -21,6 +21,9 @@
             @can('viewAny', App\Models\Product::class)
               <a href="{{ route('products.index') }}">Produk</a>
             @endcan
+            @can('viewAny', App\Models\Supplier::class)
+              <a href="{{ route('suppliers.index') }}">Supplier</a>
+            @endcan
             @can('viewAny', App\Models\Purchase::class)
               <a href="{{ route('purchases.index') }}">Penerimaan</a>
             @endcan

@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +30,15 @@ Route::middleware('auth')->group(function () {
         Route::get('{product}/edit', [ProductController::class, 'edit'])->name('edit');
         Route::put('{product}', [ProductController::class, 'update'])->name('update');
         Route::post('{product}/deactivate', [ProductController::class, 'deactivate'])->name('deactivate');
+    });
+
+    Route::prefix('suppliers')->name('suppliers.')->group(function () {
+        Route::get('/', [SupplierController::class, 'index'])->name('index');
+        Route::get('create', [SupplierController::class, 'create'])->name('create');
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
+        Route::get('{supplier}/edit', [SupplierController::class, 'edit'])->name('edit');
+        Route::put('{supplier}', [SupplierController::class, 'update'])->name('update');
+        Route::post('{supplier}/deactivate', [SupplierController::class, 'deactivate'])->name('deactivate');
     });
 
     Route::prefix('purchases')->name('purchases.')->group(function () {

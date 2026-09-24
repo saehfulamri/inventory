@@ -136,6 +136,15 @@
 - [x] TASK-095 MVP release
 - [x] TASK-096 Foto produk [P1 — opsional]: migrasi `image_path` pada `products`; upload + validasi tipe/ukuran + thumbnail; tampilkan di list/detail produk dan kart belanja kasir. Alternatif hemat biaya: simpan URL gambar (tanpa upload) jika upload dianggap terlalu berat. *(Diimplementasikan: upload JPG/PNG/WEBP ≤ 2MB, thumbnail tampilan via CSS `object-fit`, tampil di list produk & keranjang POS. Foto lama otomatis dihapus saat diganti.)*
 
+## Phase 11 — Supplier Management
+
+- [x] TASK-097 Halaman daftar supplier: filter kata kunci (nama/kode) & status, pagination, kolom Kontak/Alamat/Status/Aksi, aksi nonaktifkan (soft-disable, histori penerimaan tetap)
+- [x] TASK-098 Form tambah/edit supplier (`suppliers/create`, `suppliers/edit`, `_form`) — kode opsional unik, nama wajib, email valid, checkbox status
+- [x] TASK-099 Validasi `StoreSupplierRequest`/`UpdateSupplierRequest` dengan pesan Bahasa Indonesia
+- [x] TASK-100 `SupplierPolicy` (viewAny/create/update/delete: Admin & Gudang) + route `suppliers.*` + `SupplierController` + link nav "Supplier"
+- [x] TASK-101 Tests: `SupplierManagementTest` (list, empty state, create, validasi, update, nonaktifkan, filter) & `SupplierAuthorizationTest` (policy & HTTP 403)
+- [x] TASK-102 Update dokumentasi: `02-requirements.md` (FR-SUP-004/005/006), `07-task-backlog.md`, `08-changelog.md`, `README.md`
+
 ## AI Task Protocol
 
 AI hanya mengerjakan task yang diminta.

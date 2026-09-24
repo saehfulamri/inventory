@@ -29,6 +29,19 @@ Format:
 ## 2026-09-24
 
 ### Added
+- Modul Kelola Supplier (Phase 11, FR-SUP-001/004/005): halaman daftar supplier (`suppliers/index`) dengan filter kata kunci (nama/kode) & status aktif/nonaktif + pagination, form tambah (`suppliers/create`) & edit (`suppliers/edit`) lewat partial `_form`, dan aksi "Nonaktifkan" (soft-disable — histori penerimaan barang tetap utuh, bisa diaktifkan lagi lewat form edit). Tambah route `suppliers.*` (`index/create/store/edit/update/deactivate`), `SupplierController`, link "Supplier" di topbar (di-gate `@can('viewAny', ...)`).
+- `StoreSupplierRequest` / `UpdateSupplierRequest`: validasi `code` (nullable, unik kecuali diri sendiri, max 50), `name` (required, max 150), `phone` (nullable, max 30), `email` (nullable, format email), `address` (nullable, max 1000), `is_active` (boolean) — dengan pesan Bahasa Indonesia.
+- `SupplierPolicy` (Admin & Gudang untuk `viewAny`/`create`/`update`/`delete`) — konsisten dengan `ProductPolicy`.
+- Tests: `SupplierManagementTest` (lihat daftar, empty state, buka form, create, wajib `name`, tolak `code` duplikat & email tidak valid, update, nonaktifkan tanpa menghapus, filter kata kunci & status) dan `SupplierAuthorizationTest` (policy Admin/Gudang ✓, Kasir/Manager ditolak — termasuk 403 di tiap endpoint).
+
+### Changed
+- `routes/web.php`: grup route `suppliers.*` di dalam middleware `auth`.
+- `resources/views/layouts/app.blade.php`: tambah link "Supplier" di topnav (muncul hanya untuk Admin & Gudang via policy).
+- `02-requirements.md`: tambah FR-SUP-004 (Admin/Gudang dapat mengubah data supplier) [P0], FR-SUP-005 (daftar supplier dapat dicari & difilter status) [P0], FR-SUP-006 (kode supplier opsional & unik) [P1].
+- `07-task-backlog.md`: tambah Phase 11 — Supplier Management (TASK-097–102), ditandai selesai.
+- `README.md`: seksi Fitur Utama & Status diperbarui (modul kelola supplier).
+
+### Added
 - Persiapan open source: lisensi MIT (`LICENSE`), workflow GitHub Actions (`.github/workflows/tests.yml` — Pint + PHPUnit di PHP 8.3 & 8.4, memakai SQLite in-memory tanpa service MySQL), badge lisensi/PHP/Laravel/Tests di README, daftar fitur utama, `CONTRIBUTING.md` (panduan kontribusi: setup, konvensi, alur git, checklist PR), serta template issue (`bug_report`, `feature_request`) dan template Pull Request di `.github/`.
 
 ### Changed

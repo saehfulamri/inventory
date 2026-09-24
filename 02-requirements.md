@@ -86,6 +86,15 @@ Supplier memiliki nama, kontak, alamat, dan status.
 ### FR-SUP-003 [P0]
 Supplier dapat dinonaktifkan tanpa menghapus histori penerimaan.
 
+### FR-SUP-004 [P0]
+Admin/Gudang dapat mengubah data supplier (nama, kontak, alamat, kode, status).
+
+### FR-SUP-005 [P0]
+Daftar supplier dapat dicari (nama/kode) dan difilter berdasarkan status aktif/nonaktif.
+
+### FR-SUP-006 [P1]
+Kode supplier bersifat opsional dan unik bila diisi.
+
 ## 6. Inventory
 
 ### FR-STOCK-001 [P0]

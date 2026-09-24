@@ -9,7 +9,7 @@ Aplikasi web monolith Laravel untuk mengelola master produk, stok, pembelian/pen
 
 ## Fitur Utama
 
-- **Master Data** — produk, kategori, satuan, supplier, pengguna dengan role
+- **Master Data** — produk, kategori, satuan, supplier (kelola: daftar + cari/filter, tambah, edit, nonaktifkan), pengguna dengan role
 - **Inventory** — stok real-time, penerimaan barang, penyesuaian stok, riwayat pergerakan stok (audit trail), indikator stok minimum
 - **Penjualan (POS)** — pencarian produk (nama/SKU/barcode), keranjang, perhitungan subtotal & kembalian, metode bayar cash/transfer/QRIS/card, struk siap-cetak
 - **Dashboard** — ringkasan penjualan hari ini, chart 7 hari terakhir, produk stok menipis
@@ -117,4 +117,4 @@ Copyright (c) 2026 Saehful Amri.
 
 ## Status
 
-MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`10-deployment.md`) & backup/restore (`11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. Lihat `07-task-backlog.md` dan `08-changelog.md` untuk detail.
+MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`10-deployment.md`) & backup/restore (`11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. **Phase 11 — Modul Kelola Supplier (FR-SUP-001/004/005) ditambahkan** pasca-rilis `v0.2.0`: daftar + filter, tambah, edit, nonaktifkan (akses Admin & Gudang). Lihat `07-task-backlog.md` dan `08-changelog.md` untuk detail.
