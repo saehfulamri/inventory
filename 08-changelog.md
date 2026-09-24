@@ -41,6 +41,15 @@ Format:
 ### Fixed
 - `resources/views/reports/purchases.blade.php`: kolom Total memakai `$purchase->total_amount` (sebelumnya `$purchase->grand_total` yang tidak ada pada model Purchase → selalu tampil Rp 0,00). Assertion nilai total ditambahkan di `ReportFeatureTest`.
 
+### Security
+- Ekspor CSV laporan penjualan: nilai sel yang diawali karakter yang dieksekusi spreadsheet (`=`, `+`, `-`, `@`, tab, CR) kini diberi awalan kutip tunggal untuk mencegah CSV formula injection (OWASP) + test baru.
+- Route `POST /login` kini memakai rate limiting (`throttle:5,1`) untuk memperlambat serangan brute-force.
+- Review keamanan selesai (TASK-082–085): validasi via Form Request dengan pesan Bahasa Indonesia, tidak ada output Blade tidak ter-escape (`{!! !!}`), semua form memakai `@csrf`, tidak ada log sensitif, dan mass assignment aman — seluruh model memakai `#[Fillable(...)]` dan tidak ada `$request->all()`.
+
+### Changed
+- `07-task-backlog.md`: tandai selesai TASK-079–090 dan TASK-093–095 (dievaluasi ulang berdasarkan kondisi kode aktual; tersisa TASK-091 Deployment, TASK-092 Backup/restore, dan TASK-096 Foto produk).
+- `.env.example`: `APP_NAME` dari `Laravel` → `Sistem Inventori & Penjualan`.
+
 ## 2026-09-23
 
 ### Changed

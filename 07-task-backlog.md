@@ -114,26 +114,26 @@
 
 ## Phase 9 — Authorization & Hardening
 
-- [ ] TASK-079 Define role permissions
-- [ ] TASK-080 Apply policies/middleware
-- [ ] TASK-081 Authorization feature tests
-- [ ] TASK-082 Review validation
-- [ ] TASK-083 Review CSRF/XSS/security configuration
-- [ ] TASK-084 Review sensitive logging
-- [ ] TASK-085 Review mass assignment
+- [x] TASK-079 Define role permissions
+- [x] TASK-080 Apply policies/middleware
+- [x] TASK-081 Authorization feature tests
+- [x] TASK-082 Review validation
+- [x] TASK-083 Review CSRF/XSS/security configuration
+- [x] TASK-084 Review sensitive logging
+- [x] TASK-085 Review mass assignment
 
 ## Phase 10 — Quality & Release
 
-- [ ] TASK-086 Run full automated test suite
-- [ ] TASK-087 Fix regression issues
-- [ ] TASK-088 Database migration review
-- [ ] TASK-089 Seed production-safe defaults
-- [ ] TASK-090 Environment/config review
+- [x] TASK-086 Run full automated test suite
+- [x] TASK-087 Fix regression issues
+- [x] TASK-088 Database migration review
+- [x] TASK-089 Seed production-safe defaults
+- [x] TASK-090 Environment/config review
 - [ ] TASK-091 Deployment preparation
 - [ ] TASK-092 Backup/restore procedure
-- [ ] TASK-093 Update README
-- [ ] TASK-094 Update changelog
-- [ ] TASK-095 MVP release
+- [x] TASK-093 Update README
+- [x] TASK-094 Update changelog
+- [x] TASK-095 MVP release
 - [ ] TASK-096 Foto produk [P1 — opsional]: migrasi `image_path` pada `products`; upload + validasi tipe/ukuran + thumbnail; tampilkan di list/detail produk dan kart belanja kasir. Alternatif hemat biaya: simpan URL gambar (tanpa upload) jika upload dianggap terlalu berat.
 
 ## AI Task Protocol

@@ -126,7 +126,7 @@ class ReportService
     private function csvLine(array $row): string
     {
         $handle = fopen('php://temp', 'r+');
-        fputcsv($handle, $row);
+        fputcsv($handle, array_map([$this, 'csvSafeValue'], $row));
         rewind($handle);
 
         $line = (string) stream_get_contents($handle);
@@ -134,6 +134,22 @@ class ReportService
         fclose($handle);
 
         return $line;
+    }
+
+    /**
+     * Mencegah CSV formula injection (OWASP): sel yang diawali karakter yang
+     * dieksekusi spreadsheet (=, +, -, @, tab, CR) diberi awalan kutip tunggal
+     * sehingga nilai diperlakukan sebagai teks saat dibuka di Excel/Google Sheets.
+     */
+    private function csvSafeValue(mixed $value): string
+    {
+        $string = (string) $value;
+
+        if ($string !== '' && preg_match('/^[=+\-@\t\r]/', $string) === 1) {
+            return "'".$string;
+        }
+
+        return $string;
     }
 
     /**

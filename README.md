@@ -112,4 +112,4 @@ Copyright (c) 2026 Saehful Amri.
 
 ## Status
 
-MVP untuk fitur inti sudah selesai (Phase 0–8). Phase 9 (Authorization & Hardening) dan Phase 10 (Quality & Release) masih dalam proses. Lihat `07-task-backlog.md` untuk progress per fase.
+MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). Phase 10 tersisa: persiapan deployment, prosedur backup/restore, dan fitur opsional foto produk. Lihat `07-task-backlog.md` untuk progress per fase.

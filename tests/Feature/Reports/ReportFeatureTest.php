@@ -157,4 +157,19 @@ class ReportFeatureTest extends TestCase
         $response->assertOk();
         $this->assertGreaterThan(0, strlen((string) $response->streamedContent()));
     }
+
+    public function test_sales_export_escapes_csv_formula_injection(): void
+    {
+        $admin = User::factory()->withRole(Role::Admin)->create([
+            'name' => '=HYPERLINK("http://evil.example")',
+        ]);
+        Sale::factory()->for($admin)->create();
+
+        $response = $this->actingAs($admin)->get(route('reports.sales.export'));
+
+        $response->assertOk();
+        $stream = (string) $response->streamedContent();
+        $this->assertStringContainsString("'=HYPERLINK(", $stream);
+        $this->assertStringNotContainsString("\n=HYPERLINK(", $stream);
+    }
 }
