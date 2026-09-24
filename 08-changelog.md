@@ -29,6 +29,21 @@ Format:
 ## 2026-09-24
 
 ### Added
+- Middleware `SecurityHeaders` (global) yang mengirim header keamanan pada semua respons web: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (nonaktif geolocation/microphone/camera), dan **Content-Security-Policy baseline** (`default-src 'self'`, `object-src 'none'`, `frame-ancestors 'self'`, `form-action 'self'`, `upgrade-insecure-requests`; `script-src`/`style-src` masih `'unsafe-inline'` karena inline handler & `<script>` pada POS/form yang ada — target refactor bertahap ke nonce/hash).
+- `tests/Feature/Security/SecurityHeadersTest.php`: header kehadiran di halaman guest & authenticated, serta kebenaran baseline CSP (3 test).
+
+### Changed
+- `bootstrap/app.php`: aktifkan middleware `TrustHosts` (proteksi Host header poisoning; otomatis nonaktif di env `local`/testing) dan daftarkan `SecurityHeaders` sebagai global middleware.
+- `ReportService::exportSales()`: pagination streaming kini menggunakan parameter halaman eksplisit (`paginate(..., $perPage, $pageNumber)`) menggantikan mutasi global `request()->merge(['page' => ...])` — responsivitas terhadap request bersih, tanpa efek samping global.
+- `SaleRepositoryInterface` & `EloquentSaleRepository`: `paginate()` menerima argumen opsional `?int $page = null` (diteruskan ke `LengthAwarePaginator`; saat null tetap resolve dari request seperti sebelumnya).
+- `.env.example`: tambah dokumentasi `SESSION_SECURE_COOKIE=true` (commented) — wajib aktif di produksi HTTPS agar cookie session tidak dikirim lewat HTTP.
+
+### Security
+- Hasil review keamanan menyeluruh (lih. catatan): SQL injection (semua kueri terparameterisasi), XSS (semua output auto-escaped), CSRF (10/10 form memakai `@csrf`), session fixation (regenerate + invalidate), RBAC (semua endpoint pakai `authorize()`), mass assignment (`#[Fillable]` di 11 model), upload file (MIME asli + ukuran), CSV formula injection, dependensi (`composer audit` 0 advisory) — seluruhnya lulus. Gap yang ditutup di rilis ini: security headers + CSP baseline, trusted hosts, dokumentasi secure cookie.
+
+## 2026-09-24
+
+### Added
 - Modul Kelola Supplier (Phase 11, FR-SUP-001/004/005): halaman daftar supplier (`suppliers/index`) dengan filter kata kunci (nama/kode) & status aktif/nonaktif + pagination, form tambah (`suppliers/create`) & edit (`suppliers/edit`) lewat partial `_form`, dan aksi "Nonaktifkan" (soft-disable — histori penerimaan barang tetap utuh, bisa diaktifkan lagi lewat form edit). Tambah route `suppliers.*` (`index/create/store/edit/update/deactivate`), `SupplierController`, link "Supplier" di topbar (di-gate `@can('viewAny', ...)`).
 - `StoreSupplierRequest` / `UpdateSupplierRequest`: validasi `code` (nullable, unik kecuali diri sendiri, max 50), `name` (required, max 150), `phone` (nullable, max 30), `email` (nullable, format email), `address` (nullable, max 1000), `is_active` (boolean) — dengan pesan Bahasa Indonesia.
 - `SupplierPolicy` (Admin & Gudang untuk `viewAny`/`create`/`update`/`delete`) — konsisten dengan `ProductPolicy`.

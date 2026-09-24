@@ -96,9 +96,13 @@ class ReportService
     {
         yield $this->csvLine(['No. Penjualan', 'Tanggal', 'Kasir', 'Metode', 'Total', 'Status']);
 
-        $page = $this->sales->paginate($this->salesFilters($filters), $perPage);
+        $pageNumber = 1;
+        $lastPage = 1;
 
-        while ($page->count() > 0) {
+        do {
+            $page = $this->sales->paginate($this->salesFilters($filters), $perPage, $pageNumber);
+            $lastPage = $page->lastPage();
+
             foreach ($page->items() as $sale) {
                 yield $this->csvLine([
                     $sale->sale_number,
@@ -110,14 +114,8 @@ class ReportService
                 ]);
             }
 
-            if (! $page->hasMorePages()) {
-                break;
-            }
-
-            request()->merge(['page' => $page->currentPage() + 1]);
-
-            $page = $this->sales->paginate($this->salesFilters($filters), $perPage);
-        }
+            $pageNumber++;
+        } while ($pageNumber <= $lastPage);
     }
 
     /**

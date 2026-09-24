@@ -10,7 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentSaleRepository implements SaleRepositoryInterface
 {
-    public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
+    public function paginate(array $filters = [], int $perPage = 15, ?int $page = null): LengthAwarePaginator
     {
         return Sale::query()
             ->with(['user'])
@@ -31,7 +31,7 @@ class EloquentSaleRepository implements SaleRepositoryInterface
             })
             ->orderByDesc('sale_date')
             ->orderByDesc('id')
-            ->paginate($perPage);
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function findById(int $id): ?Sale
