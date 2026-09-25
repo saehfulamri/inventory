@@ -26,7 +26,29 @@ Format:
 - ...
 ```
 
-## 2026-09-24
+## 2026-09-25
+
+### Added
+- Fase 0 — TASK-103: fondasi Inertia + Vue 3 (SPA): dependensi `inertiajs/inertia-laravel ^3.3` dan `tightenco/ziggy ^2.6`; npm `@inertiajs/vue3 ^3.7.1`, `vue ^3.5.43`, `@vitejs/plugin-vue ^6.0.9`, `ziggy-js ^2.6.4`; root template `resources/views/app.blade.php`; middleware `HandleInertiaRequests` (shared props `app`/`auth`/`can`/`flash`); plugin Vue di `vite.config.js`; CI: Setup Node 22 + `npm ci` + `npm run build`.
+- Fase 1 — TASK-104/105: komponen UI reusable (`AppLayout.vue` + 10 komponen `ui/`) mengikuti token `09-design.md`; halaman login Inertia; komponen Error (403/404/500) via `Inertia::handleExceptionsUsing()`.
+- Fase 2 — TASK-106: migrasi halaman Dashboard ke Inertia (`Pages/Dashboard/Index.vue`); view Blade `dashboard/index.blade.php` dihapus; test `DashboardTest` dialihkan ke assertion `assertInertia`.
+
+### Changed
+- Keputusan arsitektur frontend: migrasi view layer dari **Blade Template** ke **Vue.js 3 + Inertia.js (SPA)**. Rencana dan konvensi didokumentasikan; implementasi berjalan bertahap per modul sesuai `07-task-backlog.md` (Phase 12, TASK-103–115). Backend (Controller → Service → Repository → Eloquent), seluruh route, dan business logic tidak berubah. Blade menyisakan satu root template (`resources/views/app.blade.php`).
+- `01-project-brief.md`: teknologi frontend diperbarui ke Vue.js 3 + Inertia.js (plus Ziggy, Vite/Tailwind v4).
+- `02-requirements.md`: tambah NFR-011 Frontend Architecture [P0] (SPA via Inertia; business logic tetap server-side; endpoint JSON POS tetap dipertahankan).
+- `03-product-spec.md`: referensi "Blade components/layouts" diganti "Komponen Vue (SFC) reusable".
+- `04-architecture.md`: presentation layer diperbarui ke Inertia/Vue — alur presentasi, tanggung jawab `Vue (Inertia Page)`, struktur `resources/js`, konvensi Inertia/Vue, dan penegasan authorization tidak boleh hanya disembunyikan di frontend.
+- `06-coding-rules.md`: seksi "Blade Rules" diganti "Vue/Inertia Rules (Frontend)".
+- `09-design.md`: tambah seksi "Implementasi di Frontend (Vue/Inertia)" — token desain dikonsumsi komponen Vue; UI reusable sebagai SFC.
+- `05-database.md`: tambah catatan bahwa migrasi frontend tidak mengubah skema database maupun kontrak data.
+- `10-deployment.md`: kebutuhan Node dan langkah build aset frontend diperbarui (bundel Vue/Inertia + Tailwind); `view:cache` hanya mencakup root template Blade.
+- `11-backup-restore.md`: aset yang tidak perlu di-backup ditambah `public/build/` (regenerable via `npm run build`).
+- `README.md`: seksi Arsitektur & Prasyarat diperbarui ke Vue.js 3/Inertia; langkah instalasi kini mencakup build aset frontend.
+- `CONTRIBUTING.md`: prasyarat, aturan authorization, dan alur dependensi fitur diperbarui ke frontend Vue/Inertia.
+
+### Notes
+- Fase ini baru mendokumentasikan rencana (planning). Implementasi setiap modul akan dicatat pada changelog di rilis berikut.
 
 ### Added
 - Middleware `SecurityHeaders` (global) yang mengirim header keamanan pada semua respons web: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (nonaktif geolocation/microphone/camera), dan **Content-Security-Policy baseline** (`default-src 'self'`, `object-src 'none'`, `frame-ancestors 'self'`, `form-action 'self'`, `upgrade-insecure-requests`; `script-src`/`style-src` masih `'unsafe-inline'` karena inline handler & `<script>` pada POS/form yang ada — target refactor bertahap ke nonce/hash).

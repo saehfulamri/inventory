@@ -9,6 +9,7 @@
 - Timestamp menggunakan kolom Laravel yang sesuai.
 - Hindari hard delete untuk master yang memiliki histori transaksi.
 - Nomor dokumen bisnis harus unik.
+- Migrasi frontend (Vue.js + Inertia.js) tidak mengubah skema database maupun kontrak data; seluruh aturan di atas tetap berlaku.
 
 ## 2. Entity Overview
 

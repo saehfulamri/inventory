@@ -4,7 +4,7 @@
 
 Sistem Inventori & Penjualan (Mini Supermarket) adalah aplikasi web untuk membantu mini supermarket mengelola master produk, stok, pembelian/penerimaan barang, penjualan, pengguna, supplier, serta laporan operasional.
 
-Aplikasi dibangun sebagai monolith Laravel dengan Blade Template dan MySQL. Business logic dipisahkan dari controller menggunakan Service/Repository Pattern agar kode mudah diuji, dirawat, dan dikembangkan.
+Aplikasi dibangun sebagai monolith Laravel dan MySQL. View layer (frontend) menggunakan Vue.js 3 via Inertia.js (SPA). Business logic dipisahkan dari controller menggunakan Service/Repository Pattern agar kode mudah diuji, dirawat, dan dikembangkan.
 
 ## 2. Tujuan
 
@@ -79,12 +79,14 @@ Fitur tersebut dapat dipertimbangkan setelah MVP stabil.
 
 - PHP
 - Laravel
-- Blade Template
+- Vue.js 3 (view layer frontend)
+- Inertia.js (integrasi SPA; Blade hanya untuk root template)
+- Ziggy (akses named route di frontend)
 - MySQL
 - Laravel Eloquent
 - Laravel Validation/Form Request
 - Laravel Authentication sesuai kebutuhan versi Laravel
-- CSS/JavaScript dengan pendekatan sederhana dan maintainable
+- Vite + Tailwind CSS v4 (bundling aset & styling)
 - Composer
 - Git
 

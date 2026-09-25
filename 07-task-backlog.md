@@ -145,6 +145,24 @@
 - [x] TASK-101 Tests: `SupplierManagementTest` (list, empty state, create, validasi, update, nonaktifkan, filter) & `SupplierAuthorizationTest` (policy & HTTP 403)
 - [x] TASK-102 Update dokumentasi: `02-requirements.md` (FR-SUP-004/005/006), `07-task-backlog.md`, `08-changelog.md`, `README.md`
 
+## Phase 12 — Frontend Migration ke Inertia.js + Vue 3
+
+- [x] TASK-103 Install & konfigurasi fondasi Inertia + Vue: `inertiajs/inertia-laravel`, `@inertiajs/vue3`, `vue`, `@vitejs/plugin-vue`, Ziggy; root template `app.blade.php`; middleware `HandleInertiaRequests` (shared props auth + flash); plugin Vue di `vite.config.js`
+- [x] TASK-104 Foundation UI: `AppLayout.vue` (topbar/nav berbasis role, flash message, skip-link, focus management) + komponen base (button, card, form-field, table, pagination, empty-state, confirmation dialog) mengikuti token `09-design.md`
+- [x] TASK-105 Auth & Error: halaman login (Inertia) + root component Error (403/404/500)
+- [x] TASK-106 Dashboard page
+- [ ] TASK-107 Produk: list (filter/pagination) + form create/edit (termasuk upload foto produk via `useForm` multipart)
+- [ ] TASK-108 Supplier: list (filter) + form create/edit
+- [ ] TASK-109 Inventory: stok list, riwayat movement, form adjustment
+- [ ] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize
+- [ ] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)
+- [ ] TASK-112 Laporan: index + laporan sales/stock/movements/purchases + link ekspor CSV
+- [ ] TASK-113 Update feature tests ke assertion Inertia (`assertInertia`); hapus view Blade lama; verifikasi `npm run build`
+- [ ] TASK-114 Hardening & security: hilangkan `'unsafe-inline'` pada `script-src` CSP (setelah semua inline script dihapus), tinjau CSRF/XSRF Inertia, pertahankan NFR-009/NFR-010
+- [ ] TASK-115 Full regression suite + update dokumentasi (changelog, README)
+
+Catatan konvensi: migrasi inkremental per modul (satu task pada satu waktu, sesuai AI Task Protocol), memanfaatkan kemampuan Inertia berjalan berdampingan dengan Blade selama transisi, dan business logic tetap server-side (Controller → Service → Repository tidak berubah).
+
 ## AI Task Protocol
 
 AI hanya mengerjakan task yang diminta.
@@ -184,7 +202,7 @@ Service
    ↓
 Controller
    ↓
-Blade
+Vue (Inertia Page)
    ↓
 Test
 ```

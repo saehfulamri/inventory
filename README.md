@@ -36,7 +36,7 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 
 ## Arsitektur
 
-- Laravel monolith + Blade Template + MySQL.
+- Laravel monolith + Vue.js 3 via Inertia.js (SPA) + MySQL.
 - Controller tipis → Service (business logic) → Repository (data access) → Eloquent.
 - Setiap perubahan stok tercatat sebagai stock movement dengan sumber yang jelas.
 - Operasi multi-step (penjualan, penerimaan) menggunakan database transaction secara atomic.
@@ -46,7 +46,7 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 - PHP >= 8.4
 - Composer
 - MySQL 8+ / 9+
-- Node.js & npm (opsional, untuk Vite pada pengembangan frontend)
+- Node.js & npm (untuk membangun aset frontend Vue/Inertia)
 
 ## Instalasi (Development)
 
@@ -74,7 +74,10 @@ php artisan migrate
 # 5. Symlink storage publik (diperlukan untuk fitur foto produk)
 php artisan storage:link
 
-# 6. Jalankan server development
+# 6. Install & build aset frontend (Vue/Inertia) — saat development jalankan `npm run dev` untuk hot reload
+npm install && npm run build
+
+# 7. Jalankan server development
 php artisan serve
 ```
 

@@ -240,3 +240,6 @@ Frontend memenuhi standar aksesibilitas WCAG 2.2 level AA: kontras teks ≥ 4.5:
 
 ### NFR-010 Document Language [P0]
 Seluruh halaman menyatakan bahasa dokumen dengan benar melalui atribut `lang` agar teknologi bantu (screen reader) dapat membaca konten dengan tepat.
+
+### NFR-011 Frontend Architecture [P0]
+Frontend dibangun sebagai single-page application (SPA) dengan Vue.js 3 + Inertia.js: navigasi internal (menu, link, filter, pagination) berjalan tanpa reload penuh halaman. Seluruh validasi bisnis dan perhitungan transaksi (subtotal, total, pajak, stok) tetap dilakukan server-side di Service; frontend hanya menampilkan data dan interaksi ringan. Endpoint JSON yang sudah ada (mis. pencarian produk POS pada `GET /sales/products`) tetap dipertahankan.

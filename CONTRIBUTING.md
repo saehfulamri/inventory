@@ -11,7 +11,7 @@ Terima kasih sudah ingin berkontribusi! 🎉 Proyek ini adalah aplikasi monolith
 
 ## Persiapan Lingkungan Development
 
-Prasyarat: PHP ≥ 8.4, Composer, dan (opsional) Node.js & npm untuk frontend.
+Prasyarat: PHP ≥ 8.4, Composer, dan Node.js & npm (untuk membangun aset frontend Vue/Inertia).
 
 ```sh
 # 1. Install dependensi
@@ -31,7 +31,7 @@ mysql -u root -p -e "CREATE DATABASE inventory CHARACTER SET utf8mb4 COLLATE utf
 
 # 4. Jalankan migrasi + seeder data demo
 php artisan migrate --seed
-# (opsional) build aset frontend
+# (opsional) build aset frontend (Vue/Inertia + Tailwind)
 npm install && npm run build
 
 # 5. Jalankan server
@@ -69,7 +69,7 @@ Aturan inti yang **tidak bisa ditawar**:
 2. **Semua perubahan stok melalui Service terpusat** (`StockService::increase/decrease/adjust`) — jangan pernah `$product->stock -= $qty` langsung di controller.
 3. **Setiap perubahan stok mencatat stock movement** dengan sumber transaksi (`PURCHASE_IN`, `SALE_OUT`, `ADJUSTMENT`, dst).
 4. **Operasi multi-step menggunakan database transaction** (`DB::transaction`) — kalau satu langkah gagal, seluruh proses rollback.
-5. **Authorization selalu di server-side** via Policy/Gate — menyembunyikan tombol di Blade saja tidak cukup.
+5. **Authorization selalu di server-side** via Policy/Gate — menyembunyikan tombol/menu di frontend (Vue) saja tidak cukup.
 6. **Stok/minimum & uang**: gunakan tipe konsisten (`decimal`) sesuai migrasi.
 
 Struktur direktori utama:
@@ -102,7 +102,7 @@ Ikuti [`06-coding-rules.md`](06-coding-rules.md) secara penuh. Ringkasannya:
 Ikuti alur dependensi (lihat juga `07-task-backlog.md`):
 
 ```text
-Migration → Model → Repository → Service → Controller → Blade → Test
+Migration → Model → Repository → Service → Controller → Vue (Inertia Page) → Test
 ```
 
 Cocokkan dengan task di backlog; hindari mengerjakan task yang dependensinya belum ada.

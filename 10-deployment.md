@@ -7,7 +7,7 @@ Dokumen ini berisi langkah deploy aplikasi ke server produksi. Aplikasi adalah m
 - PHP >= 8.4 dengan ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`, `gd` *(jika menjalankan fitur foto produk di masa depan)*.
 - Composer 2.
 - MySQL 8+ / MariaDB 10.6+.
-- Node.js 20+ dan npm (hanya untuk membangun aset frontend saat rilis).
+- Node.js 20+ dan npm (untuk membangun aset frontend Vue/Inertia + Tailwind saat rilis).
 - Nginx atau Caddy (disarankan) / Apache.
 - Akses SSH + kemampuan install system service.
 
@@ -73,7 +73,7 @@ php artisan migrate --force
 # Symlink storage/public (wajib agar foto produk di /storage/products/... bisa diakses)
 php artisan storage:link
 
-# Aset frontend (Tailwind/CSS build)
+# Aset frontend (Vue/Inertia + Tailwind build) — bundel SPA disajikan sebagai aset statis di public/build/
 npm ci
 npm run build
 
@@ -86,6 +86,8 @@ php artisan route:cache
 php artisan view:cache
 php artisan event:cache
 ```
+
+`view:cache` hanya mencakup root template Blade (`app.blade.php`); halaman Inertia dirender di browser dari bundel `public/build/` hasil `npm run build`.
 
 Perintah cache perlu diulang **setiap kali** kode atau konfigurasi berubah di proses update (lihat bagian 4).
 

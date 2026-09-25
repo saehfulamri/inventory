@@ -560,3 +560,12 @@ The structural breakpoints that matter for agents: 1440px (content lock), 1068px
 - Dark-mode counterparts for store and accessories utility cards were not surfaced on the analyzed pages; the system documented is the daytime/light-dominant variant Apple ships by default.
 - Atmospheric photography (environment page mountain vista) is a content asset, not a design token; the documented `{component.environment-quote-card}` describes the structural surface only.
 - The exact backdrop-filter blur radius on `{component.sub-nav-frosted}` and `{component.floating-sticky-bar}` is platform-dependent; production CSS uses `saturate(180%) blur(20px)` as a typical baseline but the value isn't formalized as a token.
+
+## Implementasi di Frontend (Vue/Inertia)
+
+Sistem desain ini diimplementasikan sebagai **CSS custom properties** pada `resources/css/app.css` (token warna, spacing, radius, tipografi) dan dikonsumsi oleh komponen Vue (Single File Components) pada `resources/js/Components/` serta halaman Pages aplikasi Inertia.
+
+- Gunakan token, jangan hard-code nilai hex/spacing/radius di dalam komponen.
+- Lapisan presentasi (Vue) hanya memuat token sebagai nilai CSS; seluruh nilai bisnis (contoh: total transaksi) dihitung server-side.
+- Aksesibilitas WCAG 2.2 AA (kontras, fokus, label) mengikuti token kontras yang sudah ditetapkan (mis. `.muted` memakai `ink-muted-80`).
+- Pola UI berulang (button, card, form, badge, tabel, pagination, empty-state) diwujudkan sebagai komponen Vue reusable, bukan ditulis ulang per halaman.

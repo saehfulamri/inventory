@@ -8,7 +8,7 @@ Aplikasi menggunakan Laravel monolith dengan:
 - Service Layer untuk business logic/use case.
 - Repository Layer untuk abstraction akses data.
 - Eloquent sebagai ORM.
-- Blade sebagai presentation layer.
+- Vue.js 3 + Inertia.js sebagai presentation layer (SPA; Blade hanya untuk root template).
 
 ## 2. Prinsip Dependency
 
@@ -26,9 +26,9 @@ MySQL
 
 Presentation:
 
-Blade View
+Vue Page (Inertia)
     ↑
-Controller
+Controller (Inertia::render)
 
 Request validation:
 
@@ -108,14 +108,14 @@ Bertugas:
 - casts,
 - model-specific behavior sederhana.
 
-### Blade
+### Vue (Inertia Page)
 
 Bertugas:
 - presentation,
-- rendering data,
-- UI interaction ringan.
+- rendering props dari controller,
+- interaksi UI ringan (state lokal komponen, form, navigasi via Inertia).
 
-Jangan menaruh business logic transaksi di Blade.
+Jangan menaruh business logic transaksi di Vue. Perhitungan bisnis (subtotal, grand total, stok) tetap dilakukan server-side oleh Service; kalkulasi di sisi client hanya untuk preview/UX dan bukan sumber kebenaran.
 
 ## 4. Suggested Directory Structure
 
@@ -134,17 +134,23 @@ app/
 
 resources/
 ├── views/
-│   ├── layouts/
-│   ├── components/
-│   ├── dashboard/
-│   ├── products/
-│   ├── categories/
-│   ├── suppliers/
-│   ├── purchases/
-│   ├── sales/
-│   ├── inventory/
-│   └── reports/
-└── ...
+│   └── app.blade.php              # root template (satu-satunya view Blade)
+└── js/
+    ├── app.js
+    ├── app.css
+    ├── Pages/
+    │   ├── Auth/
+    │   ├── Dashboard/
+    │   ├── Products/
+    │   ├── Categories/
+    │   ├── Suppliers/
+    │   ├── Purchases/
+    │   ├── Sales/
+    │   ├── Inventory/
+    │   └── Reports/
+    └── Components/
+        ├── Layouts/
+        └── ui/
 
 database/
 ├── migrations/
@@ -155,6 +161,16 @@ tests/
 ├── Feature/
 └── Unit/
 ```
+
+### Inertia/Vue Conventions
+
+- Controller mengembalikan `Inertia::render('PageName', [...props])`, bukan `view()`.
+- Data yang dibagi lintas halaman (user login, flash message) dibagikan lewat middleware `HandleInertiaRequests` (shared props), tidak diulang per controller.
+- Navigasi internal memakai Inertia (`<Link>` / `router`); route memakai named route + Ziggy.
+- Form memakai `useForm` dari `@inertiajs/vue3` — CSRF/XSRF dan error handling otomatis, error validasi server diasosiasikan ke input.
+- Pagination: controller mengirim `LengthAwarePaginator`; Inertia mengubahnya menjadi `data/links/meta` untuk komponen frontend.
+- Halaman error (403/404/500) dirender lewat root component `Error.vue`.
+- `resources/views/app.blade.php` adalah satu-satunya view Blade (root template).
 
 ## 5. Repository Contract
 
@@ -238,7 +254,7 @@ Gunakan Laravel authorization mechanism yang sesuai:
 - Policies
 - middleware/role authorization
 
-Jangan hanya menyembunyikan tombol di Blade. Backend tetap harus memvalidasi authorization.
+Jangan hanya menyembunyikan menu/tombol di frontend (Vue). Backend tetap harus memvalidasi authorization, dan data yang tidak diizinkan tidak boleh dikirim sebagai props.
 
 ## 10. Database Query Rules
 
@@ -281,7 +297,7 @@ Prioritas testing:
 
 AI/developer tidak boleh:
 - memindahkan business logic ke Controller hanya demi cepat selesai,
-- membuat query database tersebar di Blade,
+- membuat query database tersebar di view/frontend,
 - membuat repository baru tanpa kebutuhan,
 - menambahkan dependency tanpa alasan,
 - mengganti architecture pattern tanpa keputusan eksplisit.

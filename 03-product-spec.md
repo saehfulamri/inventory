@@ -211,7 +211,7 @@ Prioritas:
 2. Tablet.
 3. Mobile.
 
-Blade components/layouts digunakan agar UI tidak diduplikasi.
+Komponen Vue (Single File Components) yang reusable digunakan agar UI tidak diduplikasi.
 
 ## 14. Acceptance Criteria Umum
 

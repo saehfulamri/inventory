@@ -17,7 +17,7 @@ Prinsip:
 | File konfigurasi | `.env` | Kredensial & rahasia produksi |
 | Kode | repo git (tag/commit) | Dibuat lewat git — history **harus** di-push ke remote |
 
-> Tidak perlu mem-backup `vendor/`, `node_modules/`, atau `storage/framework/cache|views|sessions|logs` — regenerable.
+> Tidak perlu mem-backup `vendor/`, `node_modules/`, `public/build/` (hasil build aset frontend Vue/Inertia — regenerable via `npm run build`), atau `storage/framework/cache|views|sessions|logs` — semuanya regenerable.
 
 ## 2. Backup Database (mysqldump)
 

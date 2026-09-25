@@ -75,13 +75,16 @@ $temp
 
 kecuali scope sangat kecil dan maknanya jelas.
 
-## 5. Blade Rules
+## 5. Vue/Inertia Rules (Frontend)
 
-- Gunakan layout/component yang reusable.
-- Hindari duplikasi markup.
-- Jangan menaruh business calculation kompleks di Blade.
-- Escape output secara default.
-- Gunakan partial/component untuk pola UI berulang.
+- Frontend dibangun dengan Vue.js 3 (Composition API) via Inertia.js sebagai SPA; Blade hanya dipakai untuk root template `app.blade.php`.
+- Gunakan Single File Components (SFC) yang reusable; hindari duplikasi markup.
+- Business logic dan perhitungan bisnis (stok, subtotal, grand total, pajak) tetap di server (Service). Vue hanya bertugas presentasi + interaksi ringan.
+- Navigasi internal memakai Inertia (`<Link>` / `router`), bukan `location.href` atau `fetch` untuk pindah halaman; gunakan named route (Ziggy).
+- Form memakai `useForm` dari `@inertiajs/vue3` — CSRF/XSRF otomatis dan error validasi server ditampilkan terkait input.
+- Jangan render konten user dengan `v-html` tanpa sanitasi; gunakan binding teks biasa agar terhindar dari XSS.
+- Pertahankan aksesibilitas WCAG 2.2 AA: label programatik, indikator fokus, error terkait input, atribut `lang`, `aria-live` untuk flash message.
+- Hindari state global berlebihan; data lintas halaman dibagikan via shared props (`HandleInertiaRequests`), state lokal cukup di dalam komponen.
 
 ## 6. Validation
 
