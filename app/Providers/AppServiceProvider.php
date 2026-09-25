@@ -24,6 +24,7 @@ use App\Repositories\Eloquent\EloquentStockAdjustmentRepository;
 use App\Repositories\Eloquent\EloquentStockMovementRepository;
 use App\Repositories\Eloquent\EloquentSupplierRepository;
 use App\Repositories\Eloquent\EloquentUnitRepository;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Inertia\ExceptionResponse;
@@ -63,5 +64,23 @@ class AppServiceProvider extends ServiceProvider
 
             return null;
         });
+
+        // Override direktif @inertia bawaan package agar skrip data-block
+        // <script type="application/json" data-page> memakai nonce CSP yang
+        // dibagikan middleware SecurityHeaders. Tanpa nonce, script-src yang
+        // ketat (tanpa 'unsafe-inline') akan memblokir elemen tersebut dan
+        // halaman gagal di-bootstrap. Konten verba sama dengan
+        // Inertia\Directive::compile, hanya menambah atribut nonce.
+        Blade::directive('inertia', fn () => implode(' ', array_map('trim', explode("\n", '<?php
+            $__inertiaSsrResponse = app(\Inertia\Ssr\SsrState::class)->setPage($page)->dispatch();
+
+            if ($__inertiaSsrResponse) {
+                echo $__inertiaSsrResponse->body;
+            } else {
+                $__inertiaNonce = trim((string) View::shared("cspNonce", ""));
+                $__inertiaNonceAttr = $__inertiaNonce !== "" ? " nonce=\"" . e($__inertiaNonce) . "\"" : "";
+                ?><script data-page="app" type="application/json"{!! $__inertiaNonceAttr !!}>{!! json_encode($page, JSON_HEX_TAG) !!}</script><div id="app"></div><?php
+            }
+        ?>'))));
     }
 }

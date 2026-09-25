@@ -8,8 +8,6 @@
 
     <title inertia>{{ config('app.name') }}</title>
 
-    @routes
-    <script>window.Ziggy = window.Ziggy ?? Ziggy;</script>
     @vite(['resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>

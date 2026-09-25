@@ -157,9 +157,9 @@
 - [x] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize
 - [x] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)
 - [x] TASK-112 Laporan: index + laporan sales/stock/movements/purchases + link ekspor CSV
-- [ ] TASK-113 Update feature tests ke assertion Inertia (`assertInertia`); hapus view Blade lama; verifikasi `npm run build`
-- [ ] TASK-114 Hardening & security: hilangkan `'unsafe-inline'` pada `script-src` CSP (setelah semua inline script dihapus), tinjau CSRF/XSRF Inertia, pertahankan NFR-009/NFR-010
-- [ ] TASK-115 Full regression suite + update dokumentasi (changelog, README)
+- [x] TASK-113 Update feature tests ke assertion Inertia (`assertInertia`); hapus view Blade lama; verifikasi `npm run build`
+- [x] TASK-114 Hardening & security: hilangkan `'unsafe-inline'` pada `script-src` CSP, tinjau CSRF/XSRF Inertia, pertahankan NFR-009/NFR-010 — solusi akhir: izinkan origin Vite dev server saat `npm run dev` (dari `public/hot`) + **CSP nonce per-respons** sebagai defense-in-depth untuk data-block Inertia; tanpa keduanya halaman beku/putih saat review; lihat changelog untuk detail
+- [x] TASK-115 Full regression suite + update dokumentasi (changelog, README)
 
 Catatan konvensi: migrasi inkremental per modul (satu task pada satu waktu, sesuai AI Task Protocol), memanfaatkan kemampuan Inertia berjalan berdampingan dengan Blade selama transisi, dan business logic tetap server-side (Controller → Service → Repository tidak berubah).
 
