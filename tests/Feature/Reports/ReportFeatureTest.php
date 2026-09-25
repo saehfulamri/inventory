@@ -10,6 +10,7 @@ use App\Models\Sale;
 use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ReportFeatureTest extends TestCase
@@ -24,19 +25,24 @@ class ReportFeatureTest extends TestCase
 
             $this->actingAs($user)
                 ->get(route('reports.index'))
-                ->assertOk();
+                ->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component('Reports/Index'));
             $this->actingAs($user)
                 ->get(route('reports.sales'))
-                ->assertOk();
+                ->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component('Reports/Sales'));
             $this->actingAs($user)
                 ->get(route('reports.stock'))
-                ->assertOk();
+                ->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component('Reports/Stock'));
             $this->actingAs($user)
                 ->get(route('reports.movements'))
-                ->assertOk();
+                ->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component('Reports/Movements'));
             $this->actingAs($user)
                 ->get(route('reports.purchases'))
-                ->assertOk();
+                ->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component('Reports/Purchases'));
         }
     }
 
@@ -57,6 +63,26 @@ class ReportFeatureTest extends TestCase
         }
     }
 
+    public function test_report_index_shows_summary_cards(): void
+    {
+        $admin = User::factory()->withRole(Role::Admin)->create();
+        $product = Product::factory()->create();
+        Sale::factory()->for($admin)->create(['grand_total' => 100_000]);
+        Purchase::factory()->completed()->create(['total_amount' => 50_000]);
+        StockMovement::factory()->for($product)->for($admin)->create(['quantity' => 10]);
+
+        $this->actingAs($admin)
+            ->get(route('reports.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Index')
+                ->where('sales.total', 100_000)
+                ->where('sales.count', 1)
+                ->where('purchases.total', 50_000)
+                ->where('movements.units', 10)
+            );
+    }
+
     public function test_sales_report_lists_sales_and_summary(): void
     {
         $admin = User::factory()->withRole(Role::Admin)->create();
@@ -67,8 +93,14 @@ class ReportFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('reports.sales'))
             ->assertOk()
-            ->assertSee($sale->sale_number)
-            ->assertSee('250.000', false);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Sales')
+                ->where('summary.total', 250_000)
+                ->where('summary.count', 1)
+                ->where('sales.total', 1)
+                ->where('sales.data.0.sale_number', $sale->sale_number)
+                ->where('sales.data.0.grand_total', '250000.00')
+            );
     }
 
     public function test_stock_report_lists_products(): void
@@ -79,7 +111,38 @@ class ReportFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('reports.stock'))
             ->assertOk()
-            ->assertSee('Kopi Arabika 500g');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Stock')
+                ->where('products.total', 1)
+                ->where('products.data.0.name', 'Kopi Arabika 500g')
+            );
+    }
+
+    public function test_stock_report_filters_by_keyword_and_low_stock(): void
+    {
+        $admin = User::factory()->withRole(Role::Admin)->create();
+        Product::factory()->create(['name' => 'Kopi Arabika 500g', 'stock' => 3, 'minimum_stock' => 5]);
+        Product::factory()->create(['name' => 'Teh Melati', 'stock' => 20, 'minimum_stock' => 5]);
+
+        $this->actingAs($admin)
+            ->get(route('reports.stock', ['keyword' => 'Kopi']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Stock')
+                ->where('filters.keyword', 'Kopi')
+                ->where('products.total', 1)
+                ->where('products.data.0.name', 'Kopi Arabika 500g')
+            );
+
+        $this->actingAs($admin)
+            ->get(route('reports.stock', ['low_stock' => 1]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Stock')
+                ->where('filters.low_stock', '1')
+                ->where('products.total', 1)
+                ->where('products.data.0.name', 'Kopi Arabika 500g')
+            );
     }
 
     public function test_movements_report_renders_with_product_filter(): void
@@ -94,7 +157,11 @@ class ReportFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('reports.movements'))
             ->assertOk()
-            ->assertSee($product->name);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Movements')
+                ->where('movements.total', 1)
+                ->where('movements.data.0.product.name', $product->name)
+            );
     }
 
     public function test_movements_report_can_be_filtered_by_product(): void
@@ -112,7 +179,12 @@ class ReportFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('reports.movements', ['product_id' => $a->id]))
             ->assertOk()
-            ->assertSee($movementA->id);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Movements')
+                ->where('filters.product_id', $a->id)
+                ->where('movements.total', 1)
+                ->where('movements.data.0.id', $movementA->id)
+            );
     }
 
     public function test_purchases_report_lists_purchases(): void
@@ -126,8 +198,12 @@ class ReportFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('reports.purchases'))
             ->assertOk()
-            ->assertSee('PO-20260714-0001')
-            ->assertSee('125.000,00', false);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Reports/Purchases')
+                ->where('purchases.total', 1)
+                ->where('purchases.data.0.purchase_number', 'PO-20260714-0001')
+                ->where('purchases.data.0.total_amount', '125000.00')
+            );
     }
 
     public function test_sales_export_streams_csv_header_and_rows(): void

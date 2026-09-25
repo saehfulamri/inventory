@@ -14,6 +14,24 @@ export function formatCurrency(value) {
 }
 
 /**
+ * Format angka dengan jumlah desimal tertentu (konvensi id-ID).
+ *
+ * Contoh: formatNumber(1500) => "1.500"
+ *
+ * @param {number|string|null} value
+ * @param {number} [decimals=0]
+ * @returns {string}
+ */
+export function formatNumber(value, decimals = 0) {
+    const amount = Number(value) || 0;
+
+    return new Intl.NumberFormat('id-ID', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    }).format(amount);
+}
+
+/**
  * Format angka kuantitas stok dengan 3 angka desimal (konvensi id-ID).
  *
  * Contoh: formatQuantity(15) => "15,000"
