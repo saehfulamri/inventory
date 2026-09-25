@@ -3,6 +3,7 @@ import { computed, inject } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '../../Components/Layouts/AppLayout.vue';
 import VBadge from '../../Components/ui/VBadge.vue';
+import { formatCurrency } from '../../utils/format.js';
 
 const props = defineProps({
     summary: { type: Object, required: true },
@@ -26,10 +27,6 @@ function barHeight(point) {
     }
 
     return `${Math.max(6, Math.round((point.total / chartMax.value) * 100))}%`;
-}
-
-function formatCurrency(value) {
-    return `Rp ${new Intl.NumberFormat('id-ID').format(Math.trunc(value ?? 0))}`;
 }
 </script>
 

@@ -151,7 +151,7 @@
 - [x] TASK-104 Foundation UI: `AppLayout.vue` (topbar/nav berbasis role, flash message, skip-link, focus management) + komponen base (button, card, form-field, table, pagination, empty-state, confirmation dialog) mengikuti token `09-design.md`
 - [x] TASK-105 Auth & Error: halaman login (Inertia) + root component Error (403/404/500)
 - [x] TASK-106 Dashboard page
-- [ ] TASK-107 Produk: list (filter/pagination) + form create/edit (termasuk upload foto produk via `useForm` multipart)
+- [x] TASK-107 Produk: list (filter/pagination) + form create/edit (termasuk upload foto produk via `useForm` multipart)
 - [ ] TASK-108 Supplier: list (filter) + form create/edit
 - [ ] TASK-109 Inventory: stok list, riwayat movement, form adjustment
 - [ ] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize

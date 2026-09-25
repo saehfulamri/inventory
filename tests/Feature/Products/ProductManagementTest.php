@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ProductManagementTest extends TestCase
@@ -53,8 +54,13 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.index'))
             ->assertOk()
-            ->assertSee($product->name)
-            ->assertSee($product->sku);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('can.viewAnyProducts', true)
+                ->where('products.total', 1)
+                ->where('products.data.0.name', $product->name)
+                ->where('products.data.0.sku', $product->sku)
+            );
     }
 
     public function test_product_list_shows_empty_state_when_no_products(): void
@@ -62,7 +68,11 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.index'))
             ->assertOk()
-            ->assertSee('Belum ada produk.');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('products.total', 0)
+                ->where('products.data', [])
+            );
     }
 
     public function test_admin_can_open_create_form(): void
@@ -70,7 +80,12 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.create'))
             ->assertOk()
-            ->assertSee('Tambah Produk');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Create')
+                ->where('product', null)
+                ->has('categories')
+                ->has('units')
+            );
     }
 
     public function test_admin_can_create_product(): void
@@ -166,7 +181,10 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.index'))
             ->assertOk()
-            ->assertSee($product->image_url);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('products.data.0.image_url', $product->image_url)
+            );
     }
 
     public function test_create_product_rejects_non_image_file(): void
@@ -222,7 +240,14 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.edit', $product))
             ->assertOk()
-            ->assertSee($product->name);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Edit')
+                ->where('product.name', $product->name)
+                ->where('product.sku', $product->sku)
+                ->where('product.id', $product->id)
+                ->has('categories')
+                ->has('units')
+            );
     }
 
     public function test_admin_can_update_product(): void
@@ -293,8 +318,12 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.index', ['keyword' => 'Kopi']))
             ->assertOk()
-            ->assertSee('Kopi Susu Gula Aren')
-            ->assertDontSee('Teh Botol');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('filters.keyword', 'Kopi')
+                ->where('products.total', 1)
+                ->where('products.data.0.name', 'Kopi Susu Gula Aren')
+            );
     }
 
     public function test_product_list_can_filter_by_category(): void
@@ -303,13 +332,17 @@ class ProductManagementTest extends TestCase
         $categoryB = $this->category();
         $unit = $this->unit();
         $productA = Product::factory()->create(['category_id' => $categoryA->id, 'unit_id' => $unit->id]);
-        $productB = Product::factory()->create(['category_id' => $categoryB->id, 'unit_id' => $unit->id]);
+        Product::factory()->create(['category_id' => $categoryB->id, 'unit_id' => $unit->id]);
 
         $this->actingAs($this->admin())
             ->get(route('products.index', ['category_id' => $categoryA->id]))
             ->assertOk()
-            ->assertSee($productA->name)
-            ->assertDontSee($productB->name);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('filters.category_id', (string) $categoryA->id)
+                ->where('products.total', 1)
+                ->where('products.data.0.name', $productA->name)
+            );
     }
 
     public function test_product_list_can_filter_by_low_stock(): void
@@ -323,7 +356,7 @@ class ProductManagementTest extends TestCase
             'stock' => 2,
             'minimum_stock' => 5,
         ]);
-        $healthy = Product::factory()->create([
+        Product::factory()->create([
             'category_id' => $category->id,
             'unit_id' => $unit->id,
             'stock' => 100,
@@ -333,8 +366,12 @@ class ProductManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('products.index', ['low_stock' => 1]))
             ->assertOk()
-            ->assertSee($low->name)
-            ->assertDontSee($healthy->name);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('filters.low_stock', true)
+                ->where('products.total', 1)
+                ->where('products.data.0.name', $low->name)
+            );
     }
 
     public function test_guest_is_redirected_to_login(): void

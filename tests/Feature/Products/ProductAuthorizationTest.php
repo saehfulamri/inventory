@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Models\User;
 use App\Policies\ProductPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ProductAuthorizationTest extends TestCase
@@ -60,12 +61,18 @@ class ProductAuthorizationTest extends TestCase
         $this->actingAs($warehouse)
             ->get(route('products.index'))
             ->assertOk()
-            ->assertSee('Produk');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Index')
+                ->where('can.viewAnyProducts', true)
+            );
 
         $this->actingAs($warehouse)
             ->get(route('products.create'))
             ->assertOk()
-            ->assertSee('Tambah Produk');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Create')
+                ->where('can.viewAnyProducts', true)
+            );
     }
 
     public function test_cashier_is_forbidden_on_product_pages(): void

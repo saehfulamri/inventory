@@ -12,7 +12,8 @@ use App\Services\UnitService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends Controller
 {
@@ -25,22 +26,24 @@ class ProductController extends Controller
         protected UnitService $unitService,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Product::class);
 
-        return view('products.index', [
-            'products' => $this->productService->paginate($this->filters($request)),
-            'filters' => $this->filters($request),
+        $filters = $this->filters($request);
+
+        return Inertia::render('Products/Index', [
+            'products' => $this->productService->paginate($filters),
+            'filters' => $filters,
             'categories' => $this->categoryService->findActive(),
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
         $this->authorize('create', Product::class);
 
-        return view('products.create', $this->formData(new Product));
+        return Inertia::render('Products/Create', $this->formData());
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
@@ -56,11 +59,11 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Produk berhasil dibuat.');
     }
 
-    public function edit(Product $product): View
+    public function edit(Product $product): Response
     {
         $this->authorize('update', $product);
 
-        return view('products.edit', $this->formData($product));
+        return Inertia::render('Products/Edit', $this->formData($product));
     }
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
@@ -98,7 +101,7 @@ class ProductController extends Controller
         ], fn ($value) => $value !== null);
     }
 
-    private function formData(Product $product): array
+    private function formData(?Product $product = null): array
     {
         return [
             'product' => $product,

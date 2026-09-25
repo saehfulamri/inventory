@@ -29,6 +29,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    /** @var list<string> */
+    protected $appends = ['image_url'];
+
     /**
      * URL publik foto produk, atau null bila produk tanpa foto.
      */

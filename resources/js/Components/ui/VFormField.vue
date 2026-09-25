@@ -9,6 +9,8 @@ const props = defineProps({
     autocomplete: { type: String, default: null },
     autofocus: { type: Boolean, default: false },
     placeholder: { type: String, default: null },
+    min: { type: [String, Number], default: undefined },
+    step: { type: [String, Number], default: undefined },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -36,6 +38,8 @@ const emit = defineEmits(['update:modelValue']);
             :value="modelValue"
             :placeholder="placeholder"
             :required="required"
+            :min="min"
+            :step="step"
             :autocomplete="autocomplete ?? undefined"
             :autofocus="autofocus"
             :aria-invalid="error ? 'true' : 'false'"
