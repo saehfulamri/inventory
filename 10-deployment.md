@@ -15,21 +15,25 @@ DNS sudah diarahkan ke server dan sertifikat TLS tersedia (Caddy/LetsEncrypt) �
 
 ## 2. Langkah Deploy (Server Baru)
 
+Server baru mengikuti alur GitHub Flow yang sama: clone repository sebagai
+`repository`, lalu deploy tag rilis melalui script release atomik. Jangan
+checkout branch fitur atau melakukan build langsung di document root.
+
 ```sh
-# 1. Ambil kode
-git clone git@github.com:saehfulamri/inventory.git /var/www/inventory
-cd /var/www/inventory
+# 1. Siapkan clone yang hanya menjadi sumber tag/commit
+git clone --no-checkout git@github.com:saehfulamri/inventory.git \
+  /var/www/inventory/repository
+cd /var/www/inventory/repository
+git fetch --tags --prune
 
-# 2. Setel branch rilis/stable
-git fetch --tags
-git checkout v0.1.0   # atau tag/komit tertentu
+# 2. Environment produksi (sekali saja, sebelum deployment pertama)
+sudo install -o deploy -g www-data -m 0600 /path/to/production/.env \
+  /var/www/inventory/shared/.env
 
-# 3. Dependensi (tanpa tooling development)
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-# 4. Environment produksi
-cp .env.example .env
-php artisan key:generate
+# 3. Deploy tag yang sudah dibuat dari commit main setelah PR merge
+cd /var/www/inventory/repository
+HEALTH_URL=https://inventory.example.com/up \
+  ./scripts/deploy-release.sh v0.3.0
 ```
 
 ### 2.1 Isi `.env` produksi
@@ -66,25 +70,14 @@ MAIL_MAILER=log             # sesuaikan bila ingin email sungguhan
 
 ### 2.2 Migrasi, storage, dan aset
 
+Migrasi, storage link, dependency install, build asset, dan cache dijalankan
+oleh `scripts/deploy-release.sh` di release baru. Jangan menjalankan langkah
+tersebut manual di `current` karena dapat mencampur dua versi aplikasi.
+
 ```sh
-# Basis data
-php artisan migrate --force
-
-# Symlink storage/public (wajib agar foto produk di /storage/products/... bisa diakses)
-php artisan storage:link
-
-# Aset frontend (Vue/Inertia + Tailwind build) — bundel SPA disajikan sebagai aset statis di public/build/
-npm ci
-npm run build
-
 # Rights — pastikan user web server dapat menulis
-sudo chown -R www-data:www-data storage bootstrap/cache
-
-# Cache produksi
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+sudo chown -R deploy:www-data /var/www/inventory/shared/storage
+sudo chmod -R u+rwX,g+rwX /var/www/inventory/shared/storage
 ```
 
 `view:cache` hanya mencakup root template Blade (`app.blade.php`); halaman Inertia dirender di browser dari bundel `public/build/` hasil `npm run build`.
@@ -96,8 +89,18 @@ Perintah cache perlu diulang **setiap kali** kode atau konfigurasi berubah di pr
 ### Nginx (contoh)
 
 ```nginx
+# Redirect seluruh traffic HTTP ke HTTPS.
 server {
-    listen 443 ssl http2;
+    listen 80;
+    listen [::]:80;
+    server_name inventory.example.com;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
     server_name inventory.example.com;
 
     root /var/www/inventory/public;
@@ -106,6 +109,11 @@ server {
     ssl_certificate     /etc/letsencrypt/live/inventory.example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/inventory.example.com/privkey.pem;
 
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
@@ -113,7 +121,11 @@ server {
     # Foto produk & aset statis
     location ~* \.(jpg|jpeg|png|webp)$ {
         expires 30d;
-        add_header Cache-Control "public, immutable";
+        add_header Cache-Control "public, immutable" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     }
 
     location ~ \.php$ {
@@ -122,11 +134,25 @@ server {
         fastcgi_pass unix:/run/php/php8.4-fpm.sock;
     }
 
+    # Jangan pernah expose file tersembunyi atau file konfigurasi.
     location ~ /\.(?!well-known).* {
         deny all;
     }
 }
 ```
+
+Setelah mengaktifkan konfigurasi, validasi dan reload secara eksplisit:
+
+```sh
+sudo nginx -t
+sudo systemctl reload nginx
+curl -I http://inventory.example.com/
+curl -I https://inventory.example.com/
+```
+
+Request HTTP harus mengembalikan `301` menuju HTTPS dan response HTTPS harus
+memuat header `Strict-Transport-Security`. HSTS hanya boleh diaktifkan setelah
+sertifikat TLS dan seluruh subdomain yang tercakup benar-benar siap HTTPS.
 
 ### Caddy (lebih sederhana)
 
@@ -148,33 +174,91 @@ inventory.example.com {
 }
 ```
 
-## 4. Proses Update (Release)
+## 4. Deployment Release Atomik
+
+Gunakan layout berikut agar release baru dibangun tanpa mengubah release yang
+sedang aktif:
+
+```text
+/var/www/inventory/
+├── current -> releases/<release-id>
+├── repository/                 # clone Git dengan remote origin
+├── releases/<release-id>/     # immutable setelah aktif
+└── shared/
+    ├── .env
+    └── storage/
+```
+
+Web server harus menunjuk ke `/var/www/inventory/current/public`, bukan ke
+direktori release tertentu. Siapkan direktori dan environment sekali:
+
+```sh
+sudo install -d -o deploy -g www-data -m 0750 \
+  /var/www/inventory/{repository,releases,shared,shared/storage}
+sudo install -d -o deploy -g www-data -m 0750 /var/www/inventory/shared/storage/app
+sudo install -o deploy -g www-data -m 0600 /path/to/production/.env \
+  /var/www/inventory/shared/.env
+git clone git@github.com:saehfulamri/inventory.git /var/www/inventory/repository
+```
+
+Tambahkan script deployment ke repository dan jadikan executable:
+
+```sh
+chmod 0750 scripts/deploy-release.sh scripts/rollback-release.sh
+```
+
+Jalankan deployment sebagai user `deploy`, bukan `root`. Script membangun
+dependency dan asset di release baru, membuat cache, mengaktifkan maintenance
+mode pada release aktif, menjalankan migrasi, lalu mengganti symlink `current`
+secara atomik. Migrasi harus backward-compatible dengan release aktif karena
+database berubah sebelum symlink berpindah.
+
+```sh
+cd /var/www/inventory/repository
+git fetch --tags --prune
+
+cd /var/www/inventory
+HEALTH_URL=https://inventory.example.com/up \
+  repository/scripts/deploy-release.sh v0.3.0
+```
+
+`HEALTH_URL` harus mengarah ke endpoint yang hanya dianggap sehat jika response
+HTTP berhasil. Jika preflight, build, cache, atau migrasi gagal sebelum switch,
+release baru dihapus dan release aktif tetap dipertahankan. Jika health check
+gagal setelah switch, lakukan rollback segera; script tidak melakukan rollback
+otomatis karena migrasi mungkin sudah mengubah schema.
+
+## 5. Rollback Release
+
+Rollback hanya mengganti symlink ke release sebelumnya. Jangan otomatis
+menjalankan `migrate:rollback`, karena data mungkin sudah ditulis memakai
+schema baru. Gunakan migrasi forward-compatible untuk memperbaiki deployment
+yang gagal.
 
 ```sh
 cd /var/www/inventory
-
-# 1. Backup dulu — lihat 11-backup-restore.md
-# 2. Ambil versi baru
-git fetch --tags
-git checkout v0.2.0   # contoh versi berikutnya
-
-# 3. Dependensi & aset (bila ada perubahan)
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-npm ci && npm run build
-
-# 4. Migrasi (idempotent; aman dijalankan saat maintenance off-peak)
-php artisan down --retry=60
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
-php artisan up
+scripts/rollback-release.sh
 ```
 
-Rollback cepat bila terjadi masalah: checkout kembali versi sebelumnya, ulangi langkah 3–4 (migrasi rollback tidak perlu otomatis — lakukan `php artisan migrate:rollback` hanya bila migrasi baru bermasalah dan data belum dipakai).
+Target release juga dapat diberikan secara eksplisit:
 
-## 5. Checklist Keamanan Sebelum Go-Live
+```sh
+scripts/rollback-release.sh /var/www/inventory/releases/20260925020000
+```
+
+Setelah deployment atau rollback, verifikasi:
+
+```sh
+readlink /var/www/inventory/current
+curl --fail --silent --show-error https://inventory.example.com/up
+php /var/www/inventory/current/artisan about
+php /var/www/inventory/current/artisan migrate:status
+```
+
+Simpan minimal lima release terakhir. Hapus release lama hanya setelah health
+check release baru berhasil dan backup telah tervalidasi.
+
+## 6. Checklist Keamanan Sebelum Go-Live
 
 - [ ] `APP_ENV=production` dan `APP_DEBUG=false`.
 - [ ] Kredensial DB non-root dengan hak terbatas.
@@ -185,7 +269,7 @@ Rollback cepat bila terjadi masalah: checkout kembali versi sebelumnya, ulangi l
 - [ ] Restore backup pernah diuji di server/pulau lain.
 - [ ] App key unik (`APP_KEY` hasil generate, bukan dari repor).
 
-## 6. Operasional Harian
+## 7. Operasional Harian
 
 ```sh
 php artisan about              # cek environment/config ter-cache
