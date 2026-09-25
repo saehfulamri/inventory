@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -12,7 +13,12 @@ class LoginTest extends TestCase
 
     public function test_login_page_can_be_rendered(): void
     {
-        $this->get(route('login'))->assertOk();
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Auth/Login')
+                ->where('auth.user', null)
+            );
     }
 
     public function test_user_can_login_with_valid_credentials(): void

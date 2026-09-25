@@ -26,6 +26,8 @@ use App\Repositories\Eloquent\EloquentSupplierRepository;
 use App\Repositories\Eloquent\EloquentUnitRepository;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,6 +50,18 @@ class AppServiceProvider extends ServiceProvider
         // Laporan hanya dapat diakses & dilihat oleh Admin dan Manager/Owner.
         Gate::define('viewReports', function (User $user): bool {
             return in_array($user->role, [Role::Admin, Role::Manager], true);
+        });
+
+        // Render halaman error (403/404/500/503) sebagai halaman Inertia dengan
+        // shared props yang sama. Request JSON/API dikecualikan.
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
+            if (! $response->request->expectsJson() && in_array($response->statusCode(), [403, 404, 500, 503], true)) {
+                return $response->render('ErrorPage', [
+                    'status' => $response->statusCode(),
+                ])->withSharedData();
+            }
+
+            return null;
         });
     }
 }
