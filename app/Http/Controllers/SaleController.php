@@ -12,7 +12,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SaleController extends Controller
 {
@@ -23,24 +24,24 @@ class SaleController extends Controller
         protected ProductService $productService,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Sale::class);
 
-        return view('sales.index', [
+        return Inertia::render('Sales/Index', [
             'sales' => $this->saleService->paginate($this->filters($request)),
             'filters' => $this->filters($request),
-            'statuses' => SaleStatus::cases(),
-            'paymentMethods' => PaymentMethod::cases(),
+            'statuses' => $this->statusOptions(),
+            'paymentMethods' => $this->paymentMethodOptions(),
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
         $this->authorize('create', Sale::class);
 
-        return view('sales.pos', [
-            'paymentMethods' => PaymentMethod::cases(),
+        return Inertia::render('Sales/Pos', [
+            'paymentMethods' => $this->paymentMethodOptions(),
         ]);
     }
 
@@ -71,13 +72,29 @@ class SaleController extends Controller
             ->with('success', 'Transaksi berhasil. Stok telah diperbarui.');
     }
 
-    public function show(Sale $sale): View
+    public function show(Sale $sale): Response
     {
         $this->authorize('view', $sale);
 
-        return view('sales.show', [
+        return Inertia::render('Sales/Show', [
             'sale' => $sale->load(['user', 'items.product']),
         ]);
+    }
+
+    private function statusOptions(): array
+    {
+        return collect(SaleStatus::cases())
+            ->map(fn (SaleStatus $status) => ['value' => $status->value, 'label' => $status->label()])
+            ->values()
+            ->all();
+    }
+
+    private function paymentMethodOptions(): array
+    {
+        return collect(PaymentMethod::cases())
+            ->map(fn (PaymentMethod $method) => ['value' => $method->value, 'label' => $method->label()])
+            ->values()
+            ->all();
     }
 
     private function filters(Request $request): array

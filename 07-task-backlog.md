@@ -155,7 +155,7 @@
 - [x] TASK-108 Supplier: list (filter) + form create/edit
 - [x] TASK-109 Inventory: stok list, riwayat movement, form adjustment
 - [x] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize
-- [ ] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)
+- [x] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)
 - [ ] TASK-112 Laporan: index + laporan sales/stock/movements/purchases + link ekspor CSV
 - [ ] TASK-113 Update feature tests ke assertion Inertia (`assertInertia`); hapus view Blade lama; verifikasi `npm run build`
 - [ ] TASK-114 Hardening & security: hilangkan `'unsafe-inline'` pada `script-src` CSP (setelah semua inline script dihapus), tinjau CSRF/XSRF Inertia, pertahankan NFR-009/NFR-010

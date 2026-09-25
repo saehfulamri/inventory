@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class SaleManagementTest extends TestCase
@@ -21,8 +22,12 @@ class SaleManagementTest extends TestCase
         $this->actingAs($cashier)
             ->get(route('sales.create'))
             ->assertOk()
-            ->assertSee('Penjualan')
-            ->assertSee('Keranjang');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Sales/Pos')
+                ->where('paymentMethods.0.value', 'cash')
+                ->where('paymentMethods.0.label', 'Tunai')
+                ->where('paymentMethods.3.value', 'card')
+            );
     }
 
     public function test_products_endpoint_searches_active_products_with_stock(): void
@@ -141,8 +146,11 @@ class SaleManagementTest extends TestCase
         $this->actingAs($cashier)
             ->get(route('sales.index'))
             ->assertOk()
-            ->assertSee('SO-20260921-0001234')
-            ->assertSee('Penjualan');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Sales/Index')
+                ->where('sales.total', 1)
+                ->where('sales.data.0.sale_number', 'SO-20260921-0001234')
+            );
     }
 
     public function test_receipt_page_renders_sale_details(): void
@@ -167,8 +175,12 @@ class SaleManagementTest extends TestCase
         $this->actingAs($cashier)
             ->get(route('sales.show', $sale))
             ->assertOk()
-            ->assertSee('Produk Struk')
-            ->assertSee($sale->sale_number)
-            ->assertSee('Cetak Struk');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Sales/Show')
+                ->where('sale.sale_number', $sale->sale_number)
+                ->where('sale.grand_total', '30000.00')
+                ->where('sale.paid_amount', '50000.00')
+                ->where('sale.items.0.product.name', 'Produk Struk')
+            );
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Policies\SalePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class SaleAuthorizationTest extends TestCase
@@ -45,10 +46,13 @@ class SaleAuthorizationTest extends TestCase
         $cashier = User::factory()->withRole(Role::Cashier)->create();
         $sale = Sale::factory()->for($cashier)->create();
 
-        $this->actingAs($cashier)->get(route('sales.index'))->assertOk();
-        $this->actingAs($cashier)->get(route('sales.create'))->assertOk();
+        $this->actingAs($cashier)->get(route('sales.index'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Index'));
+        $this->actingAs($cashier)->get(route('sales.create'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Pos'));
         $this->actingAs($cashier)->get(route('sales.products'))->assertOk();
-        $this->actingAs($cashier)->get(route('sales.show', $sale))->assertOk();
+        $this->actingAs($cashier)->get(route('sales.show', $sale))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Show'));
     }
 
     public function test_admin_can_access_sale_pages(): void
@@ -56,10 +60,13 @@ class SaleAuthorizationTest extends TestCase
         $admin = User::factory()->withRole(Role::Admin)->create();
         $sale = Sale::factory()->for($admin)->create();
 
-        $this->actingAs($admin)->get(route('sales.index'))->assertOk();
-        $this->actingAs($admin)->get(route('sales.create'))->assertOk();
+        $this->actingAs($admin)->get(route('sales.index'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Index'));
+        $this->actingAs($admin)->get(route('sales.create'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Pos'));
         $this->actingAs($admin)->get(route('sales.products'))->assertOk();
-        $this->actingAs($admin)->get(route('sales.show', $sale))->assertOk();
+        $this->actingAs($admin)->get(route('sales.show', $sale))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Sales/Show'));
     }
 
     public function test_warehouse_is_forbidden_on_sale_pages(): void
