@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -29,11 +30,16 @@ class DashboardTest extends TestCase
         $this->actingAs($cashier)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Penjualan Hari Ini')
-            ->assertSee('150.000')
-            ->assertSee('Produk Stok Menipis')
-            ->assertSee('Beras Menipis')
-            ->assertSee('Penjualan 7 Hari Terakhir');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/Index')
+                ->where('summary.today_total', 150000)
+                ->where('summary.today_count', 1)
+                ->where('summary.active_products', 2)
+                ->where('summary.low_stock_count', 1)
+                ->has('summary.low_stock', 1)
+                ->where('summary.low_stock.0.name', 'Beras Menipis')
+                ->has('summary.chart', 7)
+            );
     }
 
     public function test_dashboard_shows_linked_low_stock_for_management_roles(): void
@@ -44,8 +50,11 @@ class DashboardTest extends TestCase
         $this->actingAs($admin)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Sabun Menipis')
-            ->assertSee('Lihat Semua');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/Index')
+                ->where('summary.low_stock.0.name', 'Sabun Menipis')
+                ->where('can.viewAnyProducts', true)
+            );
     }
 
     public function test_dashboard_shows_empty_states_when_no_data(): void
@@ -55,8 +64,14 @@ class DashboardTest extends TestCase
         $this->actingAs($warehouse)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Rp 0')
-            ->assertSee('Semua produk berada di atas stok minimum.');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/Index')
+                ->where('summary.today_total', 0)
+                ->where('summary.today_count', 0)
+                ->where('summary.active_products', 0)
+                ->where('summary.low_stock_count', 0)
+                ->where('summary.low_stock', [])
+            );
     }
 
     public function test_each_role_can_access_dashboard(): void

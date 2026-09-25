@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __invoke(DashboardService $dashboard): View
+    public function __invoke(DashboardService $dashboard): Response
     {
-        return view('dashboard.index', [
+        return Inertia::render('Dashboard/Index', [
             'summary' => $dashboard->summary(),
         ]);
     }
