@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Policies\StockAdjustmentPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class StockAuthorizationTest extends TestCase
@@ -40,9 +41,12 @@ class StockAuthorizationTest extends TestCase
         $warehouse = User::factory()->withRole(Role::Warehouse)->create();
         $product = Product::factory()->create(['stock' => 10]);
 
-        $this->actingAs($warehouse)->get(route('inventory.index'))->assertOk()->assertSee('Stok');
-        $this->actingAs($warehouse)->get(route('inventory.movements'))->assertOk();
-        $this->actingAs($warehouse)->get(route('inventory.adjustments.create'))->assertOk();
+        $this->actingAs($warehouse)->get(route('inventory.index'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Index'));
+        $this->actingAs($warehouse)->get(route('inventory.movements'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Movements'));
+        $this->actingAs($warehouse)->get(route('inventory.adjustments.create'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Adjustments/Create'));
 
         $this->actingAs($warehouse)->post(route('inventory.adjustments.store'), [
             'product_id' => $product->id,
@@ -55,9 +59,12 @@ class StockAuthorizationTest extends TestCase
     {
         $admin = User::factory()->withRole(Role::Admin)->create();
 
-        $this->actingAs($admin)->get(route('inventory.index'))->assertOk();
-        $this->actingAs($admin)->get(route('inventory.movements'))->assertOk();
-        $this->actingAs($admin)->get(route('inventory.adjustments.create'))->assertOk();
+        $this->actingAs($admin)->get(route('inventory.index'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Index'));
+        $this->actingAs($admin)->get(route('inventory.movements'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Movements'));
+        $this->actingAs($admin)->get(route('inventory.adjustments.create'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Inventory/Adjustments/Create'));
     }
 
     public function test_cashier_is_forbidden_on_stock_pages(): void

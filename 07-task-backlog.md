@@ -153,7 +153,7 @@
 - [x] TASK-106 Dashboard page
 - [x] TASK-107 Produk: list (filter/pagination) + form create/edit (termasuk upload foto produk via `useForm` multipart)
 - [x] TASK-108 Supplier: list (filter) + form create/edit
-- [ ] TASK-109 Inventory: stok list, riwayat movement, form adjustment
+- [x] TASK-109 Inventory: stok list, riwayat movement, form adjustment
 - [ ] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize
 - [ ] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)
 - [ ] TASK-112 Laporan: index + laporan sales/stock/movements/purchases + link ekspor CSV

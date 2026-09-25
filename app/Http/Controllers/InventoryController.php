@@ -13,7 +13,8 @@ use App\Services\StockMovementService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class InventoryController extends Controller
 {
@@ -26,34 +27,41 @@ class InventoryController extends Controller
         protected StockAdjustmentService $stockAdjustmentService,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Product::class);
 
-        return view('inventory.index', [
-            'products' => $this->productService->paginate($this->stockFilters($request)),
-            'filters' => $this->stockFilters($request),
+        $filters = $this->stockFilters($request);
+
+        return Inertia::render('Inventory/Index', [
+            'products' => $this->productService->paginate($filters),
+            'filters' => $filters,
             'categories' => $this->categoryService->findActive(),
         ]);
     }
 
-    public function movements(Request $request): View
+    public function movements(Request $request): Response
     {
         $this->authorize('viewAny', Product::class);
 
-        return view('inventory.movements', [
+        $movementTypes = collect(MovementType::cases())
+            ->map(fn (MovementType $type) => ['value' => $type->value, 'label' => $type->label()])
+            ->values()
+            ->all();
+
+        return Inertia::render('Inventory/Movements', [
             'movements' => $this->stockMovementService->paginate($this->movementFilters($request)),
             'filters' => $this->movementFilters($request),
             'products' => $this->productService->findActive(),
-            'movementTypes' => MovementType::cases(),
+            'movementTypes' => $movementTypes,
         ]);
     }
 
-    public function createAdjustment(Request $request): View
+    public function createAdjustment(Request $request): Response
     {
         $this->authorize('create', StockAdjustment::class);
 
-        return view('inventory.adjustments.create', [
+        return Inertia::render('Inventory/Adjustments/Create', [
             'products' => $this->productService->findActive(),
             'selectedProductId' => $request->filled('product_id') ? (int) $request->input('product_id') : null,
         ]);
