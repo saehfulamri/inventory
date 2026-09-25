@@ -11,7 +11,8 @@ use App\Services\SupplierService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PurchaseController extends Controller
 {
@@ -23,23 +24,28 @@ class PurchaseController extends Controller
         protected ProductService $productService,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Purchase::class);
 
-        return view('purchases.index', [
+        $statuses = collect(PurchaseStatus::cases())
+            ->map(fn (PurchaseStatus $status) => ['value' => $status->value, 'label' => $status->label()])
+            ->values()
+            ->all();
+
+        return Inertia::render('Purchases/Index', [
             'purchases' => $this->purchaseService->paginate($this->filters($request)),
             'filters' => $this->filters($request),
             'suppliers' => $this->supplierService->findActive(),
-            'statuses' => PurchaseStatus::cases(),
+            'statuses' => $statuses,
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
         $this->authorize('create', Purchase::class);
 
-        return view('purchases.create', [
+        return Inertia::render('Purchases/Create', [
             'suppliers' => $this->supplierService->findActive(),
             'products' => $this->productService->findActive(),
         ]);
@@ -56,11 +62,11 @@ class PurchaseController extends Controller
             ->with('success', 'Penerimaan berhasil dibuat. Finalisasi penerimaan untuk menambah stok.');
     }
 
-    public function show(Purchase $purchase): View
+    public function show(Purchase $purchase): Response
     {
         $this->authorize('view', $purchase);
 
-        return view('purchases.show', [
+        return Inertia::render('Purchases/Show', [
             'purchase' => $purchase->load(['supplier', 'user', 'items.product']),
         ]);
     }

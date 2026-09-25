@@ -9,6 +9,7 @@ use App\Models\PurchaseItem;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class PurchaseReceivingTest extends TestCase
@@ -20,7 +21,11 @@ class PurchaseReceivingTest extends TestCase
         $this->actingAs($this->warehouse())
             ->get(route('purchases.index'))
             ->assertOk()
-            ->assertSee('Belum ada penerimaan.');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Purchases/Index')
+                ->where('purchases.total', 0)
+                ->where('purchases.data', [])
+            );
     }
 
     public function test_warehouse_can_open_create_form(): void
@@ -28,7 +33,7 @@ class PurchaseReceivingTest extends TestCase
         $this->actingAs($this->warehouse())
             ->get(route('purchases.create'))
             ->assertOk()
-            ->assertSee('Tambah Penerimaan');
+            ->assertInertia(fn (Assert $page) => $page->component('Purchases/Create'));
     }
 
     public function test_store_creates_draft_without_changing_stock(): void
@@ -143,9 +148,13 @@ class PurchaseReceivingTest extends TestCase
         $this->actingAs($warehouse)
             ->get(route('purchases.show', $purchase))
             ->assertOk()
-            ->assertSee($purchase->purchase_number)
-            ->assertSee('Air Mineral 600ml')
-            ->assertSee('Draft');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Purchases/Show')
+                ->where('purchase.purchase_number', $purchase->purchase_number)
+                ->where('purchase.status', 'draft')
+                ->where('purchase.supplier.name', $supplier->name)
+                ->where('purchase.items.0.product.name', 'Air Mineral 600ml')
+            );
     }
 
     private function admin(): User

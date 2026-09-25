@@ -51,3 +51,44 @@ export function formatDateTime(value) {
 
     return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
+
+/**
+ * Format tanggal menjadi "dd/mm/yyyy" (konvensi tampilan aplikasi).
+ * Menerima "yyyy-mm-dd" maupun string timestamp ISO.
+ *
+ * @param {string|null} value
+ * @returns {string}
+ */
+export function formatDate(value) {
+    if (!value) {
+        return '';
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        const [year, month, day] = value.split('-');
+
+        return `${day}/${month}/${year}`;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return '';
+    }
+
+    const pad = (n) => String(n).padStart(2, '0');
+
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+}
+
+/**
+ * Tanggal hari ini dalam format "yyyy-mm-dd" (zona waktu lokal), untuk input type="date".
+ *
+ * @returns {string}
+ */
+export function todayISO() {
+    const date = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}

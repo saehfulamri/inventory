@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Policies\PurchasePolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class PurchaseAuthorizationTest extends TestCase
@@ -53,16 +54,17 @@ class PurchaseAuthorizationTest extends TestCase
         $this->actingAs($warehouse)
             ->get(route('purchases.index'))
             ->assertOk()
-            ->assertSee('Penerimaan');
+            ->assertInertia(fn (Assert $page) => $page->component('Purchases/Index'));
 
         $this->actingAs($warehouse)
             ->get(route('purchases.create'))
             ->assertOk()
-            ->assertSee('Tambah Penerimaan');
+            ->assertInertia(fn (Assert $page) => $page->component('Purchases/Create'));
 
         $this->actingAs($warehouse)
             ->get(route('purchases.show', $purchase))
-            ->assertOk();
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Purchases/Show'));
     }
 
     public function test_cashier_is_forbidden_on_receiving_pages(): void
