@@ -9,7 +9,8 @@ use App\Services\SupplierService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SupplierController extends Controller
 {
@@ -17,21 +18,23 @@ class SupplierController extends Controller
 
     public function __construct(protected SupplierService $supplierService) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', Supplier::class);
 
-        return view('suppliers.index', [
-            'suppliers' => $this->supplierService->paginate($this->filters($request)),
-            'filters' => $this->filters($request),
+        $filters = $this->filters($request);
+
+        return Inertia::render('Suppliers/Index', [
+            'suppliers' => $this->supplierService->paginate($filters),
+            'filters' => $filters,
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
         $this->authorize('create', Supplier::class);
 
-        return view('suppliers.create', ['supplier' => new Supplier]);
+        return Inertia::render('Suppliers/Create');
     }
 
     public function store(StoreSupplierRequest $request): RedirectResponse
@@ -46,11 +49,13 @@ class SupplierController extends Controller
         return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
     }
 
-    public function edit(Supplier $supplier): View
+    public function edit(Supplier $supplier): Response
     {
         $this->authorize('update', $supplier);
 
-        return view('suppliers.edit', ['supplier' => $supplier]);
+        return Inertia::render('Suppliers/Edit', [
+            'supplier' => $supplier,
+        ]);
     }
 
     public function update(UpdateSupplierRequest $request, Supplier $supplier): RedirectResponse

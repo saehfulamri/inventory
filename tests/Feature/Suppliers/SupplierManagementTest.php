@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class SupplierManagementTest extends TestCase
@@ -36,8 +37,13 @@ class SupplierManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('suppliers.index'))
             ->assertOk()
-            ->assertSee($supplier->name)
-            ->assertSee($supplier->code);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Index')
+                ->where('can.viewAnySuppliers', true)
+                ->where('suppliers.total', 1)
+                ->where('suppliers.data.0.name', $supplier->name)
+                ->where('suppliers.data.0.code', $supplier->code)
+            );
     }
 
     public function test_supplier_list_shows_empty_state_when_no_suppliers(): void
@@ -45,7 +51,11 @@ class SupplierManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('suppliers.index'))
             ->assertOk()
-            ->assertSee('Belum ada supplier.');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Index')
+                ->where('suppliers.total', 0)
+                ->where('suppliers.data', [])
+            );
     }
 
     public function test_admin_can_open_create_form(): void
@@ -53,7 +63,10 @@ class SupplierManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('suppliers.create'))
             ->assertOk()
-            ->assertSee('Tambah Supplier');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Create')
+                ->where('can.viewAnySuppliers', true)
+            );
     }
 
     public function test_admin_can_create_supplier(): void
@@ -109,7 +122,11 @@ class SupplierManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('suppliers.edit', $supplier))
             ->assertOk()
-            ->assertSee($supplier->name);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Edit')
+                ->where('supplier.name', $supplier->name)
+                ->where('supplier.id', $supplier->id)
+            );
     }
 
     public function test_admin_can_update_supplier(): void
@@ -170,13 +187,21 @@ class SupplierManagementTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('suppliers.index', ['keyword' => 'Alpha']))
             ->assertOk()
-            ->assertSee('PT Alpha')
-            ->assertDontSee('CV Beta');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Index')
+                ->where('filters.keyword', 'Alpha')
+                ->where('suppliers.total', 1)
+                ->where('suppliers.data.0.name', 'PT Alpha')
+            );
 
         $this->actingAs($this->admin())
             ->get(route('suppliers.index', ['is_active' => 1]))
             ->assertOk()
-            ->assertSee('PT Alpha')
-            ->assertDontSee('CV Beta');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Index')
+                ->where('filters.is_active', 1)
+                ->where('suppliers.total', 1)
+                ->where('suppliers.data.0.name', 'PT Alpha')
+            );
     }
 }

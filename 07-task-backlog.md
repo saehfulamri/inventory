@@ -152,7 +152,7 @@
 - [x] TASK-105 Auth & Error: halaman login (Inertia) + root component Error (403/404/500)
 - [x] TASK-106 Dashboard page
 - [x] TASK-107 Produk: list (filter/pagination) + form create/edit (termasuk upload foto produk via `useForm` multipart)
-- [ ] TASK-108 Supplier: list (filter) + form create/edit
+- [x] TASK-108 Supplier: list (filter) + form create/edit
 - [ ] TASK-109 Inventory: stok list, riwayat movement, form adjustment
 - [ ] TASK-110 Penerimaan: index, create (baris item dinamis), show, finalize
 - [ ] TASK-111 Penjualan: index, POS interaktif (cart reactive, pencarian produk via endpoint JSON yang sudah ada), show/struk (print)

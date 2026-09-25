@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'can' => [
                 'viewAnyProducts' => $user?->can('viewAny', Product::class) ?? false,
+                'viewAnySuppliers' => $user?->can('viewAny', Supplier::class) ?? false,
                 'viewAnyPurchases' => $user?->can('viewAny', Purchase::class) ?? false,
                 'viewAnySales' => $user?->can('viewAny', Sale::class) ?? false,
                 'viewReports' => $user?->can('viewReports') ?? false,

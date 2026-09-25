@@ -7,6 +7,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Policies\SupplierPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class SupplierAuthorizationTest extends TestCase
@@ -52,12 +53,18 @@ class SupplierAuthorizationTest extends TestCase
         $this->actingAs($warehouse)
             ->get(route('suppliers.index'))
             ->assertOk()
-            ->assertSee('Supplier');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Index')
+                ->where('can.viewAnySuppliers', true)
+            );
 
         $this->actingAs($warehouse)
             ->get(route('suppliers.create'))
             ->assertOk()
-            ->assertSee('Tambah Supplier');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Suppliers/Create')
+                ->where('can.viewAnySuppliers', true)
+            );
     }
 
     public function test_cashier_is_forbidden_on_supplier_pages(): void

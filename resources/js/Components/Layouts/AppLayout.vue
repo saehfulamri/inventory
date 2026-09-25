@@ -29,6 +29,7 @@ function logout() {
                 <div class="topnav__links">
                     <Link :href="route('dashboard')">Dashboard</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('products.index')">Produk</Link>
+                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')">Supplier</Link>
                     <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')">Penerimaan</Link>
                     <Link v-if="can.viewAnySales" :href="route('sales.index')">Penjualan</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('inventory.index')">Stok</Link>

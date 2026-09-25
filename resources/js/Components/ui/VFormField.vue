@@ -11,6 +11,7 @@ const props = defineProps({
     placeholder: { type: String, default: null },
     min: { type: [String, Number], default: undefined },
     step: { type: [String, Number], default: undefined },
+    rows: { type: [String, Number], default: 3 },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -26,6 +27,7 @@ const emit = defineEmits(['update:modelValue']);
             :value="modelValue"
             :placeholder="placeholder"
             :required="required"
+            :rows="rows"
             :aria-invalid="error ? 'true' : 'false'"
             :aria-describedby="error ? `${id}-error` : undefined"
             @input="emit('update:modelValue', $event.target.value)"
