@@ -137,9 +137,21 @@ php artisan test --filter=SaleServiceTest
 
 Setiap perubahan **harus** menyertakan/update test yang relevan. Prioritas test sesuai `04-architecture.md`: Sale → Stock → Purchase/Receiving → Authorization → Product validation.
 
-## Alur Kerja Git
+## Alur Kerja Git (GitHub Flow)
 
-### 1. Branch
+Proyek memakai **GitHub Flow**: semua perubahan dikerjakan di branch terpisah dan masuk ke `main` hanya lewat **Pull Request**. Branch `main` diproteksi di GitHub — *direct push* ke `main` ditolak, dan PR baru bisa di-merge bila status check CI (test + pint) lulus.
+
+### Langkah kerja
+
+1. Pastikan `main` mutakhir: `git checkout main && git pull`.
+2. Buat branch kerja dari `main` — penamaan sesuai bagian *Penamaan branch* di bawah.
+3. Kerjakan perubahan; tiap *logical change* satu commit (Conventional Commits).
+4. Push branch: `git push -u origin <nama-branch>`.
+5. Buka **Pull Request** ke `main` — template di `.github/PULL_REQUEST_TEMPLATE.md` terisi otomatis.
+6. Isi deskripsi (apa/mengapa/bagaimana) dan tautkan `TASK-XXX` bila ada; tunggu CI (`Tests / PHP 8.4`, `Tests / PHP 8.5`) dan review.
+7. Merge lewat GitHub setelah hijau (disarankan *squash and merge* agar 1 task = 1 commit rapi), lalu hapus branch.
+
+### Penamaan branch
 
 Kerjakan di branch terpisah, bukan langsung di `main`. Penamaan branch:
 
@@ -150,7 +162,7 @@ docs/perbarui-panduan-installasi
 test/tambah-test-finalisasi-penerimaan
 ```
 
-### 2. Commit
+### Commit
 
 Gunakan [Conventional Commits](https://www.conventionalcommits.org/), satu logical change per commit:
 
@@ -163,12 +175,12 @@ docs: update database design
 chore: update dependencies
 ```
 
-### 3. Pull Request
+### Pull Request
 
 - Deskripsikan **apa, mengapa, dan bagaimana** perubahannya.
 - Hubungkan ke issue/backlog task jika ada (`TASK-063`, `#12`).
 - Sebutkan test yang dijalankan dan hasilnya.
-- Pastikan checklist di bawah terpenuhi.
+- Pastikan checklist di bawah terpenuhi (template PR sudah memuatnya).
 
 ### Checklist PR
 
