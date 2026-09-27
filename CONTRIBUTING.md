@@ -139,7 +139,7 @@ Setiap perubahan **harus** menyertakan/update test yang relevan. Prioritas test 
 
 ## Alur Kerja Git (GitHub Flow)
 
-Proyek memakai **GitHub Flow**: semua perubahan dikerjakan di branch terpisah dan masuk ke `main` hanya lewat **Pull Request**. Branch `main` diproteksi di GitHub — *direct push* ke `main` ditolak, dan PR baru bisa di-merge bila status check CI (test + pint) lulus.
+Proyek memakai **GitHub Flow**: semua perubahan dikerjakan di branch terpisah dan masuk ke `main` hanya lewat **Pull Request**. Repository harus mengonfigurasi branch protection untuk `main` — *direct push* ditolak, dan PR hanya dapat di-merge bila status check CI (test + pint) lulus.
 
 ### Langkah kerja
 
@@ -150,6 +150,16 @@ Proyek memakai **GitHub Flow**: semua perubahan dikerjakan di branch terpisah da
 5. Buka **Pull Request** ke `main` — template di `.github/PULL_REQUEST_TEMPLATE.md` terisi otomatis.
 6. Isi deskripsi (apa/mengapa/bagaimana) dan tautkan `TASK-XXX` bila ada; tunggu CI (`Tests / PHP 8.4`, `Tests / PHP 8.5`) dan review.
 7. Merge lewat GitHub setelah hijau (disarankan *squash and merge* agar 1 task = 1 commit rapi), lalu hapus branch.
+
+### Aturan branch `main`
+
+- `main` hanya menerima perubahan melalui Pull Request; jangan melakukan
+  direct push atau force-push.
+- Aktifkan branch protection: wajib review minimal satu maintainer, status
+  check CI wajib lulus, conversation wajib diselesaikan, dan branch harus
+  up-to-date sebelum merge.
+- Merge commit yang sudah masuk `main` menjadi satu-satunya sumber rilis.
+  Jangan deploy branch fitur atau commit lokal yang belum di-review.
 
 ### Penamaan branch
 
@@ -191,6 +201,26 @@ chore: update dependencies
 - [ ] Perubahan stok/transaksi memakai Service + transaction + stock movement
 - [ ] Tidak ada perubahan file yang tidak relevan
 - [ ] Dokumentasi (README / `08-changelog.md`) diperbarui bila diperlukan
+- [ ] Dampak deployment, migrasi, backup, atau rollback dijelaskan bila ada
+- [ ] Tidak ada secret, `.env`, atau artefak build yang ditambahkan
+
+### Rilis dan deployment
+
+Setelah PR di-merge ke `main`, maintainer membuat tag rilis dari commit
+`main` yang sudah lulus CI. Tag bersifat immutable dan menjadi input deployment:
+
+```sh
+git checkout main
+git pull --ff-only origin main
+git tag -a v0.3.0 -m "Release v0.3.0"
+git push origin v0.3.0
+```
+
+Produksi hanya boleh dideploy dari tag atau commit SHA yang menunjuk ke commit
+di `main`. Deployment dijalankan memakai
+`scripts/deploy-release.sh`; rollback memakai `scripts/rollback-release.sh`.
+Jangan memindahkan atau menghapus tag yang sudah dipakai deployment. Jika
+terjadi kesalahan, buat PR perbaikan baru dan rilis tag berikutnya.
 
 ## Kontribusi dengan AI Coding Agent
 

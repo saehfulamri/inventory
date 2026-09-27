@@ -110,7 +110,10 @@ php artisan test
 
 ## Kontribusi
 
-Panduan lengkap untuk berkontribusi (setup, arsitektur, konvensi coding, alur git, checklist PR, dsb.) tersedia di [CONTRIBUTING.md](CONTRIBUTING.md).
+Panduan lengkap untuk berkontribusi (setup, arsitektur, konvensi coding,
+GitHub Flow, branch protection, alur tag rilis, checklist PR, dsb.) tersedia di
+[CONTRIBUTING.md](CONTRIBUTING.md). Produksi hanya dideploy dari tag yang
+dibuat setelah PR di-merge ke `main`.
 
 ## Lisensi
 

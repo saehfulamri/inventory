@@ -26,6 +26,19 @@ Format:
 - ...
 ```
 
+## 2026-09-26
+
+### Changed
+- Alur kontribusi dan deployment diselaraskan dengan GitHub Flow: aturan
+  branch protection `main` ditetapkan sebagai prasyarat repository, perubahan
+  masuk melalui PR, dan produksi hanya menerima tag rilis dari commit `main`
+  setelah merge.
+- Template PR menambahkan checklist dampak deployment/migrasi/backup serta
+  larangan secret dan artefak build.
+- Workflow CI juga berjalan saat tag `v*` dibuat sebagai verifikasi rilis.
+- `10-deployment.md` diperbarui agar server baru dan deployment release
+  atomik menggunakan tag rilis, bukan checkout branch atau build in-place.
+
 ## 2026-09-25
 
 ### Added
