@@ -61,13 +61,6 @@
 
     /* Display font */
     --font-display: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-
-    /* Custom breakpoints (min-width only, per Tailwind v4 convention) */
-    --breakpoint-sm-phone: 420px;
-    --breakpoint-tablet-portrait: 641px;
-    --breakpoint-tablet-landscape: 834px;
-    --breakpoint-desktop: 1069px;
-    --breakpoint-wide: 1441px;
 }
 
 /* Dark mode via class strategy (replaces darkMode: 'class' in tailwind.config.js) */

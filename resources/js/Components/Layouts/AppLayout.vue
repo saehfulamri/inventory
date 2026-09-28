@@ -38,16 +38,25 @@ function logout() {
                 {{ appName }}
             </Link>
 
-<button type="button" class="btn--nav md:hidden" @click="toggleMobileNav" aria-label="Toggle navigation" :aria-expanded="isMobileNavOpen" aria-controls="mobile-nav">☰</button>
-<nav v-if="user" class="topnav" aria-label="Navigasi utama">
+            <!-- Hamburger: visible only below md breakpoint (768px) -->
+            <button
+                type="button"
+                class="btn--nav md:hidden"
+                aria-label="Toggle navigation"
+                :aria-expanded="isMobileNavOpen"
+                aria-controls="mobile-nav"
+                @click="toggleMobileNav"
+            >☰</button>
+
+            <nav v-if="user" class="topnav" aria-label="Navigasi utama">
                 <div class="topnav__links hidden md:flex">
                     <Link :href="route('dashboard')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('dashboard') }">Dashboard</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium': isActive('products.index') }">Produk</Link>
-                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium': isActive('suppliers.index') }">Supplier</Link>
-                    <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium': isActive('purchases.index') }">Penerimaan</Link>
-                    <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium': isActive('sales.index') }">Penjualan</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium': isActive('inventory.index') }">Stok</Link>
-                    <Link v-if="can.viewReports" :href="route('reports.index')" :class="{ 'text-primary font-medium': isActive('reports.index') }">Laporan</Link>
+                    <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('products') }">Produk</Link>
+                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('suppliers') }">Supplier</Link>
+                    <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('purchases') }">Penerimaan</Link>
+                    <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('sales') }">Penjualan</Link>
+                    <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('inventory') }">Stok</Link>
+                    <Link v-if="can.viewReports" :href="route('reports.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('reports') }">Laporan</Link>
                 </div>
 
                 <span class="topnav__user">{{ user.name }}</span>
