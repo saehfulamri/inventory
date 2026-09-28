@@ -56,10 +56,8 @@ const chartPoints = computed(() =>
              ====================================================== -->
         <section
             class="summary-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6"
-            aria-labelledby="summary-section-title"
+            aria-label="Ringkasan Kinerja"
         >
-            <h2 id="summary-section-title" class="sr-only">Ringkasan Kinerja</h2>
-
             <article class="summary-card p-4 bg-white rounded shadow" aria-labelledby="card-sales-today">
                 <h3 id="card-sales-today" class="summary-card__label text-sm font-medium text-gray-500">Penjualan Hari Ini</h3>
                 <span class="summary-card__value block text-2xl font-semibold text-gray-900">{{ todayTotal }}</span>
