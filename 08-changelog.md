@@ -28,6 +28,12 @@ Format:
 
 ## 2026-09-26
 
+### Added
+- CI quality gates: validasi metadata Composer, lint sintaks PHP, dan feature
+  test menggunakan MySQL 8.0 pada PHP 8.4.
+- Workflow `Dependency Audit` terjadwal mingguan dan manual untuk audit lockfile
+  Composer serta seluruh dependency npm.
+
 ### Changed
 - Alur kontribusi dan deployment diselaraskan dengan GitHub Flow: aturan
   branch protection `main` ditetapkan sebagai prasyarat repository, perubahan
