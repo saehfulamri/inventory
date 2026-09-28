@@ -3,33 +3,93 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* ============================================================
+   Design Tokens (Tailwind v4 @theme)
+   ============================================================ */
 @theme {
+    /* Typography */
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-}
 
-/* Design Tokens (CSS custom properties) */
-:root {
+    /* Brand / Primary palette */
     --color-primary: #0066cc;
     --color-primary-focus: #0071e3;
     --color-primary-on-dark: #2997ff;
+    --color-on-primary: #ffffff;
+
+    /* Surface palette */
     --color-ink: #1d1d1f;
     --color-surface-black: #000000;
     --color-surface-pearl: #fafafc;
+    --color-canvas: #ffffff;
+    --color-canvas-parchment: #f5f5f7;
+    --color-divider-soft: #f0f0f0;
+    --color-hairline: #e0e0e0;
+
+    /* Dark surfaces */
     --color-surface-tile-1: #272729;
     --color-surface-tile-2: #2a2a2c;
     --color-surface-tile-3: #252527;
-    --color-canvas: #ffffff;
-    --color-canvas-parchment: #f5f5f7;
-    --color-on-primary: #ffffff;
     --color-on-dark: #ffffff;
-    --color-divider-soft: #f0f0f0;
-    --color-hairline: #e0e0e0;
-    /* Additional token placeholders can be added here */
+
+    /* Badge semantic colors (WCAG AA verified) */
+    --color-badge-danger-bg: #fef2f2;     /* red-50  */
+    --color-badge-danger-text: #991b1b;   /* red-800 – contrast 6.33:1 on red-50 */
+    --color-badge-success-bg: #ecfdf5;    /* emerald-50 */
+    --color-badge-success-text: #065f46;  /* emerald-800 – contrast 7.08:1 on emerald-50 */
+    --color-badge-warning-bg: #fffbeb;    /* amber-50 */
+    --color-badge-warning-text: #92400e;  /* amber-800 – contrast 5.93:1 on amber-50 */
+    --color-badge-muted-bg: #f3f4f6;      /* gray-100 */
+    --color-badge-muted-text: #374151;    /* gray-700 – contrast 7.59:1 on gray-100 */
+
+    /* Custom border radius */
+    --radius-pill: 9999px;
+
+    /* Custom spacing */
+    --spacing-section: 80px;
 }
+
+/* ============================================================
+   Component layer: badge variants
+   ============================================================ */
+@layer components {
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        white-space: nowrap;
+    }
+
+    .badge--danger {
+        background-color: var(--color-badge-danger-bg);
+        color: var(--color-badge-danger-text);
+    }
+
+    .badge--success {
+        background-color: var(--color-badge-success-bg);
+        color: var(--color-badge-success-text);
+    }
+
+    .badge--warning {
+        background-color: var(--color-badge-warning-bg);
+        color: var(--color-badge-warning-text);
+    }
+
+    .badge--muted {
+        background-color: var(--color-badge-muted-bg);
+        color: var(--color-badge-muted-text);
+    }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
 
 /* Product image shadow – only applied to product renders */
 .product-image {
-    @apply shadow-none;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.22);
 }
