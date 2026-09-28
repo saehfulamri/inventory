@@ -26,6 +26,11 @@ module.exports = {
         "on-dark": '#ffffff',
         "divider-soft": '#f0f0f0',
         hairline: '#e0e0e0',
+        // Badge colors for UI/UX plan
+        danger: '#dc2626', // Tailwind red-600
+        success: '#10b981', // Tailwind emerald-500
+        warning: '#f59e0b', // Tailwind amber-500
+        muted: '#e5e7eb', // Tailwind gray-200
       },
       borderRadius: {
         none: '0px',

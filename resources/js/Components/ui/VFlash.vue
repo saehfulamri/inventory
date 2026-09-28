@@ -5,7 +5,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="flash" :class="`flash--${type}`" :role="type === 'error' ? 'alert' : 'status'">
+    <div class="flash" :class="`flash--${type}`" :role="type === 'error' ? 'alert' : 'status'" :aria-live="type === 'error' ? 'assertive' : 'polite'">
         <slot />
     </div>
 </template>
