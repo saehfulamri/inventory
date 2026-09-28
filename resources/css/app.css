@@ -50,6 +50,39 @@
 }
 
 /* ============================================================
+   Accessibility utilities – always available, never purged
+   ============================================================ */
+@layer utilities {
+    /**
+     * Visually hide an element while keeping it accessible to screen readers.
+     * Use when an element provides context for AT but is redundant visually.
+     */
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+
+    /** Undo sr-only when the element should become visible (e.g. on focus). */
+    .not-sr-only {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+    }
+}
+
+/* ============================================================
    Component layer: badge variants
    ============================================================ */
 @layer components {
