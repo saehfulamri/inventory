@@ -41,7 +41,7 @@ function logout() {
 <button type="button" class="btn--nav md:hidden" @click="toggleMobileNav" aria-label="Toggle navigation" :aria-expanded="isMobileNavOpen" aria-controls="mobile-nav">☰</button>
 <nav v-if="user" class="topnav" aria-label="Navigasi utama">
                 <div class="topnav__links hidden md:flex">
-                    <Link :href="route('dashboard')" :class="{ 'text-primary font-medium': isActive('dashboard') }">Dashboard</Link>
+                    <Link :href="route('dashboard')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('dashboard') }">Dashboard</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium': isActive('products.index') }">Produk</Link>
                     <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium': isActive('suppliers.index') }">Supplier</Link>
                     <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium': isActive('purchases.index') }">Penerimaan</Link>

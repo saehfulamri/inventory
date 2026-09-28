@@ -23,6 +23,7 @@ class SchemaTest extends TestCase
             'sale_items',
             'stock_movements',
             'stock_adjustments',
+            'document_sequences',
         ];
 
         foreach ($tables as $table) {

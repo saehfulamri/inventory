@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Product;
+use App\Models\Sale;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use Illuminate\Support\Carbon;
@@ -54,5 +56,26 @@ class DashboardService
         }
 
         return $points;
+    }
+
+    /**
+     * Return dashboard data with eager‑loaded relations to avoid N+1 queries.
+     */
+    public function eagerLoadDashboard(): array
+    {
+        $today = now()->toDateString();
+
+        $sales = Sale::with(['items.product'])
+            ->whereDate('created_at', $today)
+            ->get();
+
+        $lowStock = Product::with('category')
+            ->where('stock', '<', 5)
+            ->get();
+
+        return [
+            'sales' => $sales,
+            'lowStock' => $lowStock,
+        ];
     }
 }

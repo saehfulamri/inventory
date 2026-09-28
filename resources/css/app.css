@@ -47,10 +47,34 @@
 
     /* Custom border radius */
     --radius-pill: 9999px;
+    --radius-xs: 5px;
+    --radius-sm: 8px;
+    --radius-md: 11px;
+    --radius-lg: 18px;
 
-    /* Custom spacing */
+    /* Named spacing scale (mirrors tailwind.config.js) */
+    --spacing-xxs: 4px;
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 17px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
     --spacing-section: 80px;
+
+    /* Display font */
+    --font-display: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /* Custom breakpoints (min-width only, per Tailwind v4 convention) */
+    --breakpoint-sm-phone: 420px;
+    --breakpoint-tablet-portrait: 641px;
+    --breakpoint-tablet-landscape: 834px;
+    --breakpoint-desktop: 1069px;
+    --breakpoint-wide: 1441px;
 }
+
+/* Dark mode via class strategy (replaces darkMode: 'class' in tailwind.config.js) */
+@variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
    Accessibility utilities – always available, never purged

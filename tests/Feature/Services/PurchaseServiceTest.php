@@ -70,8 +70,14 @@ class PurchaseServiceTest extends TestCase
             'items' => [['product_id' => $product->id, 'quantity' => 1, 'unit_price' => 1000]],
         ], $admin);
 
-        $this->assertNotSame($first->purchase_number, $second->purchase_number);
+        $this->assertSame('PO-'.now()->format('Ymd').'-0001', $first->purchase_number);
+        $this->assertSame('PO-'.now()->format('Ymd').'-0002', $second->purchase_number);
         $this->assertDatabaseCount('purchases', 2);
+        $this->assertDatabaseHas('document_sequences', [
+            'document_type' => 'purchase',
+            'sequence_date' => now()->toDateString(),
+            'current_value' => 2,
+        ]);
     }
 
     public function test_finalize_increases_stock_and_records_purchase_in_movement(): void
@@ -105,13 +111,14 @@ class PurchaseServiceTest extends TestCase
         $supplier = Supplier::factory()->create();
         $product = Product::factory()->create(['stock' => 10]);
         $purchase = $this->createPurchase($admin, $supplier, $product, 5, 2000);
+        $stalePurchase = Purchase::findOrFail($purchase->id);
         $service = app(PurchaseService::class);
 
         $service->finalize($purchase, $admin);
 
         $this->expectException(ValidationException::class);
         try {
-            $service->finalize($purchase, $admin);
+            $service->finalize($stalePurchase, $admin);
         } finally {
             $this->assertSame(15.0, (float) $product->fresh()->stock);
             $this->assertDatabaseCount('stock_movements', 1);
@@ -165,6 +172,7 @@ class PurchaseServiceTest extends TestCase
         $this->assertSame(20.0, (float) $productB->fresh()->stock);
         $this->assertSame(PurchaseStatus::Draft, $purchase->fresh()->status);
         $this->assertDatabaseCount('stock_movements', 0);
+        $this->assertDatabaseCount('document_sequences', 1);
     }
 
     public function test_paginate_filters_by_supplier_and_status(): void

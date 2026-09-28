@@ -97,6 +97,20 @@ class EloquentProductRepository implements ProductRepositoryInterface
             ->get();
     }
 
+    /**
+     * Get low‑stock products with eager‑loaded category relation.
+     */
+    public function lowStockWithCategory(int $limit): Collection
+    {
+        return Product::query()
+            ->where('is_active', true)
+            ->whereColumn('stock', '<=', 'minimum_stock')
+            ->with('category')
+            ->orderBy('stock')
+            ->limit($limit)
+            ->get();
+    }
+
     public function lowStockCount(): int
     {
         return Product::query()

@@ -39,18 +39,9 @@ class EloquentPurchaseRepository implements PurchaseRepositoryInterface
         return Purchase::with(['supplier', 'user', 'items.product'])->find($id);
     }
 
-    public function nextPurchaseNumber(DateTimeInterface $date): string
+    public function findByIdForUpdate(int $id): ?Purchase
     {
-        $prefix = 'PO-'.$date->format('Ymd').'-';
-
-        $latest = Purchase::query()
-            ->where('purchase_number', 'like', $prefix.'%')
-            ->orderByDesc('purchase_number')
-            ->value('purchase_number');
-
-        $sequence = $latest === null ? 1 : ((int) substr($latest, strlen($prefix))) + 1;
-
-        return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
+        return Purchase::query()->whereKey($id)->lockForUpdate()->first();
     }
 
     public function create(array $data): Purchase

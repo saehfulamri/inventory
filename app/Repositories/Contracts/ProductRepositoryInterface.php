@@ -28,6 +28,11 @@ interface ProductRepositoryInterface
 
     public function lowStock(int $limit): Collection;
 
+    /**
+     * Get low‑stock products with eager‑loaded category relation.
+     */
+    public function lowStockWithCategory(int $limit): Collection;
+
     public function lowStockCount(): int;
 
     /**

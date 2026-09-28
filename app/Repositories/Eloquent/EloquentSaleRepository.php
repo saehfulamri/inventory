@@ -7,6 +7,7 @@ use App\Models\Sale;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use DateTimeInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class EloquentSaleRepository implements SaleRepositoryInterface
 {
@@ -39,20 +40,6 @@ class EloquentSaleRepository implements SaleRepositoryInterface
         return Sale::with(['user', 'items.product'])->find($id);
     }
 
-    public function nextSaleNumber(DateTimeInterface $date): string
-    {
-        $prefix = 'SO-'.$date->format('Ymd').'-';
-
-        $latest = Sale::query()
-            ->where('sale_number', 'like', $prefix.'%')
-            ->orderByDesc('sale_number')
-            ->value('sale_number');
-
-        $sequence = $latest === null ? 1 : ((int) substr($latest, strlen($prefix))) + 1;
-
-        return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
-    }
-
     public function create(array $data): Sale
     {
         return Sale::create($data);
@@ -63,6 +50,16 @@ class EloquentSaleRepository implements SaleRepositoryInterface
         $sale->update($data);
 
         return $sale;
+    }
+
+    /**
+     * Get today’s sales with items and eager‑loaded product relation.
+     */
+    public function todayWithItems(): Collection
+    {
+        return Sale::whereDate('created_at', now()->toDateString())
+            ->with(['items.product'])
+            ->get();
     }
 
     public function summaryForDate(string $date): array

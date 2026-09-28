@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DocumentType;
 use App\Enums\MovementType;
 use App\Enums\PurchaseStatus;
 use App\Models\Purchase;
@@ -19,6 +20,7 @@ class PurchaseService
         protected PurchaseRepositoryInterface $purchases,
         protected PurchaseItemRepositoryInterface $items,
         protected StockService $stockService,
+        protected DocumentNumberService $documentNumbers,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -40,7 +42,7 @@ class PurchaseService
             $purchase = $this->purchases->create([
                 'supplier_id' => $data['supplier_id'],
                 'user_id' => $user->getKey(),
-                'purchase_number' => $this->purchases->nextPurchaseNumber($date),
+                'purchase_number' => $this->documentNumbers->next(DocumentType::Purchase, $date),
                 'purchase_date' => $date->toDateString(),
                 'status' => PurchaseStatus::Draft,
                 'total_amount' => array_sum(array_column($items, 'subtotal')),
@@ -55,19 +57,21 @@ class PurchaseService
             }
 
             return $purchase;
-        });
+        }, attempts: 5);
     }
 
     public function finalize(Purchase $purchase, User $user): Purchase
     {
-        if ($purchase->status !== PurchaseStatus::Draft) {
-            throw ValidationException::withMessages([
-                'purchase' => 'Penerimaan ini sudah difinalisasi.',
-            ]);
-        }
-
         return DB::transaction(function () use ($purchase, $user) {
-            $purchase->loadMissing(['items.product']);
+            $purchase = $this->purchases->findByIdForUpdate($purchase->getKey());
+
+            if (! $purchase instanceof Purchase || $purchase->status !== PurchaseStatus::Draft) {
+                throw ValidationException::withMessages([
+                    'purchase' => 'Penerimaan ini sudah difinalisasi.',
+                ]);
+            }
+
+            $purchase->load(['items.product']);
 
             foreach ($purchase->items as $item) {
                 $this->stockService->increase(
@@ -81,7 +85,7 @@ class PurchaseService
             }
 
             return $this->purchases->update($purchase, ['status' => PurchaseStatus::Completed]);
-        });
+        }, attempts: 5);
     }
 
     /**
