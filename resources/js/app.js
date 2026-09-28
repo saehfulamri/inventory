@@ -8,19 +8,13 @@ const appName = 'Sistem Inventori & Penjualan';
 
 createInertiaApp({
     title: (title) => (title ? `${title} — ${appName}` : appName),
-    resolve: (name) => {
-        // Critical pages (eager-load): Dashboard, Products, Sales, Inventory
-        const criticalPages = import.meta.glob('./Pages/{Dashboard,Products,Sales,Inventory}/**/*.vue');
-        // Rarely-visited pages (lazy/dynamic chunk): Reports, Suppliers, Purchases, Auth
-        const lazyPages = import.meta.glob('./Pages/{Reports,Suppliers,Purchases,Auth}/**/*.vue');
-
-        const key = `./Pages/${name}.vue`;
-        if (criticalPages[key]) {
-            return resolvePageComponent(key, criticalPages);
-        }
-        return resolvePageComponent(key, lazyPages);
-    },
-
+    // Vite automatically code-splits each page into its own chunk.
+    // A single glob is the correct approach — do NOT split into multiple globs
+    // as that prevents Tailwind v4 from scanning all Vue files via the module graph.
+    resolve: (name) => resolvePageComponent(
+        `./Pages/${name}.vue`,
+        import.meta.glob('./Pages/**/*.vue'),
+    ),
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
