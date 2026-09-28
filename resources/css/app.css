@@ -93,3 +93,51 @@
 .product-image {
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.22);
 }
+
+/* ============================================================
+   Focus styles (#12) – keyboard-visible ring for interactive elements
+   Uses :focus-visible so mouse users do not see the ring.
+   ============================================================ */
+@layer components {
+    /* Generic button (btn class) */
+    .btn:focus-visible,
+    .btn--nav:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    /* Inertia <Link> and plain <a> elements that act as nav links */
+    .topnav__links a:focus-visible,
+    .topnav__links .inertia-link:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+    /* Chart bar items (keyboard nav, Sprint 3 #13) */
+    .chart__col:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 4px;
+        border-radius: 4px;
+    }
+
+    /* Skip-link shown on focus for keyboard users */
+    .skip-link {
+        position: absolute;
+        top: -9999px;
+        left: 0;
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+        padding: 0.5rem 1rem;
+        z-index: 9999;
+        font-weight: 600;
+        border-radius: 0 0 4px 0;
+    }
+
+    .skip-link:focus-visible {
+        top: 0;
+        outline: 2px solid var(--color-on-primary);
+        outline-offset: -4px;
+    }
+}
