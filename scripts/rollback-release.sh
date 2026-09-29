@@ -58,4 +58,9 @@ mv -Tf "$TEMP_LINK" "$CURRENT_LINK"
 php "$CURRENT_LINK/artisan" up
 MAINTENANCE_ENABLED=0
 
+# Lihat catatan yang sama di scripts/deploy-release.sh mengenai worker.
+if [[ "${QUEUE_WORKER_ENABLED:-0}" == "1" ]]; then
+    php "$CURRENT_LINK/artisan" queue:restart
+fi
+
 printf 'Rolled back to %s\n' "$TARGET_RELEASE"
