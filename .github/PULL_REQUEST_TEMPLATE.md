@@ -20,7 +20,7 @@ Tautkan issue/backlog task bila ada: `TASK-063`, `#12`, `fixes #12`.
 - [ ] Authorization (Policy/Gate) konsisten bila ada halaman/menu baru
 - [ ] Perubahan stok/transaksi memakai Service + transaction + stock movement
 - [ ] Tidak ada perubahan file yang tidak relevan
-- [ ] README / `08-changelog.md` diperbarui bila diperlukan
+- [ ] README / `docs/08-changelog.md` diperbarui bila diperlukan
 - [ ] Dampak deployment, migrasi, backup, atau rollback dijelaskan bila ada
 - [ ] Tidak ada secret, `.env`, atau artefak build yang ditambahkan
 

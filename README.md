@@ -22,17 +22,20 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 
 | File | Isi |
 | --- | --- |
-| `01-project-brief.md` | Ringkasan, tujuan, target pengguna, ruang lingkup MVP, teknologi. |
-| `02-requirements.md` | Functional & non-functional requirements (prioritas P0/P1/P2). |
-| `03-product-spec.md` | Spesifikasi UI/UX, user flow, acceptance criteria. |
-| `04-architecture.md` | Arsitektur Laravel Service/Repository Pattern. |
-| `05-database.md` | Desain database MySQL. |
-| `06-coding-rules.md` | Coding rules & aturan pengembangan AI. |
-| `07-task-backlog.md` | Task backlog dan roadmap. |
-| `08-changelog.md` | Catatan perubahan penting proyek. |
-| `09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
-| `10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
-| `11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
+| `docs/01-project-brief.md` | Ringkasan, tujuan, target pengguna, ruang lingkup MVP, teknologi. |
+| `docs/02-requirements.md` | Functional & non-functional requirements (prioritas P0/P1/P2). |
+| `docs/03-product-spec.md` | Spesifikasi UI/UX, user flow, acceptance criteria. |
+| `docs/04-architecture.md` | Arsitektur Laravel Service/Repository Pattern. |
+| `docs/05-database.md` | Desain database MySQL. |
+| `docs/06-coding-rules.md` | Coding rules & aturan pengembangan AI. |
+| `docs/07-task-backlog.md` | Task backlog dan roadmap. |
+| `docs/08-changelog.md` | Catatan perubahan penting proyek. |
+| `docs/09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
+| `docs/10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
+| `docs/11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
+| `docs/12-copilot_infrastructure-remediation-plan.md` | Roadmap remediation infrastruktur (backup, deploy, CI, queue, observability). |
+| `docs/13-agy_uiux_improvement_plan.md` | Rencana perbaikan UI/UX (prioritas, effort, verifikasi). |
+| `docs/14-agy_UI_UX_Audit_Report.md` | Hasil audit UI/UX terhadap sistem desain `09-design.md`. |
 
 ## Arsitektur
 
@@ -123,4 +126,4 @@ Copyright (c) 2026 Saehful Amri.
 
 ## Status
 
-MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`10-deployment.md`) & backup/restore (`11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. **Phase 11 — Modul Kelola Supplier (FR-SUP-001/004/005) ditambahkan** pasca-rilis `v0.2.0`: daftar + filter, tambah, edit, nonaktifkan (akses Admin & Gudang). **Phase 12 — Frontend Migration ke Inertia.js + Vue 3 selesai** (TASK-103–115): seluruh modul (Dashboard, Produk, Supplier, Inventory, Penerimaan, Penjualan/POS, Laporan) dimigrasi ke SPA Vue/Inertia dengan business logic tetap server-side; view Blade tersisa hanya root template `app.blade.php`; CSP diperketat (`script-src 'self'`, tanpa `'unsafe-inline'`). Lihat `07-task-backlog.md` dan `08-changelog.md` untuk detail.
+MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`docs/10-deployment.md`) & backup/restore (`docs/11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. **Phase 11 — Modul Kelola Supplier (FR-SUP-001/004/005) ditambahkan** pasca-rilis `v0.2.0`: daftar + filter, tambah, edit, nonaktifkan (akses Admin & Gudang). **Phase 12 — Frontend Migration ke Inertia.js + Vue 3 selesai** (TASK-103–115): seluruh modul (Dashboard, Produk, Supplier, Inventory, Penerimaan, Penjualan/POS, Laporan) dimigrasi ke SPA Vue/Inertia dengan business logic tetap server-side; view Blade tersisa hanya root template `app.blade.php`; CSP diperketat (`script-src 'self'`, tanpa `'unsafe-inline'`). Lihat `docs/07-task-backlog.md` dan `docs/08-changelog.md` untuk detail.
