@@ -26,7 +26,28 @@ Format:
 - ...
 ```
 
+## 2026-09-29
+
+### Added
+- Fase 4 infrastruktur — operasi queue produksi didokumentasikan di
+  `10-deployment.md` bagian 8: keputusan tetap sinkron (belum ada job
+  `ShouldQueue`), kriteria kapan worker perlu diaktifkan, rencana aktivasi
+  (Supervisor/systemd, timeout/retry/`retry_after`, prosedur triage
+  `failed_jobs`), dan checklist pra-aktivasi.
+- Template Supervisor `deploy/supervisor/inventory-worker.conf.example` untuk
+  menjalankan `queue:work` (tidak aktif secara default).
+- `scripts/deploy-release.sh` dan `scripts/rollback-release.sh` menambahkan
+  hook opsional `QUEUE_WORKER_ENABLED=1` yang memanggil `artisan queue:restart`
+  setelah symlink `current` berpindah, agar worker (jika suatu saat aktif)
+  otomatis memakai kode rilis terbaru tanpa `kill -9`.
+
 ## 2026-09-26
+
+### Added
+- CI quality gates: validasi metadata Composer, lint sintaks PHP, dan feature
+  test menggunakan MySQL 8.0 pada PHP 8.4.
+- Workflow `Dependency Audit` terjadwal mingguan dan manual untuk audit lockfile
+  Composer serta seluruh dependency npm.
 
 ### Changed
 - Alur kontribusi dan deployment diselaraskan dengan GitHub Flow: aturan

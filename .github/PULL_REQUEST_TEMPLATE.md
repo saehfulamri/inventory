@@ -16,6 +16,8 @@ Tautkan issue/backlog task bila ada: `TASK-063`, `#12`, `fixes #12`.
 
 - [ ] `composer test` lulus (atau minimal test relevan)
 - [ ] `vendor/bin/pint --test` lulus
+- [ ] Composer validation, PHP syntax, dan CI MySQL lulus
+- [ ] Dependency audit Composer/npm tidak memiliki advisory High/Critical
 - [ ] Validation (Form Request) ditambahkan bila ada input baru
 - [ ] Authorization (Policy/Gate) konsisten bila ada halaman/menu baru
 - [ ] Perubahan stok/transaksi memakai Service + transaction + stock movement

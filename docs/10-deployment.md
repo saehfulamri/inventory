@@ -1,6 +1,6 @@
 # Deployment — Panduan Menuju Produksi
 
-Dokumen ini berisi langkah deploy aplikasi ke server produksi. Aplikasi adalah monolith Laravel, sehingga deployment cukup ringan: satu web server + PHP-FPM + MySQL, tanpa queue worker (semua proses saat ini berjalan sinkron).
+Dokumen ini berisi langkah deploy aplikasi ke server produksi. Aplikasi adalah monolith Laravel, sehingga deployment cukup ringan: satu web server + PHP-FPM + MySQL. Queue worker belum diaktifkan karena belum ada job asynchronous — lihat bagian 8 untuk keputusan dan kriteria aktivasinya.
 
 ## 1. Persyaratan Server
 
@@ -61,7 +61,7 @@ SESSION_SECURE_COOKIE=true  # hanya kirim cookie via HTTPS
 SESSION_LIFETIME=120
 
 CACHE_STORE=database
-QUEUE_CONNECTION=database   # cadangan; saat ini belum ada job
+QUEUE_CONNECTION=database   # driver siap pakai; worker belum diaktifkan, lihat bagian 8
 
 MAIL_MAILER=log             # sesuaikan bila ingin email sungguhan
 ```
@@ -268,6 +268,7 @@ check release baru berhasil dan backup telah tervalidasi.
 - [ ] Backup otomatis terjadwal (lihat `11-backup-restore.md`).
 - [ ] Restore backup pernah diuji di server/pulau lain.
 - [ ] App key unik (`APP_KEY` hasil generate, bukan dari repor).
+- [ ] Queue worker: tidak diaktifkan kecuali kriteria bagian 8.1 terpenuhi.
 
 ## 7. Operasional Harian
 
@@ -278,4 +279,90 @@ php artisan storage:link       # pastikan symlink ada
 tail -f storage/logs/laravel.log
 ```
 
-> Tidak ada queue worker / cron scheduler yang wajib dijalankan untuk fungsionalitas saat ini.
+> Tidak ada cron scheduler yang wajib dijalankan untuk fungsionalitas saat ini.
+> Untuk queue worker, lihat bagian 8.
+
+## 8. Operasi Queue Produksi
+
+### 8.1 Keputusan saat ini: tetap sinkron, tanpa worker
+
+Per penulisan dokumen ini, **tidak ada job yang mengimplementasikan
+`ShouldQueue`** dan tidak ada pemanggilan `Bus::dispatch()`/`::dispatch()` di
+`app/`. Semua proses (import/export, notifikasi, dsb.) berjalan sinkron dalam
+request HTTP. `QUEUE_CONNECTION=database` tetap diset sebagai driver cadangan
+(tabel `jobs` dan `failed_jobs` sudah ada dari migrasi bawaan Laravel), tetapi
+**tidak ada worker (`queue:work`) yang dijalankan di produksi**, sehingga tidak
+relevan untuk memantau proses worker yang menumpuk job.
+
+**Kriteria kapan worker perlu diaktifkan** — aktifkan queue worker sebelum job
+apa pun di-deploy ke produksi jika salah satu berikut terjadi:
+
+- Ada job baru yang mengimplementasikan `ShouldQueue` (mis. pengiriman email
+  notifikasi, generate laporan besar, import/export data massal).
+- Ada proses yang saat ini sinkron dipindah ke background untuk menghindari
+  timeout request (mis. proses > beberapa detik).
+- Sebuah package pihak ketiga secara default men-dispatch job ke queue.
+
+Jika kriteria di atas belum terpenuhi, **jangan** menjalankan `queue:work` di
+produksi — worker yang berjalan tanpa job untuk diproses hanya menghabiskan
+resource dan menambah permukaan operasional tanpa manfaat.
+
+### 8.2 Rencana aktivasi (jika/ketika dibutuhkan)
+
+1. **Pilih koneksi queue.** Gunakan `database` (driver saat ini) untuk volume
+   job rendah–menengah tanpa dependency tambahan. Pertimbangkan `redis` hanya
+   jika throughput tinggi atau butuh delay/priority queue yang lebih efisien —
+   ini menambah dependency infra (server Redis) sehingga perlu keputusan
+   terpisah, bukan default.
+2. **Jalankan worker via Supervisor** (disarankan) menggunakan template di
+   `deploy/supervisor/inventory-worker.conf.example`. Salin ke
+   `/etc/supervisor/conf.d/inventory-worker.conf`, sesuaikan path/user, lalu:
+   ```sh
+   sudo supervisorctl reread
+   sudo supervisorctl update
+   sudo supervisorctl start "inventory-worker:*"
+   ```
+   Alternatif systemd: buat unit `inventory-worker@.service` dengan
+   `Restart=always`, `ExecStart=php /var/www/inventory/current/artisan queue:work ...`,
+   dan `WorkingDirectory=/var/www/inventory/current`.
+3. **Timeout, retry, dan `retry_after`.** Gunakan opsi CLI eksplisit, jangan
+   andalkan default:
+   - `--tries=3` — job gagal permanen dipindah ke `failed_jobs` setelah 3
+     percobaan (gunakan `$job->tries` per job untuk override jika perlu).
+   - `--timeout=90` — proses child worker dibunuh jika job berjalan > 90 detik
+     (job harus dirancang idempoten agar aman diulang).
+   - `retry_after` (di `config/queue.php`, env `DB_QUEUE_RETRY_AFTER`, default
+     90 detik) **harus lebih besar** dari `--timeout` supaya job yang masih
+     berjalan tidak dianggap gagal dan diambil ulang oleh worker lain.
+   - `after_commit` job database queue sudah `false` secara default
+     (`config/queue.php`) — job baru yang perlu menunggu transaksi DB commit
+     dahulu (agar tidak race dengan data yang belum tersimpan) harus eksplisit
+     set `$job->afterCommit = true` atau gunakan trait
+     `Illuminate\Bus\Batchable`/`ShouldBeAfterCommit` sesuai kebutuhan.
+4. **Restart worker saat deploy.** `scripts/deploy-release.sh` dan
+   `scripts/rollback-release.sh` sudah menyediakan hook: set
+   `QUEUE_WORKER_ENABLED=1` saat menjalankan script agar `artisan queue:restart`
+   dipanggil setelah simlink `current` berpindah. Perintah ini memberi sinyal
+   graceful ke worker agar keluar setelah job berjalan selesai; Supervisor
+   (`autorestart=true`) akan menyalakannya kembali memakai kode rilis
+   terbaru. **Jangan** `kill -9` proses worker — itu bisa memotong job di
+   tengah eksekusi.
+5. **Pantau `failed_jobs` dan sediakan prosedur triage:**
+   ```sh
+   php artisan queue:failed                 # daftar job gagal
+   php artisan queue:retry <id|--all>       # retry job tertentu/semua
+   php artisan queue:forget <id>            # buang job gagal setelah ditinjau
+   php artisan queue:prune-failed --hours=720   # bersihkan job gagal lama (>30 hari)
+   ```
+   Jadwalkan `queue:prune-failed` mingguan (lihat `05-database.md`/scheduler)
+   agar tabel `failed_jobs` tidak tumbuh tanpa batas. Alert operasional untuk
+   `failed_jobs` dijelaskan di `12-copilot_infrastructure-remediation-plan.md`
+   Fase 5 (observability).
+
+### 8.3 Checklist sebelum mengaktifkan worker di produksi
+
+- [ ] Job baru sudah diuji idempoten (aman dijalankan ulang setelah retry).
+- [ ] `--timeout` worker < `retry_after` koneksi queue.
+- [ ] Supervisor/systemd worker terdaftar dengan `autorestart=true`.
+- [ ] Hook `QUEUE_WORKER_ENABLED=1` diaktifkan di prosedur deploy.
+- [ ] Prosedur monitoring/alert `failed_jobs` sudah berjalan (Fase 5).
