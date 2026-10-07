@@ -3,7 +3,7 @@ import { computed, inject } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '../../Components/Layouts/AppLayout.vue';
 import VBadge from '../../Components/ui/VBadge.vue';
-import { formatCurrency } from '../../composables/useFormat.js';
+import { formatCurrency } from '../../utils/format.js';
 
 const props = defineProps({
     summary: { type: Object, required: true },
