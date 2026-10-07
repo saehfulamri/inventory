@@ -14,9 +14,7 @@ function closeMobileNav() { isMobileNavOpen.value = false; }
 
 // Helper to determine active route (Ziggy integration)
 function isActive(name) {
-    // `page.component` contains the Vue component name like 'Dashboard/Index'
-    // We consider a route active if the component path starts with the given name (case‑insensitive).
-    return typeof page.component === 'string' && page.component.toLowerCase().startsWith(name.toLowerCase());
+    return typeof page.component === 'string' && page.component.toLowerCase().includes(name.toLowerCase());
 }
 
 const appName = computed(() => page.props.app?.name ?? 'Sistem Inventori & Penjualan');
@@ -66,17 +64,17 @@ function logout() {
     </header>
 
     <!-- Mobile navigation drawer -->
-<div v-if="isMobileNavOpen" class="fixed inset-0 z-40 flex" id="mobile-nav">
+  <div v-if="isMobileNavOpen" class="fixed inset-0 z-40 flex" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation drawer" tabindex="-1" @keydown.escape="closeMobileNav">
   <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeMobileNav"></div>
   <nav class="bg-white w-64 p-4 overflow-y-auto">
     <div class="flex flex-col space-y-2">
       <Link :href="route('dashboard')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('dashboard') }">Dashboard</Link>
-      <Link v-if="can.viewAnyProducts" :href="route('products.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('products.index') }">Produk</Link>
-      <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('suppliers.index') }">Supplier</Link>
-      <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('purchases.index') }">Penerimaan</Link>
-      <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales.index') }">Penjualan</Link>
-      <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory.index') }">Stok</Link>
-      <Link v-if="can.viewReports" :href="route('reports.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('reports.index') }">Laporan</Link>
+      <Link v-if="can.viewAnyProducts" :href="route('products.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('products') }">Produk</Link>
+      <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('suppliers') }">Supplier</Link>
+      <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('purchases') }">Penerimaan</Link>
+      <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales') }">Penjualan</Link>
+      <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory') }">Stok</Link>
+      <Link v-if="can.viewReports" :href="route('reports.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('reports') }">Laporan</Link>
     </div>
   </nav>
 </div>

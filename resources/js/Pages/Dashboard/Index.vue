@@ -47,47 +47,49 @@ const chartPoints = computed(() =>
 
     <AppLayout>
         <div class="page-header">
-            <h1 class="page-title">Dashboard</h1>
-            <p class="muted">Selamat datang, {{ user?.name }}.</p>
+            <div class="page-title-group">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="muted">Selamat datang, {{ user?.name }}.</p>
+            </div>
         </div>
 
         <!-- ======================================================
              Summary cards (#6 semantic wrappers, #7 responsive grid)
              ====================================================== -->
         <section
-            class="summary-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6"
+            class="summary-grid"
             aria-label="Ringkasan Kinerja"
         >
-            <article class="summary-card p-4 bg-white rounded shadow" aria-labelledby="card-sales-today">
-                <h3 id="card-sales-today" class="summary-card__label text-sm font-medium text-gray-500">Penjualan Hari Ini</h3>
-                <span class="summary-card__value block text-2xl font-semibold text-gray-900">{{ todayTotal }}</span>
-                <span class="summary-card__meta block text-xs text-gray-400">{{ summary.today_count }} transaksi</span>
+            <article class="summary-card" aria-labelledby="card-sales-today">
+                <h3 id="card-sales-today" class="summary-card__label">Penjualan Hari Ini</h3>
+                <span class="summary-card__value">{{ todayTotal }}</span>
+                <span class="summary-card__meta">{{ summary.today_count }} transaksi</span>
             </article>
 
-            <article class="summary-card p-4 bg-white rounded shadow" aria-labelledby="card-transactions-today">
-                <h3 id="card-transactions-today" class="summary-card__label text-sm font-medium text-gray-500">Transaksi Hari Ini</h3>
-                <span class="summary-card__value block text-2xl font-semibold text-gray-900">{{ summary.today_count }}</span>
-                <span class="summary-card__meta block text-xs text-gray-400">Selesai</span>
+            <article class="summary-card" aria-labelledby="card-transactions-today">
+                <h3 id="card-transactions-today" class="summary-card__label">Transaksi Hari Ini</h3>
+                <span class="summary-card__value">{{ summary.today_count }}</span>
+                <span class="summary-card__meta">Selesai</span>
             </article>
 
-            <article class="summary-card p-4 bg-white rounded shadow" aria-labelledby="card-active-products">
-                <h3 id="card-active-products" class="summary-card__label text-sm font-medium text-gray-500">Produk Aktif</h3>
-                <span class="summary-card__value block text-2xl font-semibold text-gray-900">{{ summary.active_products }}</span>
-                <span class="summary-card__meta block text-xs text-gray-400">Nama produk terdaftar</span>
+            <article class="summary-card" aria-labelledby="card-active-products">
+                <h3 id="card-active-products" class="summary-card__label">Produk Aktif</h3>
+                <span class="summary-card__value">{{ summary.active_products }}</span>
+                <span class="summary-card__meta">Nama produk terdaftar</span>
             </article>
 
-            <article class="summary-card p-4 bg-white rounded shadow" aria-labelledby="card-low-stock">
-                <h3 id="card-low-stock" class="summary-card__label text-sm font-medium text-gray-500">Stok Menipis</h3>
-                <span class="summary-card__value block text-2xl font-semibold text-gray-900">{{ summary.low_stock_count }}</span>
-                <span class="summary-card__meta block text-xs text-gray-400">Stok ≤ minimum</span>
+            <article class="summary-card" aria-labelledby="card-low-stock">
+                <h3 id="card-low-stock" class="summary-card__label">Stok Menipis</h3>
+                <span class="summary-card__value">{{ summary.low_stock_count }}</span>
+                <span class="summary-card__meta">Stok ≤ minimum</span>
             </article>
         </section>
 
         <!-- ======================================================
              Dashboard panels (#6 semantic, #7 responsive grid)
              ====================================================== -->
-        <div class="dashboard-grid grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-3">
-            <section class="dashboard-panel p-4 bg-white rounded shadow" aria-labelledby="chart-title">
+        <div class="dashboard-grid">
+            <section class="dashboard-panel" aria-labelledby="chart-title">
                 <div class="dashboard-panel__header">
                     <h2 class="section-title" id="chart-title">Penjualan 7 Hari Terakhir</h2>
                 </div>
@@ -112,7 +114,7 @@ const chartPoints = computed(() =>
                 </ul>
             </section>
 
-            <section class="dashboard-panel p-4 bg-white rounded shadow" aria-labelledby="low-stock-title">
+            <section class="dashboard-panel" aria-labelledby="low-stock-title">
                 <div class="dashboard-panel__header">
                     <h2 class="section-title" id="low-stock-title">Produk Stok Menipis</h2>
                     <Link
