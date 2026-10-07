@@ -1,0 +1,27 @@
+; Template Supervisor untuk queue worker Laravel.
+;
+; Aplikasi ini SAAT INI berjalan sinkron (tidak ada job yang di-queue), jadi
+; file ini TIDAK diaktifkan secara default — lihat "8. Operasi Queue Produksi"
+; di 10-deployment.md untuk kriteria kapan worker perlu dijalankan.
+;
+; Jika keputusan itu diambil:
+;   1. Salin file ini ke /etc/supervisor/conf.d/inventory-worker.conf
+;      (hilangkan akhiran .example) dan sesuaikan path di bawah.
+;   2. Jalankan: sudo supervisorctl reread && sudo supervisorctl update
+;   3. Jalankan: sudo supervisorctl start "inventory-worker:*"
+
+[program:inventory-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/inventory/current/artisan queue:work database --queue=default --sleep=3 --tries=3 --max-time=3600 --timeout=90
+directory=/var/www/inventory/current
+autostart=true
+autorestart=true
+startsecs=1
+startretries=3
+user=deploy
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/inventory/shared/storage/logs/worker.log
+stopwaitsecs=90
+stopasgroup=true
+killasgroup=true

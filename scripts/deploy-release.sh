@@ -100,6 +100,14 @@ if [[ -x "$CURRENT_LINK/artisan" ]]; then
     MAINTENANCE_ENABLED=0
 fi
 
+# Queue worker tidak aktif secara default (lihat 10-deployment.md bagian 8).
+# Jika Supervisor/systemd worker diaktifkan, set QUEUE_WORKER_ENABLED=1 agar
+# worker lama keluar setelah job berjalan selesai dan Supervisor merestart-nya
+# dengan kode rilis terbaru.
+if [[ "${QUEUE_WORKER_ENABLED:-0}" == "1" && -x "$CURRENT_LINK/artisan" ]]; then
+    php "$CURRENT_LINK/artisan" queue:restart
+fi
+
 if [[ -n "$HEALTH_URL" ]]; then
     curl --fail --silent --show-error --location --max-time 15 "$HEALTH_URL" >/dev/null
 fi
