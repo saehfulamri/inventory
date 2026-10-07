@@ -82,57 +82,29 @@ find /var/backups/inventory -name 'env-*.env.age'     -mtime +14 -delete
 
 ## 4. Backup Otomatis (cron)
 
-Contoh `00 02 * * *` (setiap 02:00) — gabungkan database, storage, dan env dalam satu skrip `backup.sh`, lalu simpan di `/usr/local/bin/backup-inventory.sh`:
+Script backup otomatis tersedia di versi kontrol: `scripts/backup-inventory.sh`.
+Satu script menggabungkan ketiga proses: dump database (credential file 0600,
+tanpa password di command line), archive `storage/app/public`, enkripsi `age`,
+checksum SHA-256, dan rotasi retensi 14 hari. Script exit non-zero bila
+enkripsi atau checksum gagal.
+
+Pasang di server:
 
 ```sh
-#!/usr/bin/env bash
-set -euo pipefail
-
-APP_DIR="/var/www/inventory"
-BACKUP_DIR="/var/backups/inventory"
-STAMP="$(date +%Y%m%d-%H%M%S)"
-
-# Kredensial database harus disediakan melalui secret manager atau credential
-# file sementara dengan permission 0600; jangan menaruh password di command line.
-: "${DB_DATABASE:?DB_DATABASE must be provided by the secret manager}"
-: "${DB_USERNAME:?DB_USERNAME must be provided by the secret manager}"
-: "${DB_PASSWORD:?DB_PASSWORD must be provided by the secret manager}"
-: "${AGE_RECIPIENT:?AGE_RECIPIENT must be provided by the secret manager}"
-MYSQL_CNF="$(mktemp)"
-trap 'rm -f "$MYSQL_CNF"' EXIT
-umask 077
-cat > "$MYSQL_CNF" <<EOF
-[client]
-host=${DB_HOST:-127.0.0.1}
-user=${DB_USERNAME}
-password=${DB_PASSWORD}
-EOF
-
-mysqldump --single-transaction --routines --triggers --hex-blob \
-  --defaults-extra-file="$MYSQL_CNF" "$DB_DATABASE" \
-  | gzip > "$BACKUP_DIR/inventory-$STAMP.sql.gz"
-
-tar -czf "$BACKUP_DIR/storage-$STAMP.tar.gz" -C "$APP_DIR/storage/app/public" .
-age --encrypt --recipient "$AGE_RECIPIENT" \
-  --output "$BACKUP_DIR/inventory-$STAMP.sql.gz.age" \
-  "$BACKUP_DIR/inventory-$STAMP.sql.gz"
-rm -f "$BACKUP_DIR/inventory-$STAMP.sql.gz"
-age --encrypt --recipient "$AGE_RECIPIENT" \
-  --output "$BACKUP_DIR/env-$STAMP.env.age" \
-  "$APP_DIR/.env"
-
-sha256sum "$BACKUP_DIR"/*-"$STAMP".* > "$BACKUP_DIR/SHA256SUMS-$STAMP"
-
-find "$BACKUP_DIR" -name 'inventory-*.sql.gz.age' -mtime +14 -delete
-find "$BACKUP_DIR" -name 'storage-*.tar.gz'   -mtime +14 -delete
-find "$BACKUP_DIR" -name 'env-*.env.age'      -mtime +14 -delete
-find "$BACKUP_DIR" -name 'SHA256SUMS-*'       -mtime +14 -delete
+sudo install -m 0750 scripts/backup-inventory.sh /usr/local/bin/backup-inventory.sh
 ```
 
-Jadwalkan di crontab user yang punya akses. Script harus gagal bila enkripsi,
-checksum, atau upload off-site gagal; jangan menghapus backup lokal sebelum
-artefak terenkripsi dan checksum berhasil dibuat. Upload harian ke lokasi
-off-site harus memakai transport terenkripsi dan credential write-only.
+Jadwalkan di crontab user yang punya akses, misal `00 02 * * *` (setiap 02:00),
+dengan `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, dan `AGE_RECIPIENT` disediakan
+oleh secret manager:
+
+```cron
+00 02 * * * DB_DATABASE=... DB_USERNAME=... DB_PASSWORD=... AGE_RECIPIENT=... /usr/local/bin/backup-inventory.sh
+```
+
+Jangan menghapus backup lokal sebelum artefak terenkripsi dan checksum berhasil
+dibuat. Upload harian ke lokasi off-site harus memakai transport terenkripsi dan
+credential write-only.
 
 ## 5. Prosedur Restore
 
