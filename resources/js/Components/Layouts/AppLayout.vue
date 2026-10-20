@@ -51,6 +51,8 @@ function logout() {
                     <Link :href="route('dashboard')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('dashboard') }">Dashboard</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('products') }">Produk</Link>
                     <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('suppliers') }">Supplier</Link>
+                    <Link v-if="can.viewAnyCategories" :href="route('categories.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('categories') }">Kategori</Link>
+                    <Link v-if="can.viewAnyUnits" :href="route('units.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('units') }">Satuan</Link>
                     <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('purchases') }">Penerimaan</Link>
                     <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('sales') }">Penjualan</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('inventory') }">Stok</Link>
@@ -71,6 +73,8 @@ function logout() {
       <Link :href="route('dashboard')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('dashboard') }">Dashboard</Link>
       <Link v-if="can.viewAnyProducts" :href="route('products.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('products') }">Produk</Link>
       <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('suppliers') }">Supplier</Link>
+      <Link v-if="can.viewAnyCategories" :href="route('categories.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('categories') }">Kategori</Link>
+      <Link v-if="can.viewAnyUnits" :href="route('units.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('units') }">Satuan</Link>
       <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('purchases') }">Penerimaan</Link>
       <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales') }">Penjualan</Link>
       <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory') }">Stok</Link>
