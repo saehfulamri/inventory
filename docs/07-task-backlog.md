@@ -163,6 +163,27 @@
 
 Catatan konvensi: migrasi inkremental per modul (satu task pada satu waktu, sesuai AI Task Protocol), memanfaatkan kemampuan Inertia berjalan berdampingan dengan Blade selama transisi, dan business logic tetap server-side (Controller → Service → Repository tidak berubah).
 
+> **Koreksi status:** TASK-026 (CategoryService) dan TASK-027 (UnitService) sebelumnya ditandai Done, namun yang diselesaikan baru layer service/repository — lapisan HTTP/UI (route, controller, halaman Vue) belum ada sehingga FR-MASTER-001/002/003 belum terpenuhi. Pekerjaan tersebut diselesaikan pada Phase 13 di bawah.
+
+## Phase 13 — Master Data UI (Kategori & Satuan)
+
+- [x] TASK-116 `CategoryPolicy` & `UnitPolicy` (Admin & Warehouse; tanpa route delete — nonaktifkan saja, FR-MASTER-003)
+- [x] TASK-117 FormRequest `Store/UpdateCategoryRequest` & `Store/UpdateUnitRequest` (unique name; symbol wajib; pesan Bahasa Indonesia)
+- [x] TASK-118 `CategoryController` & `UnitController` (index/create/store/edit/update/deactivate + filter) + route `categories.*` & `units.*` + shared props `can.viewAnyCategories`/`can.viewAnyUnits`
+- [x] TASK-119 Halaman Vue `Categories/{Index,Create,Edit}` & `Units/{Index,Create,Edit}` + komponen `CategoryForm`/`UnitForm` + nav Kategori & Satuan (desktop + mobile)
+- [x] TASK-120 Tests: `CategoryManagementTest`, `CategoryAuthorizationTest`, `UnitManagementTest`, `UnitAuthorizationTest`
+
+## Phase 14 — Cleanup & Refactor (Clean Code)
+
+- [x] TASK-121 Higiene dokumen: merge status remediasi infrastruktur ke `docs/12-…`, pindahkan roadmap phase lanjutan ke `docs/15-improvement-roadmap.md`, hapus `GITHUB_FLOW.md` (redundan dengan `CONTRIBUTING.md`)
+- [x] TASK-122 Fix build Ziggy: `resources/js/ziggy.js` tidak lagi di-commit (artefak generate, hardcode `APP_URL` lokal); di-generate otomatis pada `npm run build`/`npm run dev` sehingga URL produksi benar
+- [x] TASK-123 Refactor `StockService`: duplikasi `increase`/`decrease` disatukan ke `applyChange()`; pembuatan stock movement via `StockMovementRepositoryInterface` (menutup bypass repository)
+- [x] TASK-124 Refactor `ReportService`: `salesFilters`/`purchaseFilters` yang identik digabung ke `dateFilters()`; `productOptions()` memakai `ProductRepositoryInterface`
+- [x] TASK-125 Helper `App\Support\RequestFilters` menggantikan boilerplate `array_filter` di seluruh controller
+- [x] TASK-126 Update changelog, README, dan dokumentasi terkait
+
+Backlog lanjutan (performance, a11y/i18n, monitoring) tercatat di `docs/15-improvement-roadmap.md`.
+
 ## AI Task Protocol
 
 AI hanya mengerjakan task yang diminta.

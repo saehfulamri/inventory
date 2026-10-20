@@ -11,8 +11,8 @@ GitHub Flow sebelum dianggap aktif di repository utama.
 | --- | --- | --- | --- |
 | 1 | Backup, HTTPS, dan supply chain Actions | Selesai | — |
 | 2 | Deployment release atomik | Selesai | Fase 1 |
-| 3 | Quality gates CI | Diimplementasikan; menunggu verifikasi CI MySQL dan merge | Fase 1 |
-| 4 | Operasional queue produksi | Belum dikerjakan | Fase 2 |
+| 3 | Quality gates CI | Selesai (PR #4 di-merge ke `main`) | Fase 1 |
+| 4 | Operasional queue produksi | Selesai (PR #5 di-merge ke `main`) | Fase 2 |
 | 5 | Observability produksi | Belum dikerjakan | Fase 2 |
 | 6 | Validasi end-to-end | Belum dikerjakan | Fase 3, 4, dan 5 |
 
@@ -63,9 +63,8 @@ rollback terdokumentasi.
 **Risiko:** sedang-tinggi; bug dapat lolos karena test hanya berjalan di SQLite
 atau dependency/action berubah tanpa terdeteksi.
 
-**Status:** workflow sudah diimplementasikan di branch
-`chore/ci-quality-gates`; menunggu job MySQL di GitHub Actions lulus dan
-perubahan di-merge ke `main`.
+**Status:** selesai; PR #4 (`chore/ci-quality-gates`) di-merge ke `main`.
+Seluruh required checks (PHP 8.4, PHP 8.5, MySQL 8.0) lulus di GitHub Actions.
 
 **Dependency:** Fase 1 untuk action immutable.
 
@@ -85,7 +84,10 @@ workflow terjadwal dapat dijalankan manual.
 **Risiko:** sedang; jika aplikasi mulai mengirim job asynchronous tanpa worker,
 job akan menumpuk dan pekerjaan tidak selesai.
 
-**Status:** belum dikerjakan.
+**Status:** selesai; PR #5 (`chore/queue-operations`) di-merge ke `main`.
+Keputusan terdokumentasi (tetap sinkron, tanpa worker aktif), template
+Supervisor tersedia di `deploy/supervisor/inventory-worker.conf.example`, dan
+hook restart-saat-deploy ditambahkan ke script release/rollback.
 
 **Dependency:** Fase 2.
 

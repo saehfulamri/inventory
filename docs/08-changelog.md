@@ -26,6 +26,51 @@ Format:
 - ...
 ```
 
+## 2026-10-20
+
+### Added
+- CRUD Kategori & Satuan (FR-MASTER-001/002/003 [P0], TASK-116–120):
+  route `categories.*` & `units.*`, `CategoryController` & `UnitController`,
+  `CategoryPolicy` & `UnitPolicy` (Admin & Gudang; nonaktifkan, tanpa hapus
+  fisik), FormRequest dengan pesan Bahasa Indonesia, halaman Vue
+  `Categories/{Index,Create,Edit}` & `Units/{Index,Create,Edit}`, serta nav
+  Kategori/Satuan pada desktop & mobile. Menutup gap di mana `CategoryService`
+  & `UnitService` sudah ada tetapi belum punya lapisan HTTP/UI.
+- Test baru: `CategoryManagementTest`, `CategoryAuthorizationTest`,
+  `UnitManagementTest`, `UnitAuthorizationTest` (30 test).
+
+### Changed
+- Dokumen konsolidasi: status remediasi infrastruktur (Fase 3 CI & Fase 4
+  queue sudah di-merge) digabungkan ke
+  `docs/12-copilot_infrastructure-remediation-plan.md`; salinan duplikat di
+  root dihapus. `13-improvement-phase.md` dipindahkan ke
+  `docs/15-improvement-roadmap.md` (penomoran phase disesuaikan agar tidak
+  bentrok dengan backlog). `GITHUB_FLOW.md` dihapus — isinya redundan dengan
+  bagian "Alur Kerja Git" di `CONTRIBUTING.md`.
+- Refactor `StockService` (TASK-123): `increase()`/`decrease()` yang kembar
+  disatukan ke `applyChange()` bersigned; pembuatan stock movement kini
+  melalui `StockMovementRepositoryInterface::create()` (menutup bypass
+  repository, method `create` ditambahkan ke contract + implementasi).
+- Refactor `ReportService` (TASK-124): `salesFilters()`/`purchaseFilters()`
+  yang identik baris-ke-baris digabung menjadi `dateFilters()`;
+  `productOptions()` memakai `ProductRepositoryInterface::productOptions()`
+  (method baru di contract + `EloquentProductRepository`).
+- Helper baru `App\Support\RequestFilters` (TASK-125) menggantikan boilerplate
+  `array_filter([...], fn ($v) => $v !== null)` di seluruh controller
+  (Product, Supplier, Category, Unit, Sale, Purchase, Inventory, Report).
+
+### Fixed
+- Build Ziggy di produksi/CI (TASK-122): `resources/js/ziggy.js` berisi
+  `http://localhost:8000` hardcode dan tidak pernah diregenerasi — URL route
+  di bundle produksi bisa salah. File tidak lagi di-commit (gitignored);
+  `npm run build` dan `npm run dev` sekarang menjalankan
+  `php artisan ziggy:generate` lebih dulu sehingga `APP_URL` lingkungan
+  masing-masing yang dipakai. Urutan step CI disesuaikan (env disiapkan
+  sebelum build).
+
+### Database
+- Tidak ada perubahan skema.
+
 ## 2026-09-29
 
 ### Added
