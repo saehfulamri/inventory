@@ -29,6 +29,11 @@ class EloquentStockMovementRepository implements StockMovementRepositoryInterfac
             ->paginate($perPage);
     }
 
+    public function create(array $data): StockMovement
+    {
+        return StockMovement::create($data);
+    }
+
     /**
      * Total kuantitas & jumlah catatan per tipe pergerakan sesuai filter.
      *

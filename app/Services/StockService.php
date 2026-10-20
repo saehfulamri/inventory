@@ -7,13 +7,17 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
 use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 class StockService
 {
-    public function __construct(protected ProductRepositoryInterface $productRepository) {}
+    public function __construct(
+        protected ProductRepositoryInterface $productRepository,
+        protected StockMovementRepositoryInterface $movementRepository,
+    ) {}
 
     public function increase(
         Product $product,
@@ -27,26 +31,22 @@ class StockService
             throw new InvalidArgumentException('Jumlah penambahan stok harus lebih dari nol.');
         }
 
-        $product = $this->productRepository->findByIdForUpdate($product->getKey()) ?? $product;
+        return $this->applyChange($product, $quantity, $type, $user, $reference, $notes);
+    }
 
-        $stockBefore = (float) $product->stock;
-        $stockAfter = $stockBefore + $quantity;
+    public function decrease(
+        Product $product,
+        float $quantity,
+        MovementType $type,
+        ?User $user = null,
+        ?Model $reference = null,
+        ?string $notes = null,
+    ): Product {
+        if ($quantity <= 0) {
+            throw new InvalidArgumentException('Jumlah pengurangan stok harus lebih dari nol.');
+        }
 
-        $this->productRepository->update($product, ['stock' => $stockAfter]);
-
-        StockMovement::create([
-            'product_id' => $product->getKey(),
-            'user_id' => $user?->getKey(),
-            'movement_type' => $type,
-            'quantity' => $quantity,
-            'stock_before' => $stockBefore,
-            'stock_after' => $stockAfter,
-            'reference_type' => $reference?->getMorphClass(),
-            'reference_id' => $reference?->getKey(),
-            'notes' => $notes,
-        ]);
-
-        return $product;
+        return $this->applyChange($product, -$quantity, $type, $user, $reference, $notes);
     }
 
     /**
@@ -73,33 +73,25 @@ class StockService
 
         $this->productRepository->update($product, ['stock' => $newStock]);
 
-        return StockMovement::create([
-            'product_id' => $product->getKey(),
-            'user_id' => $user?->getKey(),
-            'movement_type' => MovementType::Adjustment,
-            'quantity' => $difference,
-            'stock_before' => $stockBefore,
-            'stock_after' => $newStock,
-            'notes' => $notes,
-        ]);
+        return $this->recordMovement($product, MovementType::Adjustment, $difference, $stockBefore, $newStock, $user, null, $notes);
     }
 
-    public function decrease(
+    /**
+     * Terapkan perubahan stok bersigned (positif = tambah, negatif = kurangi)
+     * beserta satu stock movement, dalam satu jalur kode bersama.
+     */
+    private function applyChange(
         Product $product,
-        float $quantity,
+        float $signedQuantity,
         MovementType $type,
-        ?User $user = null,
-        ?Model $reference = null,
-        ?string $notes = null,
+        ?User $user,
+        ?Model $reference,
+        ?string $notes,
     ): Product {
-        if ($quantity <= 0) {
-            throw new InvalidArgumentException('Jumlah pengurangan stok harus lebih dari nol.');
-        }
-
         $product = $this->productRepository->findByIdForUpdate($product->getKey()) ?? $product;
 
         $stockBefore = (float) $product->stock;
-        $stockAfter = $stockBefore - $quantity;
+        $stockAfter = $stockBefore + $signedQuantity;
 
         if ($stockAfter < 0) {
             throw ValidationException::withMessages([
@@ -109,7 +101,22 @@ class StockService
 
         $this->productRepository->update($product, ['stock' => $stockAfter]);
 
-        StockMovement::create([
+        $this->recordMovement($product, $type, abs($signedQuantity), $stockBefore, $stockAfter, $user, $reference, $notes);
+
+        return $product;
+    }
+
+    private function recordMovement(
+        Product $product,
+        MovementType $type,
+        float $quantity,
+        float $stockBefore,
+        float $stockAfter,
+        ?User $user,
+        ?Model $reference,
+        ?string $notes,
+    ): StockMovement {
+        return $this->movementRepository->create([
             'product_id' => $product->getKey(),
             'user_id' => $user?->getKey(),
             'movement_type' => $type,
@@ -120,7 +127,5 @@ class StockService
             'reference_id' => $reference?->getKey(),
             'notes' => $notes,
         ]);
-
-        return $product;
     }
 }

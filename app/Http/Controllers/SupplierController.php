@@ -6,6 +6,7 @@ use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Models\Supplier;
 use App\Services\SupplierService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,9 +82,9 @@ class SupplierController extends Controller
 
     private function filters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'is_active' => $request->filled('is_active') ? (int) $request->input('is_active') : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'is_active' => RequestFilters::CAST_INT,
+        ]);
     }
 }

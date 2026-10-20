@@ -16,6 +16,11 @@ interface ProductRepositoryInterface
 
     public function findActive(): Collection;
 
+    /**
+     * Daftar ringkas produk aktif (id + nama) untuk dropdown/laporan.
+     */
+    public function productOptions(): Collection;
+
     public function searchActive(string $keyword, int $limit = 20): Collection;
 
     public function findBySku(string $sku): ?Product;

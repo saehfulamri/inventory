@@ -8,6 +8,7 @@ use App\Http\Requests\StoreSaleRequest;
 use App\Models\Sale;
 use App\Services\ProductService;
 use App\Services\SaleService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -99,12 +100,12 @@ class SaleController extends Controller
 
     private function filters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'status' => $request->filled('status') ? $request->input('status') : null,
-            'payment_method' => $request->filled('payment_method') ? $request->input('payment_method') : null,
-            'date_from' => $request->filled('date_from') ? $request->input('date_from') : null,
-            'date_to' => $request->filled('date_to') ? $request->input('date_to') : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'status' => RequestFilters::CAST_STRING,
+            'payment_method' => RequestFilters::CAST_STRING,
+            'date_from' => RequestFilters::CAST_STRING,
+            'date_to' => RequestFilters::CAST_STRING,
+        ]);
     }
 }

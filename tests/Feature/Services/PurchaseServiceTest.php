@@ -10,6 +10,7 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Services\PurchaseService;
 use App\Services\StockService;
 use Illuminate\Database\Eloquent\Model;
@@ -136,7 +137,7 @@ class PurchaseServiceTest extends TestCase
             ['product' => $productB, 'quantity' => 5, 'unit_price' => 2000],
         ]);
 
-        $failingStock = new class(app(ProductRepositoryInterface::class)) extends StockService
+        $failingStock = new class(app(ProductRepositoryInterface::class), app(StockMovementRepositoryInterface::class)) extends StockService
         {
             public int $calls = 0;
 

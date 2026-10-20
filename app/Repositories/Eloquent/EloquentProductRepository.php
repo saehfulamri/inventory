@@ -48,6 +48,14 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return Product::where('is_active', true)->orderBy('name')->get();
     }
 
+    public function productOptions(): Collection
+    {
+        return Product::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
     public function searchActive(string $keyword, int $limit = 20): Collection
     {
         return Product::query()
