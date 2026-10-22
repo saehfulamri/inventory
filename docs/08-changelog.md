@@ -42,6 +42,19 @@ Format:
   SQL, anti N+1, pagination, filter server-side, query DB-agnostic, batas
   penggunaan cache, bundling frontend).
 
+### Repository & Open Source
+- `SECURITY.md`: kebijakan keamanan, versi yang didukung, dan alur pelaporan
+  privat via GitHub Security Advisories.
+- `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) + tautan di `README.md` dan
+  `CONTRIBUTING.md`.
+- `.github/dependabot.yml`: pembaruan otomatis mingguan untuk Composer, npm, dan
+  GitHub Actions (dikelompokkan per production/development).
+- `.github/CODEOWNERS` (default `@saehfulamri`) dan contact link keamanan pada
+  `.github/ISSUE_TEMPLATE/config.yml`.
+- `composer.json`: deskripsi, keywords, `homepage`, `authors`, dan `support`
+  diperbarui (sebelumnya masih metadata skeleton Laravel).
+- `docs/screenshots/README.md`: panduan aset tangkapan layar.
+
 ### Changed
 - `GET /sales/products` (endpoint JSON pencarian produk POS) kini dibatasi
   `throttle:60,1` per user untuk mencegah penyalahgunaan.

@@ -16,6 +16,11 @@ Aplikasi web monolith Laravel untuk mengelola master produk, stok, pembelian/pen
 - **Laporan** — penjualan, pembelian, stok, pergerakan stok + ekspor CSV
 - **Keamanan & audit** — role-based access (Admin/Kasir/Gudang/Manager), semua mutasi stok tercatat dengan sumber transaksi, database transaction untuk operasi atomik
 
+## Tangkapan Layar
+
+Tangkapan layar (dashboard, POS, produk, laporan) akan ditampilkan di sini.
+Panduan kontribusi gambar tersedia di [`docs/screenshots/`](docs/screenshots/).
+
 ## Dokumentasi Proyek
 
 Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor:
@@ -34,6 +39,9 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 | `docs/11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
 | `docs/12-copilot_infrastructure-remediation-plan.md` | Roadmap remediation infrastruktur (backup, deploy, CI, queue, observability). |
 | `docs/15-improvement-roadmap.md` | Roadmap perbaikan lanjutan (performance, a11y/i18n, monitoring). |
+| `CONTRIBUTING.md` | Panduan kontribusi (setup, konvensi, GitHub Flow, checklist PR). |
+| `SECURITY.md` | Kebijakan keamanan dan cara melaporkan kerentanan secara privat. |
+| `CODE_OF_CONDUCT.md` | Standar perilaku komunitas (Contributor Covenant 2.1). |
 
 Dokumen yang sudah tidak berlaku (desain database lama, coding rules yang digantikan `AGENTS.md`/`CONTRIBUTING.md`, audit UI/UX sekali jalan) diarsipkan di `docs/archive/` — hanya untuk riwayat, jangan dijadikan referensi aktif.
 
@@ -149,6 +157,15 @@ Panduan lengkap untuk berkontribusi (setup, arsitektur, konvensi coding,
 GitHub Flow, branch protection, alur tag rilis, checklist PR, dsb.) tersedia di
 [CONTRIBUTING.md](CONTRIBUTING.md). Produksi hanya dideploy dari tag yang
 dibuat setelah PR di-merge ke `main`.
+
+Dengan berpartisipasi, Anda diharapkan mematuhi
+[Code of Conduct](CODE_OF_CONDUCT.md) proyek ini.
+
+## Keamanan
+
+Jangan membuka issue publik untuk masalah keamanan. Laporkan secara privat
+melalui [GitHub Security Advisories](https://github.com/saehfulamri/inventory/security/advisories/new);
+detail kebijakan ada di [SECURITY.md](SECURITY.md).
 
 ## Lisensi
 

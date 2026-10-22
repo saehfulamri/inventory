@@ -9,6 +9,10 @@ Terima kasih sudah ingin berkontribusi! 🎉 Proyek ini adalah aplikasi monolith
 - 🔧 **Pull request** — perbaikan bug, fitur kecil, perbaikan dokumentasi, atau peningkatan test.
 - 📚 **Dokumentasi** — perbaikan typo, penjelasan yang kurang jelas, atau contoh penggunaan.
 
+Dengan berpartisipasi, Anda diharapkan mematuhi
+[Code of Conduct](CODE_OF_CONDUCT.md). Untuk masalah keamanan, jangan buka issue
+publik — ikuti [SECURITY.md](SECURITY.md).
+
 ## Persiapan Lingkungan Development
 
 Prasyarat: PHP ≥ 8.4, Composer, dan Node.js & npm (untuk membangun aset frontend Vue/Inertia).
