@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\MovementType;
 use App\Services\ReportService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -107,14 +108,14 @@ class ReportController extends Controller
 
     private function filters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'product_id' => $request->filled('product_id') ? (int) $request->input('product_id') : null,
-            'movement_type' => $request->filled('movement_type') ? $request->input('movement_type') : null,
-            'payment_method' => $request->filled('payment_method') ? $request->input('payment_method') : null,
-            'low_stock' => $request->filled('low_stock') ? $request->input('low_stock') : null,
-            'date_from' => $request->filled('date_from') ? $request->input('date_from') : null,
-            'date_to' => $request->filled('date_to') ? $request->input('date_to') : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'product_id' => RequestFilters::CAST_INT,
+            'movement_type' => RequestFilters::CAST_STRING,
+            'payment_method' => RequestFilters::CAST_STRING,
+            'low_stock' => RequestFilters::CAST_STRING,
+            'date_from' => RequestFilters::CAST_STRING,
+            'date_to' => RequestFilters::CAST_STRING,
+        ]);
     }
 }

@@ -8,6 +8,8 @@ import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { buildParams, filterString } from '../../utils/filters.js';
+import { labelMapFrom, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     purchases: { type: Object, required: true },
@@ -22,9 +24,7 @@ const can = computed(() => page.props.can ?? {});
 
 const filters = ref({
     keyword: props.filters.keyword ?? '',
-    supplier_id: props.filters.supplier_id !== undefined && props.filters.supplier_id !== null
-        ? String(props.filters.supplier_id)
-        : '',
+    supplier_id: filterString(props.filters.supplier_id),
     status: props.filters.status ?? '',
 });
 
@@ -38,21 +38,7 @@ const statusOptions = computed(() => [
     ...props.statuses,
 ]);
 
-const statusLabels = computed(() => {
-    const map = {};
-
-    for (const status of props.statuses) {
-        map[status.value] = status.label;
-    }
-
-    return map;
-});
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
+const statusLabels = computed(() => labelMapFrom(props.statuses));
 
 const columns = [
     { key: 'purchase_number', label: 'No. Penerimaan' },
@@ -64,17 +50,7 @@ const columns = [
 ];
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.supplier_id !== '') {
-        params.supplier_id = filters.value.supplier_id;
-    }
-    if (filters.value.status) {
-        params.status = filters.value.status;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('purchases.index', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }

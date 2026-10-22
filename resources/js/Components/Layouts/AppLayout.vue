@@ -1,10 +1,21 @@
 <script setup>
-import { computed, inject } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import VFlash from '../ui/VFlash.vue';
 
+// injected Ziggy route helper
 const route = inject('route');
 const page = usePage();
+
+// Mobile navigation drawer state
+const isMobileNavOpen = ref(false);
+function toggleMobileNav() { isMobileNavOpen.value = !isMobileNavOpen.value; }
+function closeMobileNav() { isMobileNavOpen.value = false; }
+
+// Helper to determine active route (Ziggy integration)
+function isActive(name) {
+    return typeof page.component === 'string' && page.component.toLowerCase().includes(name.toLowerCase());
+}
 
 const appName = computed(() => page.props.app?.name ?? 'Sistem Inventori & Penjualan');
 const user = computed(() => page.props.auth?.user ?? null);
@@ -25,15 +36,27 @@ function logout() {
                 {{ appName }}
             </Link>
 
+            <!-- Hamburger: visible only below md breakpoint (768px) -->
+            <button
+                type="button"
+                class="btn--nav md:hidden"
+                aria-label="Toggle navigation"
+                :aria-expanded="isMobileNavOpen"
+                aria-controls="mobile-nav"
+                @click="toggleMobileNav"
+            >☰</button>
+
             <nav v-if="user" class="topnav" aria-label="Navigasi utama">
-                <div class="topnav__links">
-                    <Link :href="route('dashboard')">Dashboard</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('products.index')">Produk</Link>
-                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')">Supplier</Link>
-                    <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')">Penerimaan</Link>
-                    <Link v-if="can.viewAnySales" :href="route('sales.index')">Penjualan</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('inventory.index')">Stok</Link>
-                    <Link v-if="can.viewReports" :href="route('reports.index')">Laporan</Link>
+                <div class="topnav__links hidden md:flex">
+                    <Link :href="route('dashboard')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('dashboard') }">Dashboard</Link>
+                    <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('products') }">Produk</Link>
+                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('suppliers') }">Supplier</Link>
+                    <Link v-if="can.viewAnyCategories" :href="route('categories.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('categories') }">Kategori</Link>
+                    <Link v-if="can.viewAnyUnits" :href="route('units.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('units') }">Satuan</Link>
+                    <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('purchases') }">Penerimaan</Link>
+                    <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('sales') }">Penjualan</Link>
+                    <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('inventory') }">Stok</Link>
+                    <Link v-if="can.viewReports" :href="route('reports.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('reports') }">Laporan</Link>
                 </div>
 
                 <span class="topnav__user">{{ user.name }}</span>
@@ -42,11 +65,28 @@ function logout() {
         </div>
     </header>
 
-    <div v-if="flash.success" class="container">
+    <!-- Mobile navigation drawer -->
+  <div v-if="isMobileNavOpen" class="fixed inset-0 z-40 flex" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation drawer" tabindex="-1" @keydown.escape="closeMobileNav">
+  <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeMobileNav"></div>
+  <nav class="bg-white w-64 p-4 overflow-y-auto">
+    <div class="flex flex-col space-y-2">
+      <Link :href="route('dashboard')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('dashboard') }">Dashboard</Link>
+      <Link v-if="can.viewAnyProducts" :href="route('products.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('products') }">Produk</Link>
+      <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('suppliers') }">Supplier</Link>
+      <Link v-if="can.viewAnyCategories" :href="route('categories.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('categories') }">Kategori</Link>
+      <Link v-if="can.viewAnyUnits" :href="route('units.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('units') }">Satuan</Link>
+      <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('purchases') }">Penerimaan</Link>
+      <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales') }">Penjualan</Link>
+      <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory') }">Stok</Link>
+      <Link v-if="can.viewReports" :href="route('reports.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('reports') }">Laporan</Link>
+    </div>
+  </nav>
+</div>
+<div v-if="flash.success" class="container" role="status" aria-live="polite">
         <VFlash type="success">{{ flash.success }}</VFlash>
     </div>
 
-    <div v-if="flash.error" class="container">
+    <div v-if="flash.error" class="container" role="alert" aria-live="assertive">
         <VFlash type="error">{{ flash.error }}</VFlash>
     </div>
 

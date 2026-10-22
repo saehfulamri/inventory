@@ -7,6 +7,7 @@ use App\Models\Sale;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use DateTimeInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 class EloquentSaleRepository implements SaleRepositoryInterface
 {
@@ -37,20 +38,6 @@ class EloquentSaleRepository implements SaleRepositoryInterface
     public function findById(int $id): ?Sale
     {
         return Sale::with(['user', 'items.product'])->find($id);
-    }
-
-    public function nextSaleNumber(DateTimeInterface $date): string
-    {
-        $prefix = 'SO-'.$date->format('Ymd').'-';
-
-        $latest = Sale::query()
-            ->where('sale_number', 'like', $prefix.'%')
-            ->orderByDesc('sale_number')
-            ->value('sale_number');
-
-        $sequence = $latest === null ? 1 : ((int) substr($latest, strlen($prefix))) + 1;
-
-        return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
     }
 
     public function create(array $data): Sale
@@ -86,16 +73,18 @@ class EloquentSaleRepository implements SaleRepositoryInterface
             ->where('status', SaleStatus::Completed)
             ->whereDate('sale_date', '>=', $from->format('Y-m-d'))
             ->whereDate('sale_date', '<=', $to->format('Y-m-d'))
-            ->selectRaw('DATE(sale_date) as day')
+            ->selectRaw('sale_date as day')
             ->selectRaw('SUM(grand_total) as total')
             ->selectRaw('COUNT(*) as count')
-            ->groupBy('day')
+            ->groupBy('sale_date')
             ->get();
 
         $chart = [];
 
         foreach ($rows as $row) {
-            $chart[(string) $row['day']] = [
+            $key = Carbon::parse((string) $row['day'])->toDateString();
+
+            $chart[$key] = [
                 'total' => (float) $row->total,
                 'count' => (int) $row->count,
             ];

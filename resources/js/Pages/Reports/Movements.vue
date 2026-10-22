@@ -2,11 +2,14 @@
 import { computed, inject, ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '../../Components/Layouts/AppLayout.vue';
+import VBadge from '../../Components/ui/VBadge.vue';
 import VButton from '../../Components/ui/VButton.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatDateTime, formatQuantity } from '../../utils/format';
+import { buildParams, filterString } from '../../utils/filters.js';
+import { labelMapFrom } from '../../utils/statuses.js';
 
 const props = defineProps({
     movements: { type: Object, required: true },
@@ -18,9 +21,7 @@ const props = defineProps({
 const route = inject('route');
 
 const filters = ref({
-    product_id: props.filters.product_id !== undefined && props.filters.product_id !== null
-        ? String(props.filters.product_id)
-        : '',
+    product_id: filterString(props.filters.product_id),
     movement_type: props.filters.movement_type ?? '',
     date_from: props.filters.date_from ?? '',
     date_to: props.filters.date_to ?? '',
@@ -36,15 +37,7 @@ const typeOptions = computed(() => [
     ...props.movementTypes,
 ]);
 
-const typeLabels = computed(() => {
-    const map = {};
-
-    for (const type of props.movementTypes) {
-        map[type.value] = type.label;
-    }
-
-    return map;
-});
+const typeLabels = computed(() => labelMapFrom(props.movementTypes));
 
 const columns = [
     { key: 'created_at', label: 'Waktu' },
@@ -60,20 +53,7 @@ function delta(row) {
 }
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.product_id !== '') {
-        params.product_id = filters.value.product_id;
-    }
-    if (filters.value.movement_type) {
-        params.movement_type = filters.value.movement_type;
-    }
-    if (filters.value.date_from) {
-        params.date_from = filters.value.date_from;
-    }
-    if (filters.value.date_to) {
-        params.date_to = filters.value.date_to;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('reports.movements', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }
@@ -125,13 +105,13 @@ function applyFilters() {
             <template #product="{ row }">{{ row.product?.name ?? '—' }}</template>
 
             <template #movement_type="{ row }">
-                <span class="badge badge--ghost">{{ typeLabels[row.movement_type] ?? row.movement_type }}</span>
+                <VBadge variant="muted">{{ typeLabels[row.movement_type] ?? row.movement_type }}</VBadge>
             </template>
 
             <template #delta="{ row }">
-                <span class="badge" :class="delta(row) >= 0 ? 'badge--success' : 'badge--danger'">
+                <VBadge :variant="delta(row) >= 0 ? 'success' : 'danger'">
                     {{ delta(row) >= 0 ? '+' : '−' }}{{ formatQuantity(Math.abs(delta(row))) }}
-                </span>
+                </VBadge>
             </template>
 
             <template #stock="{ row }">

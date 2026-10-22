@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
 use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Services\SaleService;
 use App\Services\StockService;
 use Illuminate\Database\Eloquent\Model;
@@ -109,6 +110,7 @@ class SaleServiceTest extends TestCase
             $this->assertDatabaseCount('sales', 0);
             $this->assertDatabaseCount('sale_items', 0);
             $this->assertDatabaseCount('stock_movements', 0);
+            $this->assertDatabaseCount('document_sequences', 0);
         }
     }
 
@@ -197,8 +199,14 @@ class SaleServiceTest extends TestCase
             'items' => [['product_id' => $product->id, 'quantity' => 1]],
         ], $cashier);
 
-        $this->assertNotSame($first->sale_number, $second->sale_number);
+        $this->assertSame('SO-'.now()->format('Ymd').'-0001', $first->sale_number);
+        $this->assertSame('SO-'.now()->format('Ymd').'-0002', $second->sale_number);
         $this->assertDatabaseCount('sales', 2);
+        $this->assertDatabaseHas('document_sequences', [
+            'document_type' => 'sale',
+            'sequence_date' => now()->toDateString(),
+            'current_value' => 2,
+        ]);
     }
 
     public function test_complete_is_atomic_when_stock_decrease_fails(): void
@@ -207,7 +215,7 @@ class SaleServiceTest extends TestCase
         $productA = Product::factory()->create(['stock' => 10, 'selling_price' => 1000]);
         $productB = Product::factory()->create(['stock' => 20, 'selling_price' => 1000]);
 
-        $failingStock = new class(app(ProductRepositoryInterface::class)) extends StockService
+        $failingStock = new class(app(ProductRepositoryInterface::class), app(StockMovementRepositoryInterface::class)) extends StockService
         {
             public int $calls = 0;
 

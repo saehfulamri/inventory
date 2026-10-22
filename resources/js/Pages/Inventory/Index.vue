@@ -7,6 +7,7 @@ import VButton from '../../Components/ui/VButton.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
+import { buildParams, filterString } from '../../utils/filters.js';
 
 const props = defineProps({
     products: { type: Object, required: true },
@@ -20,9 +21,7 @@ const can = computed(() => page.props.can ?? {});
 
 const filters = ref({
     keyword: props.filters.keyword ?? '',
-    category_id: props.filters.category_id !== undefined && props.filters.category_id !== null
-        ? String(props.filters.category_id)
-        : '',
+    category_id: filterString(props.filters.category_id),
     low_stock: Boolean(props.filters.low_stock),
 });
 
@@ -47,14 +46,8 @@ function isLowStock(product) {
 }
 
 function applyFilters() {
-    const params = {};
+    const params = buildParams(filters.value);
 
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.category_id !== '') {
-        params.category_id = filters.value.category_id;
-    }
     if (filters.value.low_stock) {
         params.low_stock = '1';
     }

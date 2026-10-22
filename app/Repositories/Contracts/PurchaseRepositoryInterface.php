@@ -12,7 +12,7 @@ interface PurchaseRepositoryInterface
 
     public function findById(int $id): ?Purchase;
 
-    public function nextPurchaseNumber(DateTimeInterface $date): string;
+    public function findByIdForUpdate(int $id): ?Purchase;
 
     public function create(array $data): Purchase;
 

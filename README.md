@@ -16,23 +16,34 @@ Aplikasi web monolith Laravel untuk mengelola master produk, stok, pembelian/pen
 - **Laporan** — penjualan, pembelian, stok, pergerakan stok + ekspor CSV
 - **Keamanan & audit** — role-based access (Admin/Kasir/Gudang/Manager), semua mutasi stok tercatat dengan sumber transaksi, database transaction untuk operasi atomik
 
+## Tangkapan Layar
+
+Tangkapan layar (dashboard, POS, produk, laporan) akan ditampilkan di sini.
+Panduan kontribusi gambar tersedia di [`docs/screenshots/`](docs/screenshots/).
+
 ## Dokumentasi Proyek
 
 Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor:
 
 | File | Isi |
 | --- | --- |
-| `01-project-brief.md` | Ringkasan, tujuan, target pengguna, ruang lingkup MVP, teknologi. |
-| `02-requirements.md` | Functional & non-functional requirements (prioritas P0/P1/P2). |
-| `03-product-spec.md` | Spesifikasi UI/UX, user flow, acceptance criteria. |
-| `04-architecture.md` | Arsitektur Laravel Service/Repository Pattern. |
-| `05-database.md` | Desain database MySQL. |
-| `06-coding-rules.md` | Coding rules & aturan pengembangan AI. |
-| `07-task-backlog.md` | Task backlog dan roadmap. |
-| `08-changelog.md` | Catatan perubahan penting proyek. |
-| `09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
-| `10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
-| `11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
+| `docs/01-project-brief.md` | Ringkasan, tujuan, target pengguna, ruang lingkup MVP, teknologi. |
+| `docs/02-requirements.md` | Functional & non-functional requirements (prioritas P0/P1/P2). |
+| `docs/03-product-spec.md` | Spesifikasi UI/UX, user flow, acceptance criteria. |
+| `docs/04-architecture.md` | Arsitektur Laravel Service/Repository Pattern. |
+| `docs/07-task-backlog.md` | Task backlog dan roadmap. |
+| `docs/08-changelog.md` | Catatan perubahan penting proyek (pekerjaan terbaru). |
+| `CHANGELOG.md` | Riwayat rilis historis (sebelum 2026-10-20). |
+| `docs/09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
+| `docs/10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
+| `docs/11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
+| `docs/12-copilot_infrastructure-remediation-plan.md` | Roadmap remediation infrastruktur (backup, deploy, CI, queue, observability). |
+| `docs/15-improvement-roadmap.md` | Roadmap perbaikan lanjutan (performance, a11y/i18n, monitoring). |
+| `CONTRIBUTING.md` | Panduan kontribusi (setup, konvensi, GitHub Flow, checklist PR). |
+| `SECURITY.md` | Kebijakan keamanan dan cara melaporkan kerentanan secara privat. |
+| `CODE_OF_CONDUCT.md` | Standar perilaku komunitas (Contributor Covenant 2.1). |
+
+Dokumen yang sudah tidak berlaku (desain database lama, coding rules yang digantikan `AGENTS.md`/`CONTRIBUTING.md`, audit UI/UX sekali jalan) diarsipkan di `docs/archive/` — hanya untuk riwayat, jangan dijadikan referensi aktif.
 
 ## Arsitektur
 
@@ -40,6 +51,38 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 - Controller tipis → Service (business logic) → Repository (data access) → Eloquent.
 - Setiap perubahan stok tercatat sebagai stock movement dengan sumber yang jelas.
 - Operasi multi-step (penjualan, penerimaan) menggunakan database transaction secara atomic.
+
+## Peta Modul
+
+Alur data inti aplikasi:
+
+```text
+Master Data (Produk, Kategori, Satuan, Supplier)
+        │
+        ▼
+Penerimaan (Purchase) ──► Stock naik + movement PURCHASE_IN
+        │
+        ▼
+     Stok (Inventory) ◄── Penyesuaian (Adjustment) + movement ADJUSTMENT
+        │
+        ▼
+Penjualan (POS) ──► Stock turun + movement SALE_OUT
+        │
+        ▼
+    Laporan (Sales/Stock/Movement/Purchase + ekspor CSV)
+```
+
+| Modul (controller) | Frontend (`resources/js/Pages/`) | Mulai baca dari |
+| --- | --- | --- |
+| Auth & layout | `Auth/`, `Components/Layouts/` | `app/Http/Controllers/Auth/` |
+| Master data | `Products/`, `Categories/`, `Units/`, `Suppliers/` | `app/Services/ProductService.php` |
+| Penerimaan | `Purchases/` | `app/Services/PurchaseService.php` |
+| Stok & adjustment | `Inventory/` | `app/Services/StockService.php` |
+| Penjualan (POS) | `Sales/` | `app/Services/SaleService.php` |
+| Dashboard | `Dashboard/` | `app/Services/DashboardService.php` |
+| Laporan | `Reports/` | `app/Services/ReportService.php` |
+
+Panduan kontribusi dan konvensi lengkap: [CONTRIBUTING.md](CONTRIBUTING.md). Aturan untuk AI agent: [AGENTS.md](AGENTS.md) + [.ai/rules/](.ai/rules/).
 
 ## Prasyarat
 
@@ -115,6 +158,15 @@ GitHub Flow, branch protection, alur tag rilis, checklist PR, dsb.) tersedia di
 [CONTRIBUTING.md](CONTRIBUTING.md). Produksi hanya dideploy dari tag yang
 dibuat setelah PR di-merge ke `main`.
 
+Dengan berpartisipasi, Anda diharapkan mematuhi
+[Code of Conduct](CODE_OF_CONDUCT.md) proyek ini.
+
+## Keamanan
+
+Jangan membuka issue publik untuk masalah keamanan. Laporkan secara privat
+melalui [GitHub Security Advisories](https://github.com/saehfulamri/inventory/security/advisories/new);
+detail kebijakan ada di [SECURITY.md](SECURITY.md).
+
 ## Lisensi
 
 Proyek ini dirilis di bawah lisensi [MIT](LICENSE).
@@ -123,4 +175,4 @@ Copyright (c) 2026 Saehful Amri.
 
 ## Status
 
-MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`10-deployment.md`) & backup/restore (`11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. **Phase 11 — Modul Kelola Supplier (FR-SUP-001/004/005) ditambahkan** pasca-rilis `v0.2.0`: daftar + filter, tambah, edit, nonaktifkan (akses Admin & Gudang). **Phase 12 — Frontend Migration ke Inertia.js + Vue 3 selesai** (TASK-103–115): seluruh modul (Dashboard, Produk, Supplier, Inventory, Penerimaan, Penjualan/POS, Laporan) dimigrasi ke SPA Vue/Inertia dengan business logic tetap server-side; view Blade tersisa hanya root template `app.blade.php`; CSP diperketat (`script-src 'self'`, tanpa `'unsafe-inline'`). Lihat `07-task-backlog.md` dan `08-changelog.md` untuk detail.
+MVP untuk fitur inti selesai (Phase 0–8) dan rilis `v0.1.0` sudah dibuat. Phase 9 (Authorization & Hardening) selesai — termasuk review keamanan (validasi, CSRF/XSS, logging, mass assignment) dan hardening tambahan (rate-limit login, proteksi CSV formula-injection). **Phase 10 (Quality & Release) selesai** — dokumentasi deployment (`docs/10-deployment.md`) & backup/restore (`docs/11-backup-restore.md`), dan fitur foto produk (TASK-096). Seluruh roadmap selesai. **Phase 11 — Modul Kelola Supplier (FR-SUP-001/004/005) ditambahkan** pasca-rilis `v0.2.0`: daftar + filter, tambah, edit, nonaktifkan (akses Admin & Gudang). **Phase 12 — Frontend Migration ke Inertia.js + Vue 3 selesai** (TASK-103–115): seluruh modul (Dashboard, Produk, Supplier, Inventory, Penerimaan, Penjualan/POS, Laporan) dimigrasi ke SPA Vue/Inertia dengan business logic tetap server-side; view Blade tersisa hanya root template `app.blade.php`; CSP diperketat (`script-src 'self'`, tanpa `'unsafe-inline'`). **Phase 13 — Master Data UI (Kategori & Satuan) ditambahkan** (TASK-116–120): CRUD kategori & satuan (FR-MASTER-001/002/003) melengkapi dropdown produk yang sebelumnya hanya terisi lewat seeder. **Phase 14 — Cleanup & Refactor (TASK-121–126)**: konsolidasi dokumentasi, fix build Ziggy (`ziggy:generate` otomatis, file tidak lagi di-commit), dan refactor DRY backend (`StockService`, `ReportService`, helper `App\Support\RequestFilters`). Lihat `docs/07-task-backlog.md` dan `docs/08-changelog.md` untuk detail.
