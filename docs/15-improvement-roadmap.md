@@ -12,20 +12,24 @@ mengikuti kelanjutan `07-task-backlog.md`.
 - Meminimalkan beban database melalui caching dan query optimization.
 
 ## Daftar Pekerjaan (Task Backlog)
-| No | Task | Deskripsi | Prioritas |
-|---|------|-----------|-----------|
-| 14‑001 | Analisis N+1 queries | Gunakan Laravel Debugbar / Telescope untuk menemukan query berulang pada Dashboard, Produk, dan Penjualan. | P1 |
-| 14‑002 | Optimasi query Dashboard | Refactor `DashboardService` untuk eager‑load relasi (`with(['sales', 'lowStockProducts'])`). | P1 |
-| 14‑003 | Implementasi cache pada laporan | Cache hasil report harian/mingguan dengan `Cache::remember` (TTL 5 menit). | P2 |
-| 14‑004 | Queue jobs untuk proses berat | Pindahkan pembuatan `stock movement` dan `report generation` ke job yang diproses via `redis` queue. | P2 |
-| 14‑005 | Rate limiting API | Tambahkan middleware `throttle:60,1` pada route API untuk mencegah abuse. | P2 |
-| 14‑006 | Profiling front‑end | Gunakan Chrome Lighthouse untuk mengukur FCP, LCP, dan CLS; perbaiki aset yang belum dimanfaatkan. | P3 |
-| 14‑007 | Dokumentasi performance | Update `09-design.md` dengan guidelines performance & audit checklist. | P3 |
+| No | Task | Deskripsi | Prioritas | Status |
+|---|------|-----------|-----------|--------|
+| 14‑001 | Analisis N+1 queries | Gunakan Laravel Debugbar / Telescope untuk menemukan query berulang pada Dashboard, Produk, dan Penjualan. | P1 | Audit manual selesai (Telescope = dependency baru, lihat catatan). |
+| 14‑002 | Optimasi query Dashboard | Refactor `DashboardService` untuk eager‑load relasi (`with(['sales', 'lowStockProducts'])`). | P1 | ✅ Selesai — dashboard memakai agregat SQL (`summaryForDate`, `countActive`, `lowStockCount`, `chartBetween`), bukan eager-load collection. |
+| 14‑003 | Implementasi cache pada laporan | Cache hasil report harian/mingguan dengan `Cache::remember` (TTL 5 menit). | P2 | Belum dikerjakan (butuh keputusan invalidasi cache). |
+| 14‑004 | Queue jobs untuk proses berat | Pindahkan pembuatan `stock movement` dan `report generation` ke job yang diproses via `redis` queue. | P2 | Tertunda — butuh Redis (dependency/infrastruktur baru). |
+| 14‑005 | Rate limiting API | Tambahkan middleware `throttle:60,1` pada route API untuk mencegah abuse. | P2 | ✅ Selesai — `GET /sales/products` (satu-satunya endpoint JSON) diberi `throttle:60,1`, per-user. |
+| 14‑006 | Profiling front‑end | Gunakan Chrome Lighthouse untuk mengukur FCP, LCP, dan CLS; perbaiki aset yang belum dimanfaatkan. | P3 | Tertunda — butuh Lighthouse CLI (dependency npm baru). |
+| 14‑007 | Dokumentasi performance | Update `09-design.md` dengan guidelines performance & audit checklist. | P3 | ✅ Selesai — seksi "Guidelines Performance & Audit Checklist" di `09-design.md`. |
+
+> **Catatan dependency**: item yang butuh paket baru (Telescope, Redis,
+> Lighthouse, Dusk, Sentry, Prometheus, `spatie/laravel-translatable`) tidak
+> boleh dijalankan tanpa persetujuan eksplisit — lihat "Ringkasan Roadmap".
 
 ## Langkah Implementasi (GitHub Flow)
 1. **Buat branch**: `feat/performance-optimisation`.
 2. **Setup environment**: Pastikan `APP_ENV=local` dan Redis berjalan (`docker compose up -d redis`).
-3. **Tambah paket** (jika belum ada):
+3. **Tambah paket** — *hanya setelah persetujuan eksplisit*, dan satu per satu:
    ```bash
    composer require laravel/telescope --dev
    composer require predis/predis
@@ -50,14 +54,15 @@ mengikuti kelanjutan `07-task-backlog.md`.
 - Menyediakan dukungan bahasa Indonesia & English.
 
 ## Task List
-| No | Task | Detail |
-|---|------|--------|
-| 15‑001 | Audit aksesibilitas UI | Gunakan axe‑core atau Lighthouse CI, catat error ARIA. |
-| 15‑002 | Tambah `lang` attribute & teks alternatif pada gambar. |
-| 15‑003 | Implementasi paket `spatie/laravel-translatable` untuk model `Product`. |
-| 15‑004 | Buat file bahasa (`resources/lang/id/*.php`, `resources/lang/en/*.php`). |
-| 15‑005 | Update komponent UI (Button, Input) untuk menampilkan label aksesibel. |
-| 15‑006 | Tambah test end‑to‑end (Laravel Dusk) untuk verifikasi tab order. |
+| No | Task | Detail | Status |
+|---|------|--------|--------|
+| 15‑001 | Audit aksesibilitas UI | Gunakan axe‑core atau Lighthouse CI, catat error ARIA. | Belum (tool eksternal opsional). |
+| 15‑002 | Tambah `lang` attribute & teks alternatif pada gambar. | ✅ Selesai — `app.blade.php` punya `lang="{{ app()->getLocale() }}"`; semua `<img>` punya `alt` (dekoratif memakai `alt=""`). |
+| 15‑003 | Implementasi paket `spatie/laravel-translatable` untuk model `Product`. | Tertunda — dependency baru. |
+| 15‑004 | Buat file bahasa (`resources/lang/id/*.php`, `resources/lang/en/*.php`). | Belum — layanan i18n butuh 15‑003 lebih dulu. |
+| 15‑005 | Update komponen UI (Button, Input) untuk menampilkan label aksesibel. | Belum. |
+| 15‑006 | Tambah test end‑to‑end (Laravel Dusk) untuk verifikasi tab order. | Tertunda — dependency baru. |
+
 
 ## Workflow (GitHub Flow)
 Sama seperti fase 14 – satu branch per fitur (`feat/a11y-i18n`), PR, CI, pint, merge.
@@ -71,13 +76,13 @@ Sama seperti fase 14 – satu branch per fitur (`feat/a11y-i18n`), PR, CI, pint,
 - Memudahkan debugging produksi.
 
 ## Tasks
-| No | Task | Detail |
-|---|------|--------|
-| 16‑001 | Install Laravel Telescope (production‑safe config). |
-| 16‑002 | Setup Sentry SDK untuk exception tracking. |
-| 16‑003 | Konfigurasi health‑check endpoint (`/health`) yang mengembalikan status DB, cache, queue. |
-| 16‑004 | Tambah metric collection via `prometheus/client_php` dan expose `/metrics`. |
-| 16‑005 | Dokumentasi monitoring di `10-deployment.md`. |
+| No | Task | Detail | Status |
+|---|------|--------|--------|
+| 16‑001 | Install Laravel Telescope (production‑safe config). | Tertunda — dependency baru. |
+| 16‑002 | Setup Sentry SDK untuk exception tracking. | Tertunda — dependency baru. |
+| 16‑003 | Konfigurasi health‑check endpoint (`/health`) yang mengembalikan status DB, cache, queue. | ✅ Selesai — `HealthController` di luar grup `web` (tanpa sesi/cookie), JSON `{status, checks}`, HTTP 503 bila ada cek gagal. |
+| 16‑004 | Tambah metric collection via `prometheus/client_php` dan expose `/metrics`. | Tertunda — dependency baru. |
+| 16‑005 | Dokumentasi monitoring di `10-deployment.md`. | Belum. |
 
 ## GitHub Flow
 Branch `feat/monitoring`, PR, pastikan CI lulus, deploy tag rilis.
@@ -88,9 +93,24 @@ Branch `feat/monitoring`, PR, pastikan CI lulus, deploy tag rilis.
 | Phase | Fokus |
 |------|-------|
 | 13 | Master Data UI (Kategori & Satuan) — dikerjakan bersamaan, lihat `07-task-backlog.md` |
-| 14 | Performance & Optimisation |
-| 15 | Accessibility & i18n |
-| 16 | Monitoring & Observability |
+| 14 | Performance & Optimisation — 14‑001/14‑002 selesai (audit manual + agregat SQL) |
+| 15 | Accessibility & i18n — 15‑002 selesai (`lang` + `alt`) |
+| 16 | Monitoring & Observability — 16‑003 selesai (`/health`); Telescope/Sentry/Prometheus tertunda (dependency baru) |
 | 17+ | Fitur bisnis lanjutan (loyalty, multi‑cabang, API publik, dll.) |
+
+## Item yang Memerlukan Persetujuan Dependency
+
+Item berikut **tidak** boleh dikerjakan tanpa persetujuan eksplisit karena
+menambah dependensi runtime/dev:
+
+| Item | Dependency |
+|------|-----------|
+| 14‑001 (Telescope), 16‑001 | `laravel/telescope` |
+| 14‑004 (queue job) | Redis + `predis/predis` |
+| 14‑006 | `lighthouse` (npm) |
+| 15‑003 | `spatie/laravel-translatable` |
+| 15‑006 | `laravel/dusk` |
+| 16‑002 | `sentry/sentry-laravel` |
+| 16‑004 | `promphp/prometheus_client_php` |
 
 > **Catatan**: Pastikan setiap fase mengikuti aturan di `CONTRIBUTING.md` – branch protection, CI, Pint, dan checklist PR.

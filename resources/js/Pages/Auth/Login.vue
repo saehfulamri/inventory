@@ -2,6 +2,7 @@
 import { computed, inject } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import VButton from '../../Components/ui/VButton.vue';
+import VFlash from '../../Components/ui/VFlash.vue';
 import VFormField from '../../Components/ui/VFormField.vue';
 
 const route = inject('route');
@@ -25,11 +26,11 @@ function submit() {
     <div class="auth-card">
         <h1 class="auth-card__title">Masuk</h1>
 
-        <div v-if="formErrors.length" class="flash flash--error" role="alert">
+        <VFlash v-if="formErrors.length" type="error">
             <ul class="flash__list">
                 <li v-for="error in formErrors" :key="error">{{ error }}</li>
             </ul>
-        </div>
+        </VFlash>
 
         <form class="form" @submit.prevent="submit">
             <VFormField

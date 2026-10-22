@@ -89,7 +89,7 @@ app/
 
 ## Konvensi Coding
 
-Ikuti [`docs/06-coding-rules.md`](docs/06-coding-rules.md) secara penuh. Ringkasannya:
+Ikuti ringkasan berikut; aturan agent/konvensi framework ada di `AGENTS.md`, aturan arsitektur detail di [`docs/04-architecture.md`](docs/04-architecture.md):
 
 - **Nama**: gunakan nama deskriptif (`$product`, `$grandTotal`); hindari `$x`, `$temp`.
 - **Wire repository**: tambahkan binding interface → implementasi di `AppServiceProvider` bila Anda menambah repository baru.
@@ -229,14 +229,14 @@ terjadi kesalahan, buat PR perbaikan baru dan rilis tag berikutnya.
 
 Proyek ini dirancang agar mudah dikerjakan bersama AI coding agent (mis. Codex, Claude Code, Cursor). Jika Anda memakai agent:
 
-- Baca dulu: `docs/01-project-brief.md`, requirement terkait, `docs/04-architecture.md`, `docs/05-database.md` (bila menyentuh data), dan `docs/06-coding-rules.md`.
+- Baca dulu: `docs/01-project-brief.md`, requirement terkait, `docs/04-architecture.md`, dan `AGENTS.md` (bila menyentuh data, skema acuan adalah migrasi di `database/migrations/`).
 - Kerjakan satu task dalam satu waktu; jangan ubah file yang tidak terkait.
 - `AGENTS.md` di repo berisi instruksi bootstrap bagi agent.
 - Ikuti format output: Plan → Implementation → Verification → Result.
 
 ## Definition of Done
 
-A task dianggap selesai bila (dari `docs/06-coding-rules.md`):
+A task dianggap selesai bila:
 
 - Requirement terpenuhi.
 - Arsitektur tetap konsisten.

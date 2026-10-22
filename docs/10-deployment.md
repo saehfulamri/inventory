@@ -269,6 +269,7 @@ check release baru berhasil dan backup telah tervalidasi.
 - [ ] Restore backup pernah diuji di server/pulau lain.
 - [ ] App key unik (`APP_KEY` hasil generate, bukan dari repor).
 - [ ] Queue worker: tidak diaktifkan kecuali kriteria bagian 8.1 terpenuhi.
+- [ ] Monitoring memantau `GET /health` (status `200`/`ok`).
 
 ## 7. Operasional Harian
 
@@ -281,6 +282,28 @@ tail -f storage/logs/laravel.log
 
 > Tidak ada cron scheduler yang wajib dijalankan untuk fungsionalitas saat ini.
 > Untuk queue worker, lihat bagian 8.
+
+### 7.1 Health Check
+
+Tersedia dua endpoint untuk monitoring:
+
+| Endpoint | Kegunaan | Cakupan |
+| --- | --- | --- |
+| `GET /up` | Liveness (bawaan Laravel) | Aplikasi bisa boot. |
+| `GET /health` | Readiness | Koneksi database, cache (`put`/`get`/`forget`), dan queue. |
+
+`GET /health` mengembalikan JSON:
+
+```json
+{ "status": "ok", "checks": { "database": true, "cache": true, "queue": true } }
+```
+
+- HTTP `200` bila semua cek lulus; HTTP `503` bila salah satu gagal.
+- Endpoint berada di luar middleware grup `web` — tidak membuat sesi/cookie, aman
+  dipanggil monitoring setiap beberapa detik.
+- Endpoint bersifat publik (tanpa auth); payload hanya boolean, tanpa detail
+  error agar tidak membocorkan informasi.
+- Contoh probe eksternal: `curl -fsS https://domain.example/health > /dev/null`.
 
 ## 8. Operasi Queue Produksi
 
@@ -354,7 +377,7 @@ resource dan menambah permukaan operasional tanpa manfaat.
    php artisan queue:forget <id>            # buang job gagal setelah ditinjau
    php artisan queue:prune-failed --hours=720   # bersihkan job gagal lama (>30 hari)
    ```
-   Jadwalkan `queue:prune-failed` mingguan (lihat `05-database.md`/scheduler)
+   Jadwalkan `queue:prune-failed` mingguan
    agar tabel `failed_jobs` tidak tumbuh tanpa batas. Alert operasional untuk
    `failed_jobs` dijelaskan di `12-copilot_infrastructure-remediation-plan.md`
    Fase 5 (observability).

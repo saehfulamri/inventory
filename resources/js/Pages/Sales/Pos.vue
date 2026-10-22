@@ -8,13 +8,14 @@ import { formatCurrency, todayISO } from '../../utils/format';
 
 const props = defineProps({
     paymentMethods: { type: Array, default: () => [] }, // [{ value, label }]
+    defaultPaymentMethod: { type: String, default: '' },
 });
 
 const route = inject('route');
 
 const form = useForm({
     sale_date: todayISO(),
-    payment_method: 'cash',
+    payment_method: props.defaultPaymentMethod,
     paid_amount: '',
 });
 
@@ -26,14 +27,14 @@ const cart = ref([]); // { id, name, price, stock, image, qty }
 
 const paymentMethodOptions = computed(() => props.paymentMethods);
 
-const isCash = computed(() => form.payment_method === 'cash');
+const isCash = computed(() => form.payment_method === props.defaultPaymentMethod);
 
 const subtotal = computed(() => cart.value.reduce((sum, item) => sum + (item.price * item.qty), 0));
 
 const grandTotal = computed(() => subtotal.value);
 
 const change = computed(() => {
-    if (form.payment_method !== 'cash') {
+    if (!isCash.value) {
         return null;
     }
 
@@ -188,14 +189,15 @@ onMounted(searchProducts);
                                 </span>
                             </div>
 
-                            <button
-                                type="button"
-                                class="btn btn--sm product-item__add"
+                            <VButton
+                                variant="ghost"
+                                size="sm"
+                                class="product-item__add"
                                 :disabled="soldOut(product)"
                                 @click="addToCart(product)"
                             >
                                 {{ soldOut(product) ? 'Habis' : 'Tambah' }}
-                            </button>
+                            </VButton>
                         </li>
                     </ul>
                 </section>

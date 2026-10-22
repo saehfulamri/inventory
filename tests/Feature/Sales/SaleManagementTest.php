@@ -3,7 +3,9 @@
 namespace Tests\Feature\Sales;
 
 use App\Enums\MovementType;
+use App\Enums\PaymentMethod;
 use App\Enums\Role;
+use App\Enums\SaleStatus;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
@@ -26,7 +28,7 @@ class SaleManagementTest extends TestCase
                 ->component('Sales/Pos')
                 ->where('paymentMethods.0.value', 'cash')
                 ->where('paymentMethods.0.label', 'Tunai')
-                ->where('paymentMethods.3.value', 'card')
+                ->where('paymentMethods.3.value', PaymentMethod::Card->value)
             );
     }
 
@@ -76,7 +78,7 @@ class SaleManagementTest extends TestCase
 
         $response->assertRedirect();
         $this->assertSame(8.0, (float) $product->fresh()->stock);
-        $this->assertDatabaseHas('sales', ['status' => 'completed', 'grand_total' => '30000.00', 'change_amount' => '20000.00']);
+        $this->assertDatabaseHas('sales', ['status' => SaleStatus::Completed->value, 'grand_total' => '30000.00', 'change_amount' => '20000.00']);
         $this->assertDatabaseHas('stock_movements', [
             'product_id' => $product->id,
             'movement_type' => MovementType::SaleOut->value,

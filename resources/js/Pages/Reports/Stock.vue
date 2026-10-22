@@ -5,8 +5,10 @@ import AppLayout from '../../Components/Layouts/AppLayout.vue';
 import VBadge from '../../Components/ui/VBadge.vue';
 import VButton from '../../Components/ui/VButton.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
+import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency, formatNumber } from '../../utils/format';
+import { buildParams, filterString } from '../../utils/filters.js';
 
 const props = defineProps({
     products: { type: Object, required: true },
@@ -18,9 +20,7 @@ const route = inject('route');
 
 const filters = ref({
     keyword: props.filters.keyword ?? '',
-    low_stock: props.filters.low_stock !== undefined && props.filters.low_stock !== null
-        ? String(props.filters.low_stock)
-        : '',
+    low_stock: filterString(props.filters.low_stock),
 });
 
 const lowStockOptions = computed(() => [
@@ -42,14 +42,7 @@ function isLowStock(product) {
 }
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.low_stock !== '') {
-        params.low_stock = filters.value.low_stock;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('reports.stock', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }
@@ -89,14 +82,12 @@ function applyFilters() {
                 <input id="keyword" v-model.trim="filters.keyword" type="text" placeholder="SKU atau nama" />
             </div>
 
-            <div class="form__group">
-                <label for="low_stock">Status Stok</label>
-                <select id="low_stock" v-model="filters.low_stock">
-                    <option v-for="option in lowStockOptions" :key="option.value" :value="option.value">
-                        {{ option.label }}
-                    </option>
-                </select>
-            </div>
+            <VSelect
+                id="low_stock"
+                label="Status Stok"
+                v-model="filters.low_stock"
+                :options="lowStockOptions"
+            />
 
             <div class="form__actions">
                 <VButton type="submit" variant="ghost">Terapkan Filter</VButton>

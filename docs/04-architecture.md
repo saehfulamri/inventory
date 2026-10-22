@@ -121,16 +121,19 @@ Jangan menaruh business logic transaksi di Vue. Perhitungan bisnis (subtotal, gr
 
 ```text
 app/
+├── Enums/                  # domain enum (Role, MovementType, Method, dll.)
 ├── Http/
 │   ├── Controllers/
-│   └── Requests/
+│   ├── Middleware/
+│   └── Requests/           # Form Request (validasi + pesan Bahasa Indonesia)
 ├── Models/
-├── Repositories/
-│   ├── Contracts/
-│   └── Eloquent/
-├── Services/
 ├── Policies/
-└── Support/
+├── Providers/
+├── Repositories/
+│   ├── Contracts/          # interface
+│   └── Eloquent/           # implementasi query
+├── Services/               # business process (per use case)
+└── Support/                # helper lintas modul (mis. RequestFilters)
 
 resources/
 ├── views/
@@ -138,22 +141,26 @@ resources/
 └── js/
     ├── app.js
     ├── app.css
+    ├── utils/
     ├── Pages/
     │   ├── Auth/
-    │   ├── Dashboard/
-    │   ├── Products/
     │   ├── Categories/
-    │   ├── Suppliers/
-    │   ├── Purchases/
-    │   ├── Sales/
+    │   ├── Dashboard/
+    │   ├── ErrorPage.vue          # root component error 403/404/500
     │   ├── Inventory/
-    │   └── Reports/
+    │   ├── Products/
+    │   ├── Purchases/
+    │   ├── Reports/
+    │   ├── Sales/
+    │   ├── Suppliers/
+    │   └── Units/
     └── Components/
         ├── Layouts/
-        └── ui/
+        ├── Categories|Products|Suppliers|Units/   # komponen per modul
+        └── ui/                              # komponen base (VButton, VTable, …)
 
 database/
-├── migrations/
+├── migrations/             # source of truth skema database
 ├── seeders/
 └── factories/
 
@@ -166,10 +173,13 @@ tests/
 
 - Controller mengembalikan `Inertia::render('PageName', [...props])`, bukan `view()`.
 - Data yang dibagi lintas halaman (user login, flash message) dibagikan lewat middleware `HandleInertiaRequests` (shared props), tidak diulang per controller.
-- Navigasi internal memakai Inertia (`<Link>` / `router`); route memakai named route + Ziggy.
+- Navigasi internal memakai Inertia (`<Link>` / `router`), bukan `location.href`/`fetch`; route memakai named route + Ziggy.
 - Form memakai `useForm` dari `@inertiajs/vue3` — CSRF/XSRF dan error handling otomatis, error validasi server diasosiasikan ke input.
+- Jangan render konten user dengan `v-html` tanpa sanitasi; binding teks biasa agar terhindar dari XSS.
+- Pertahankan aksesibilitas WCAG 2.2 AA: label programatik, indikator fokus, error terkait input, `aria-live` untuk flash message.
+- Hindari state global berlebihan; state lokal cukup di dalam komponen — data lintas halaman lewat shared props.
 - Pagination: controller mengirim `LengthAwarePaginator`; Inertia mengubahnya menjadi `data/links/meta` untuk komponen frontend.
-- Halaman error (403/404/500) dirender lewat root component `Error.vue`.
+- Halaman error (403/404/500) dirender lewat root component `ErrorPage.vue`.
 - `resources/views/app.blade.php` adalah satu-satunya view Blade (root template).
 
 ## 5. Repository Contract

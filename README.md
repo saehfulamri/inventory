@@ -26,17 +26,16 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 | `docs/02-requirements.md` | Functional & non-functional requirements (prioritas P0/P1/P2). |
 | `docs/03-product-spec.md` | Spesifikasi UI/UX, user flow, acceptance criteria. |
 | `docs/04-architecture.md` | Arsitektur Laravel Service/Repository Pattern. |
-| `docs/05-database.md` | Desain database MySQL. |
-| `docs/06-coding-rules.md` | Coding rules & aturan pengembangan AI. |
 | `docs/07-task-backlog.md` | Task backlog dan roadmap. |
-| `docs/08-changelog.md` | Catatan perubahan penting proyek. |
+| `docs/08-changelog.md` | Catatan perubahan penting proyek (pekerjaan terbaru). |
+| `CHANGELOG.md` | Riwayat rilis historis (sebelum 2026-10-20). |
 | `docs/09-design.md` | Sistem desain UI (token warna, tipografi, komponen) sebagai referensi implementasi frontend. |
 | `docs/10-deployment.md` | Panduan deployment ke produksi (env, migrate, cache, web server, update/rollback). |
 | `docs/11-backup-restore.md` | Prosedur backup & restore database dan storage, plus cron otomatis. |
 | `docs/12-copilot_infrastructure-remediation-plan.md` | Roadmap remediation infrastruktur (backup, deploy, CI, queue, observability). |
-| `docs/13-agy_uiux_improvement_plan.md` | Rencana perbaikan UI/UX (prioritas, effort, verifikasi). |
-| `docs/14-agy_UI_UX_Audit_Report.md` | Hasil audit UI/UX terhadap sistem desain `09-design.md`. |
 | `docs/15-improvement-roadmap.md` | Roadmap perbaikan lanjutan (performance, a11y/i18n, monitoring). |
+
+Dokumen yang sudah tidak berlaku (desain database lama, coding rules yang digantikan `AGENTS.md`/`CONTRIBUTING.md`, audit UI/UX sekali jalan) diarsipkan di `docs/archive/` — hanya untuk riwayat, jangan dijadikan referensi aktif.
 
 ## Arsitektur
 
@@ -44,6 +43,38 @@ Dokumen spesifikasi dan panduan pengembangan tersedia dalam bentuk file bernomor
 - Controller tipis → Service (business logic) → Repository (data access) → Eloquent.
 - Setiap perubahan stok tercatat sebagai stock movement dengan sumber yang jelas.
 - Operasi multi-step (penjualan, penerimaan) menggunakan database transaction secara atomic.
+
+## Peta Modul
+
+Alur data inti aplikasi:
+
+```text
+Master Data (Produk, Kategori, Satuan, Supplier)
+        │
+        ▼
+Penerimaan (Purchase) ──► Stock naik + movement PURCHASE_IN
+        │
+        ▼
+     Stok (Inventory) ◄── Penyesuaian (Adjustment) + movement ADJUSTMENT
+        │
+        ▼
+Penjualan (POS) ──► Stock turun + movement SALE_OUT
+        │
+        ▼
+    Laporan (Sales/Stock/Movement/Purchase + ekspor CSV)
+```
+
+| Modul (controller) | Frontend (`resources/js/Pages/`) | Mulai baca dari |
+| --- | --- | --- |
+| Auth & layout | `Auth/`, `Components/Layouts/` | `app/Http/Controllers/Auth/` |
+| Master data | `Products/`, `Categories/`, `Units/`, `Suppliers/` | `app/Services/ProductService.php` |
+| Penerimaan | `Purchases/` | `app/Services/PurchaseService.php` |
+| Stok & adjustment | `Inventory/` | `app/Services/StockService.php` |
+| Penjualan (POS) | `Sales/` | `app/Services/SaleService.php` |
+| Dashboard | `Dashboard/` | `app/Services/DashboardService.php` |
+| Laporan | `Reports/` | `app/Services/ReportService.php` |
+
+Panduan kontribusi dan konvensi lengkap: [CONTRIBUTING.md](CONTRIBUTING.md). Aturan untuk AI agent: [AGENTS.md](AGENTS.md) + [.ai/rules/](.ai/rules/).
 
 ## Prasyarat
 

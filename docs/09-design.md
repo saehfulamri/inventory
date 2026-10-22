@@ -569,3 +569,58 @@ Sistem desain ini diimplementasikan sebagai **CSS custom properties** pada `reso
 - Lapisan presentasi (Vue) hanya memuat token sebagai nilai CSS; seluruh nilai bisnis (contoh: total transaksi) dihitung server-side.
 - Aksesibilitas WCAG 2.2 AA (kontras, fokus, label) mengikuti token kontras yang sudah ditetapkan (mis. `.muted` memakai `ink-muted-80`).
 - Pola UI berulang (button, card, form, badge, tabel, pagination, empty-state) diwujudkan sebagai komponen Vue reusable, bukan ditulis ulang per halaman.
+
+## Guidelines Performance & Audit Checklist
+
+Bagian ini melengkapi sistem desain dengan batas performa yang harus dijaga saat
+membangun UI baru. Fokusnya: halaman tetap responsif tanpa menambah dependensi
+baru.
+
+### Backend
+
+- **Agregat di database, bukan di PHP.** Ringkasan dashboard/laporan memakai
+  `SUM`/`COUNT` + `selectRaw` (lihat `DashboardService`) — jangan menarik semua
+  baris lalu menghitung di collection.
+- **Hindari N+1.** Relasi yang dipakai di loop wajib di-`with()`; jika UI tidak
+  membutuhkan relasi tersebut, jangan eager-load.
+- **Pagination wajib** untuk daftar yang tumbuh (produk, penjualan, pembelian,
+  movement, laporan). Gunakan `LengthAwarePaginator` dari repository.
+- **Filter server-side** lewat `App\Support\RequestFilters`, bukan memfilter
+  hasil paginasi di frontend.
+- **Query DB-agnostic**: hindari fungsi SQL vendor-specific (`DATE()`); normalisasi
+  tanggal di PHP bila perlu (contoh: `EloquentSaleRepository::chartBetween()`).
+- **Cache hanya untuk data mahal & jarang berubah** (mis. ringkasan laporan)
+  dengan TTL pendek dan strategi invalidasi yang jelas. Jangan cache data
+  transaksional yang harus real-time (stok, keranjang POS).
+- **Index** mengikuti pola akses: kolom filter/tanggal yang sering dipakai
+  (contoh: `sales.sale_date`).
+- **Endpoint JSON** (mis. `GET /sales/products`) wajib rate-limited
+  (`throttle`) dan mengembalikan payload minimal.
+
+### Frontend
+
+- **Bundle**: impor per halaman (Inertia code-splitting sudah otomatis);
+  hindari library berat (chart, date, dsb.) jika CSS/utilitas internal cukup.
+- **Gambar**: selalu set `width`/`height` atau rasio agar tidak menyebabkan CLS;
+  foto produk memakai `object-fit`, bukan background image.
+- **Daftar panjang**: pagination server-side — jangan render ribuan baris.
+- **Token desain** dipakai lewat CSS custom property; jangan menambah file CSS
+  per halaman bila token sudah mencakup.
+- **Interaksi**: debounce pencarian (POS) dan gunakan `aria-live` untuk hasil
+  yang berubah agar tidak memicu reflow berlebihan.
+
+### Audit Checklist
+
+Sebelum merge perubahan UI/query:
+
+- [ ] Tidak ada query di dalam loop (cek dengan `DB::listen` atau review manual).
+- [ ] Semua daftar memakai pagination; filter diterapkan server-side.
+- [ ] Ringkasan/agregat dihitung dengan SQL, bukan di PHP.
+- [ ] Endpoint JSON punya `throttle` dan payload ramping.
+- [ ] `npm run build` sukses dan tidak ada aset tak terpakai yang besar.
+- [ ] Halaman baru lulus `php artisan test` (termasuk test otorisasi).
+- [ ] `vendor/bin/pint --dirty` bersih.
+
+> Item audit yang membutuhkan tool eksternal (Telescope/Debugbar, Lighthouse CI)
+> dicatat di `15-improvement-roadmap.md` dan hanya dijalankan setelah dependency
+> disetujui.

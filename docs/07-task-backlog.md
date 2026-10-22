@@ -194,9 +194,9 @@ Contoh:
 Kerjakan TASK-063.
 
 Sebelum coding:
-- baca architecture.md
-- baca database.md
-- baca coding-rules.md
+- baca docs/04-architecture.md
+- baca skema di database/migrations (source of truth)
+- baca AGENTS.md & CONTRIBUTING.md
 - inspeksi implementation SaleService yang ada
 
 Jangan mengerjakan task lain.

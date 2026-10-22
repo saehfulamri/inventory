@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('/', [SaleController::class, 'index'])->name('index');
         Route::get('pos', [SaleController::class, 'create'])->name('create');
-        Route::get('products', [SaleController::class, 'products'])->name('products');
+        Route::get('products', [SaleController::class, 'products'])->middleware('throttle:60,1')->name('products');
         Route::post('/', [SaleController::class, 'store'])->name('store');
         Route::get('{sale}', [SaleController::class, 'show'])->name('show');
     });

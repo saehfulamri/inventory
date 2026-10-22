@@ -8,6 +8,8 @@ import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { buildParams } from '../../utils/filters.js';
+import { labelMapFrom, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     sales: { type: Object, required: true },
@@ -38,31 +40,9 @@ const paymentMethodOptions = computed(() => [
     ...props.paymentMethods,
 ]);
 
-const statusLabels = computed(() => {
-    const map = {};
+const statusLabels = computed(() => labelMapFrom(props.statuses));
 
-    for (const status of props.statuses) {
-        map[status.value] = status.label;
-    }
-
-    return map;
-});
-
-const paymentMethodLabels = computed(() => {
-    const map = {};
-
-    for (const method of props.paymentMethods) {
-        map[method.value] = method.label;
-    }
-
-    return map;
-});
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
+const paymentMethodLabels = computed(() => labelMapFrom(props.paymentMethods));
 
 const columns = [
     { key: 'sale_number', label: 'No. Penjualan' },
@@ -75,23 +55,7 @@ const columns = [
 ];
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.status) {
-        params.status = filters.value.status;
-    }
-    if (filters.value.payment_method) {
-        params.payment_method = filters.value.payment_method;
-    }
-    if (filters.value.date_from) {
-        params.date_from = filters.value.date_from;
-    }
-    if (filters.value.date_to) {
-        params.date_to = filters.value.date_to;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('sales.index', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }

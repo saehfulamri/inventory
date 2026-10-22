@@ -69,6 +69,7 @@ class PurchaseController extends Controller
 
         return Inertia::render('Purchases/Show', [
             'purchase' => $purchase->load(['supplier', 'user', 'items.product']),
+            'canFinalize' => $purchase->status === PurchaseStatus::Draft,
         ]);
     }
 

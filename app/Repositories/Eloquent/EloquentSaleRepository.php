@@ -7,7 +7,7 @@ use App\Models\Sale;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use DateTimeInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Carbon;
 
 class EloquentSaleRepository implements SaleRepositoryInterface
 {
@@ -52,16 +52,6 @@ class EloquentSaleRepository implements SaleRepositoryInterface
         return $sale;
     }
 
-    /**
-     * Get today’s sales with items and eager‑loaded product relation.
-     */
-    public function todayWithItems(): Collection
-    {
-        return Sale::whereDate('created_at', now()->toDateString())
-            ->with(['items.product'])
-            ->get();
-    }
-
     public function summaryForDate(string $date): array
     {
         $row = Sale::query()
@@ -83,16 +73,18 @@ class EloquentSaleRepository implements SaleRepositoryInterface
             ->where('status', SaleStatus::Completed)
             ->whereDate('sale_date', '>=', $from->format('Y-m-d'))
             ->whereDate('sale_date', '<=', $to->format('Y-m-d'))
-            ->selectRaw('DATE(sale_date) as day')
+            ->selectRaw('sale_date as day')
             ->selectRaw('SUM(grand_total) as total')
             ->selectRaw('COUNT(*) as count')
-            ->groupBy('day')
+            ->groupBy('sale_date')
             ->get();
 
         $chart = [];
 
         foreach ($rows as $row) {
-            $chart[(string) $row['day']] = [
+            $key = Carbon::parse((string) $row['day'])->toDateString();
+
+            $chart[$key] = [
                 'total' => (float) $row->total,
                 'count' => (int) $row->count,
             ];

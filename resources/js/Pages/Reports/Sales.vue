@@ -7,6 +7,8 @@ import VButton from '../../Components/ui/VButton.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency, formatDate, formatNumber } from '../../utils/format';
+import { buildParams } from '../../utils/filters.js';
+import { paymentMethodLabels, statusLabels, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     sales: { type: Object, required: true },
@@ -21,37 +23,7 @@ const filters = ref({
     date_to: props.filters.date_to ?? '',
 });
 
-const statusLabels = {
-    draft: 'Draft',
-    completed: 'Selesai',
-    cancelled: 'Dibatalkan',
-};
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
-
-const paymentMethodLabels = {
-    cash: 'Tunai',
-    transfer: 'Transfer',
-    qris: 'QRIS',
-    card: 'Kartu',
-};
-
-const exportParams = computed(() => {
-    const params = {};
-
-    if (filters.value.date_from) {
-        params.date_from = filters.value.date_from;
-    }
-    if (filters.value.date_to) {
-        params.date_to = filters.value.date_to;
-    }
-
-    return params;
-});
+const exportParams = computed(() => buildParams(filters.value));
 
 const columns = [
     { key: 'sale_number', label: 'No. Penjualan' },
@@ -63,14 +35,7 @@ const columns = [
 ];
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.date_from) {
-        params.date_from = filters.value.date_from;
-    }
-    if (filters.value.date_to) {
-        params.date_to = filters.value.date_to;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('reports.sales', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }

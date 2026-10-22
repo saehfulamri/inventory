@@ -43,6 +43,7 @@ class SaleController extends Controller
 
         return Inertia::render('Sales/Pos', [
             'paymentMethods' => $this->paymentMethodOptions(),
+            'defaultPaymentMethod' => PaymentMethod::Cash->value,
         ]);
     }
 

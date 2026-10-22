@@ -8,6 +8,7 @@ import VConfirmDialog from '../../Components/ui/VConfirmDialog.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
+import { activeStatusOptions, buildParams, filterString } from '../../utils/filters.js';
 
 const props = defineProps({
     categories: { type: Object, required: true },
@@ -20,16 +21,10 @@ const can = computed(() => page.props.can ?? {});
 
 const filters = ref({
     keyword: props.filters.keyword ?? '',
-    is_active: props.filters.is_active !== undefined && props.filters.is_active !== null
-        ? String(props.filters.is_active)
-        : '',
+    is_active: filterString(props.filters.is_active),
 });
 
-const statusOptions = [
-    { value: '', label: 'Semua' },
-    { value: '1', label: 'Aktif' },
-    { value: '0', label: 'Nonaktif' },
-];
+const statusOptions = activeStatusOptions();
 
 const columns = [
     { key: 'name', label: 'Nama' },
@@ -47,14 +42,7 @@ const deactivateMessage = computed(() => deactivating.value
     : '');
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.is_active !== '') {
-        params.is_active = filters.value.is_active;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('categories.index', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }

@@ -5,7 +5,6 @@ namespace App\Repositories\Contracts;
 use App\Models\Sale;
 use DateTimeInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 /**
  * Contract for Sale repository.
@@ -32,7 +31,4 @@ interface SaleRepositoryInterface
      * @return array{total: float, count: int}
      */
     public function summaryBetween(DateTimeInterface $from, DateTimeInterface $to): array;
-
-    /** Get today’s sales with items and eager‑loaded product relation. */
-    public function todayWithItems(): Collection;
 }
