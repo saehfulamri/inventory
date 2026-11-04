@@ -57,6 +57,7 @@ function logout() {
                     <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('sales') }">Penjualan</Link>
                     <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('inventory') }">Stok</Link>
                     <Link v-if="can.viewReports" :href="route('reports.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('reports') }">Laporan</Link>
+                    <Link v-if="can.manageUsers" :href="route('users.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('users') }">Pengguna</Link>
                 </div>
 
                 <span class="topnav__user">{{ user.name }}</span>
@@ -79,6 +80,7 @@ function logout() {
       <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales') }">Penjualan</Link>
       <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory') }">Stok</Link>
       <Link v-if="can.viewReports" :href="route('reports.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('reports') }">Laporan</Link>
+      <Link v-if="can.manageUsers" :href="route('users.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('users') }">Pengguna</Link>
     </div>
   </nav>
 </div>

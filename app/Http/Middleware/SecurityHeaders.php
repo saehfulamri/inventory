@@ -49,14 +49,12 @@ class SecurityHeaders
         // type=module) dan konfigurasi rute Ziggy dipindahkan ke modul JS
         // statis, sehingga tidak ada script inline aplikasi. Data halaman
         // Inertia dirender sebagai data-block <script type="application/json">
-        // yang diizinkan lewat nonce per-respons (defense-in-depth — sebagian
-        // browser tetap memperlakukannya sebagai subjek script-src).
+        // yang diizinkan lewat nonce per-respons.
         if (! $response->headers->has('Content-Security-Policy')) {
             // Saat `npm run dev` aktif, Vite menulis public/hot dan aset serta
-            // HMR dilayani dari origin dev (default http://127.0.0.1:5173).
-            // Origin itu HARUS diizinkan, jika tidak seluruh script diblokir
-            // CSP dan halaman tampak putih/beku di mode development.
-            $devServer = $this->viteDevServerUrl();
+            // HMR dilayani dari origin dev. Origin itu HARUS diizinkan, jika tidak
+            // seluruh script diblokir CSP.
+            $devServerOrigin = $this->viteDevServerOrigin();
 
             $scriptSrc = "'self' 'nonce-{$nonce}'";
             $styleSrc = "'self' 'unsafe-inline'";
@@ -64,20 +62,34 @@ class SecurityHeaders
             $fontSrc = "'self' data:";
             $connectSrc = "'self'";
 
-            if ($devServer !== null) {
-                $wsDevServer = preg_replace('#^http://#', 'ws://', $devServer);
+            if ($devServerOrigin !== null) {
+                $wsDevServerOrigin = preg_replace('#^http://#', 'ws://', $devServerOrigin);
+                $wssDevServerOrigin = preg_replace('#^https://#', 'wss://', $devServerOrigin);
 
-                $scriptSrc .= " {$devServer}";
-                $styleSrc .= " {$devServer}";
-                $imgSrc .= " {$devServer}";
-                $fontSrc .= " {$devServer}";
-                $connectSrc .= " {$devServer} {$wsDevServer}";
+                $scriptSrc .= " {$devServerOrigin}";
+                $styleSrc .= " {$devServerOrigin}";
+                $imgSrc .= " {$devServerOrigin}";
+                $fontSrc .= " {$devServerOrigin}";
+                $connectSrc .= " {$devServerOrigin} {$wsDevServerOrigin} {$wssDevServerOrigin}";
+
+                // Vite dev server/HMR dapat menyuntikkan inline script pada development.
+                // Tetap pertahankan nonce untuk data-block Inertia dan script aplikasi.
+                if (app()->environment('local')) {
+                    $scriptSrc .= " 'unsafe-inline'";
+                }
+            }
+
+            $scriptSrcElem = $scriptSrc;
+            if ($devServerOrigin !== null && app()->environment('local')) {
+                $scriptSrcElem .= " 'unsafe-inline'";
             }
 
             $csp = [
                 "default-src 'self'",
                 "script-src {$scriptSrc}",
+                "script-src-elem {$scriptSrcElem}",
                 "style-src {$styleSrc}",
+                "style-src-elem {$styleSrc}",
                 "img-src {$imgSrc}",
                 "font-src {$fontSrc}",
                 "connect-src {$connectSrc}",
@@ -101,14 +113,11 @@ class SecurityHeaders
     }
 
     /**
-     * URL origin Vite dev server saat `npm run dev` berjalan, atau null.
-     *
-     * Vite menulis file public/hot dengan URL server-nya selama dev server
-     * aktif (mis. http://127.0.0.1:5173). Deteksi ini mengikuti perilaku
-     * direktif @vite Laravel sehingga CSP selalu sejalan dengan origin
-     * yang benar-benar dipakai untuk melayani aset.
+     * Origin Vite dev server yang dikanonisasi untuk CSP.
+     * Baca dari public/hot, paksa ke 127.0.0.1 untuk kompatibilitas dengan
+     * browser (beberapa browser menolak bentuk [::1] sebagai source di CSP).
      */
-    private function viteDevServerUrl(): ?string
+    private function viteDevServerOrigin(): ?string
     {
         $hotFile = public_path('hot');
 
@@ -118,6 +127,20 @@ class SecurityHeaders
 
         $url = trim((string) file_get_contents($hotFile));
 
-        return $url === '' ? null : $url;
+        if ($url === '') {
+            return null;
+        }
+
+        $parsed = parse_url($url);
+
+        if (! is_array($parsed) || ! isset($parsed['scheme'], $parsed['port'])) {
+            return null;
+        }
+
+        $scheme = $parsed['scheme'];
+        $port = $parsed['port'];
+
+        // Kanonisasi ke 127.0.0.1 (kompatibel dengan CSP dan konsisten dengan vite.config)
+        return $scheme.'://127.0.0.1:'.$port;
     }
 }

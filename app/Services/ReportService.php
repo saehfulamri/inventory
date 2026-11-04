@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\PurchaseRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
@@ -17,7 +16,7 @@ class ReportService
     public function __construct(
         protected SaleRepositoryInterface $sales,
         protected PurchaseRepositoryInterface $purchases,
-        protected ProductRepositoryInterface $products,
+        protected ProductService $products,
         protected StockMovementRepositoryInterface $movements,
     ) {}
 
@@ -52,11 +51,11 @@ class ReportService
     }
 
     /**
-     * @return array{total_units: float, total_value: float, active_count: int, low_stock_count: int}
+     * @return array{units_total: float, value_total: float, active_count: int, low_stock_count: int}
      */
     public function stockSummary(array $filters = []): array
     {
-        return $this->products->stockSummary();
+        return $this->products->stockSummary($filters);
     }
 
     public function paginateStock(array $filters = [], int $perPage = 15): LengthAwarePaginator

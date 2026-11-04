@@ -6,7 +6,7 @@ use App\Enums\MovementType;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
-use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Services\ProductService;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
@@ -15,7 +15,7 @@ use InvalidArgumentException;
 class StockService
 {
     public function __construct(
-        protected ProductRepositoryInterface $productRepository,
+        protected ProductService $productRepository,
         protected StockMovementRepositoryInterface $movementRepository,
     ) {}
 

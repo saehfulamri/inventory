@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'viewAnyPurchases' => $user?->can('viewAny', Purchase::class) ?? false,
                 'viewAnySales' => $user?->can('viewAny', Sale::class) ?? false,
                 'viewReports' => $user?->can('viewReports') ?? false,
+                'manageUsers' => $user?->can('viewAny', \App\Models\User::class) ?? false,
             ],
             'flash' => $request->hasSession() ? [
                 'success' => $request->session()->get('success'),

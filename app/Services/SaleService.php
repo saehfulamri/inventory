@@ -9,7 +9,6 @@ use App\Enums\SaleStatus;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\SaleItemRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -22,8 +21,8 @@ class SaleService
     public function __construct(
         protected SaleRepositoryInterface $sales,
         protected SaleItemRepositoryInterface $items,
+        protected ProductService $products,
         protected StockService $stockService,
-        protected ProductRepositoryInterface $products,
         protected DocumentNumberService $documentNumbers,
     ) {}
 

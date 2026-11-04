@@ -9,7 +9,7 @@ use App\Enums\SaleStatus;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Services\ProductService;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Services\SaleService;
 use App\Services\StockService;
@@ -215,7 +215,7 @@ class SaleServiceTest extends TestCase
         $productA = Product::factory()->create(['stock' => 10, 'selling_price' => 1000]);
         $productB = Product::factory()->create(['stock' => 20, 'selling_price' => 1000]);
 
-        $failingStock = new class(app(ProductRepositoryInterface::class), app(StockMovementRepositoryInterface::class)) extends StockService
+        $failingStock = new class(app(ProductService::class), app(StockMovementRepositoryInterface::class)) extends StockService
         {
             public int $calls = 0;
 

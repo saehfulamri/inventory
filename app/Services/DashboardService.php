@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
+use App\Repositories\Contracts\PurchaseRepositoryInterface;
+use App\Services\ProductService;
 use Illuminate\Support\Carbon;
 
 class DashboardService
 {
     public function __construct(
         protected SaleRepositoryInterface $sales,
-        protected ProductRepositoryInterface $products,
+        protected PurchaseRepositoryInterface $purchases,
+        protected ProductService $products,
     ) {}
 
     /**

@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\PurchaseItemRepositoryInterface;
 use App\Repositories\Contracts\PurchaseRepositoryInterface;
 use App\Repositories\Contracts\SaleItemRepositoryInterface;
@@ -37,7 +37,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, EloquentCategoryRepository::class);
         $this->app->bind(UnitRepositoryInterface::class, EloquentUnitRepository::class);
         $this->app->bind(SupplierRepositoryInterface::class, EloquentSupplierRepository::class);
-        $this->app->bind(ProductRepositoryInterface::class, EloquentProductRepository::class);
         $this->app->bind(PurchaseRepositoryInterface::class, EloquentPurchaseRepository::class);
         $this->app->bind(PurchaseItemRepositoryInterface::class, EloquentPurchaseItemRepository::class);
         $this->app->bind(SaleRepositoryInterface::class, EloquentSaleRepository::class);
@@ -48,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::policy(User::class, UserPolicy::class);
+
         // Laporan hanya dapat diakses & dilihat oleh Admin dan Manager/Owner.
         Gate::define('viewReports', function (User $user): bool {
             return in_array($user->role, [Role::Admin, Role::Manager], true);

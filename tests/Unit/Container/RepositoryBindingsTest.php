@@ -3,7 +3,6 @@
 namespace Tests\Unit\Container;
 
 use App\Repositories\Contracts\CategoryRepositoryInterface;
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\PurchaseItemRepositoryInterface;
 use App\Repositories\Contracts\PurchaseRepositoryInterface;
 use App\Repositories\Contracts\SaleItemRepositoryInterface;
@@ -13,7 +12,6 @@ use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Repositories\Contracts\UnitRepositoryInterface;
 use App\Repositories\Eloquent\EloquenTCategoryRepository;
-use App\Repositories\Eloquent\EloquenTProductRepository;
 use App\Repositories\Eloquent\EloquentPurchaseItemRepository;
 use App\Repositories\Eloquent\EloquentPurchaseRepository;
 use App\Repositories\Eloquent\EloquentSaleItemRepository;
@@ -42,7 +40,6 @@ class RepositoryBindingsTest extends TestCase
         $this->assertInstanceOf(EloquenTCategoryRepository::class, app(CategoryRepositoryInterface::class));
         $this->assertInstanceOf(EloquenTUnitRepository::class, app(UnitRepositoryInterface::class));
         $this->assertInstanceOf(EloquenTSupplierRepository::class, app(SupplierRepositoryInterface::class));
-        $this->assertInstanceOf(EloquenTProductRepository::class, app(ProductRepositoryInterface::class));
     }
 
     public function test_services_resolve_and_inject_repository_interfaces(): void
@@ -60,7 +57,6 @@ class RepositoryBindingsTest extends TestCase
         $this->assertInstanceOf(CategoryRepositoryInterface::class, $this->repositoryOf($categoryService));
         $this->assertInstanceOf(UnitRepositoryInterface::class, $this->repositoryOf($unitService));
         $this->assertInstanceOf(SupplierRepositoryInterface::class, $this->repositoryOf($supplierService));
-        $this->assertInstanceOf(ProductRepositoryInterface::class, $this->repositoryOf($productService));
     }
 
     public function test_purchase_repositories_and_service_resolve(): void
@@ -131,7 +127,7 @@ class RepositoryBindingsTest extends TestCase
             (new ReflectionProperty($saleService, 'stockService'))->getValue($saleService),
         );
         $this->assertInstanceOf(
-            ProductRepositoryInterface::class,
+            ProductService::class,
             (new ReflectionProperty($saleService, 'products'))->getValue($saleService),
         );
     }
@@ -145,7 +141,7 @@ class RepositoryBindingsTest extends TestCase
             (new ReflectionProperty($dashboardService, 'sales'))->getValue($dashboardService),
         );
         $this->assertInstanceOf(
-            ProductRepositoryInterface::class,
+            ProductService::class,
             (new ReflectionProperty($dashboardService, 'products'))->getValue($dashboardService),
         );
     }
