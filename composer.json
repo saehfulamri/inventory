@@ -2,9 +2,30 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "saehfulamri/inventory",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Inventory and sales management (mini supermarket) built with Laravel, Inertia.js, Vue 3, and Tailwind CSS.",
+    "keywords": [
+        "laravel",
+        "inventory",
+        "inventory-management",
+        "point-of-sale",
+        "pos",
+        "inertia",
+        "inertiajs",
+        "vue",
+        "tailwindcss"
+    ],
+    "homepage": "https://github.com/saehfulamri/inventory",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Saehful Amri",
+            "homepage": "https://github.com/saehfulamri"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/saehfulamri/inventory/issues",
+        "source": "https://github.com/saehfulamri/inventory"
+    },
     "require": {
         "php": "^8.4",
         "inertiajs/inertia-laravel": "^3.3",

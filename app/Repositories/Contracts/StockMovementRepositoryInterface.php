@@ -2,11 +2,14 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Models\StockMovement;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface StockMovementRepositoryInterface
 {
     public function paginate(array $filters = [], int $perPage = 20): LengthAwarePaginator;
+
+    public function create(array $data): StockMovement;
 
     /**
      * Total kuantitas & jumlah catatan per tipe pergerakan pada rentang filter.

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Purchases;
 
+use App\Enums\MovementType;
+use App\Enums\PurchaseStatus;
 use App\Enums\Role;
 use App\Models\Product;
 use App\Models\Purchase;
@@ -46,7 +48,7 @@ class PurchaseReceivingTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('purchases', ['status' => 'draft', 'total_amount' => '10000.00']);
+        $this->assertDatabaseHas('purchases', ['status' => PurchaseStatus::Draft->value, 'total_amount' => '10000.00']);
         $this->assertDatabaseHas('purchase_items', ['quantity' => '5.000', 'unit_price' => '2000.00', 'subtotal' => '10000.00']);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => '10.000']);
         $this->assertDatabaseCount('stock_movements', 0);
@@ -92,12 +94,12 @@ class PurchaseReceivingTest extends TestCase
             ->assertRedirect(route('purchases.show', $purchase))
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('purchases', ['id' => $purchase->id, 'status' => 'completed']);
+        $this->assertDatabaseHas('purchases', ['id' => $purchase->id, 'status' => PurchaseStatus::Completed->value]);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => '15.000']);
         $this->assertDatabaseHas('stock_movements', [
             'product_id' => $product->id,
             'user_id' => $warehouse->id,
-            'movement_type' => 'purchase_in',
+            'movement_type' => MovementType::PurchaseIn->value,
             'quantity' => '5.000',
             'stock_before' => '10.000',
             'stock_after' => '15.000',
@@ -151,7 +153,7 @@ class PurchaseReceivingTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Purchases/Show')
                 ->where('purchase.purchase_number', $purchase->purchase_number)
-                ->where('purchase.status', 'draft')
+                ->where('purchase.status', PurchaseStatus::Draft->value)
                 ->where('purchase.supplier.name', $supplier->name)
                 ->where('purchase.items.0.product.name', 'Air Mineral 600ml')
             );

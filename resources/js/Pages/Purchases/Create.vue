@@ -3,6 +3,7 @@ import { computed, inject } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '../../Components/Layouts/AppLayout.vue';
 import VButton from '../../Components/ui/VButton.vue';
+import VFlash from '../../Components/ui/VFlash.vue';
 import VFormField from '../../Components/ui/VFormField.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import { formatCurrency, todayISO } from '../../utils/format';
@@ -131,9 +132,9 @@ function submit() {
             </div>
 
             <h2 class="section-title">Detail Produk</h2>
-            <div v-if="form.errors.items" class="flash flash--error" role="alert">
+            <VFlash v-if="form.errors.items" type="error">
                 {{ form.errors.items }}
-            </div>
+            </VFlash>
 
             <div class="table-wrap">
                 <table class="table">

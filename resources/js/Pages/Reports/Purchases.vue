@@ -7,6 +7,8 @@ import VButton from '../../Components/ui/VButton.vue';
 import VPagination from '../../Components/ui/VPagination.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency, formatDate, formatNumber } from '../../utils/format';
+import { buildParams } from '../../utils/filters.js';
+import { statusLabels, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     purchases: { type: Object, required: true },
@@ -21,18 +23,6 @@ const filters = ref({
     date_to: props.filters.date_to ?? '',
 });
 
-const statusLabels = {
-    draft: 'Draft',
-    completed: 'Selesai',
-    cancelled: 'Dibatalkan',
-};
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
-
 const columns = [
     { key: 'purchase_number', label: 'No. Pembelian' },
     { key: 'purchase_date', label: 'Tanggal' },
@@ -42,14 +32,7 @@ const columns = [
 ];
 
 function applyFilters() {
-    const params = {};
-
-    if (filters.value.date_from) {
-        params.date_from = filters.value.date_from;
-    }
-    if (filters.value.date_to) {
-        params.date_to = filters.value.date_to;
-    }
+    const params = buildParams(filters.value);
 
     router.get(route('reports.purchases', params), {}, { preserveState: true, preserveScroll: true, replace: true });
 }

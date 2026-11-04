@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
@@ -8,11 +9,13 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
+    return inertia('Landing/Index');
+})->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'create'])->name('login');
@@ -22,6 +25,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::resource('users', UserController::class)->except(['show']);
 
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
@@ -39,6 +44,24 @@ Route::middleware('auth')->group(function () {
         Route::get('{supplier}/edit', [SupplierController::class, 'edit'])->name('edit');
         Route::put('{supplier}', [SupplierController::class, 'update'])->name('update');
         Route::post('{supplier}/deactivate', [SupplierController::class, 'deactivate'])->name('deactivate');
+    });
+
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+        Route::get('create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/', [CategoryController::class, 'store'])->name('store');
+        Route::get('{category}/edit', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('{category}', [CategoryController::class, 'update'])->name('update');
+        Route::post('{category}/deactivate', [CategoryController::class, 'deactivate'])->name('deactivate');
+    });
+
+    Route::prefix('units')->name('units.')->group(function () {
+        Route::get('/', [UnitController::class, 'index'])->name('index');
+        Route::get('create', [UnitController::class, 'create'])->name('create');
+        Route::post('/', [UnitController::class, 'store'])->name('store');
+        Route::get('{unit}/edit', [UnitController::class, 'edit'])->name('edit');
+        Route::put('{unit}', [UnitController::class, 'update'])->name('update');
+        Route::post('{unit}/deactivate', [UnitController::class, 'deactivate'])->name('deactivate');
     });
 
     Route::prefix('purchases')->name('purchases.')->group(function () {
@@ -68,7 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('/', [SaleController::class, 'index'])->name('index');
         Route::get('pos', [SaleController::class, 'create'])->name('create');
-        Route::get('products', [SaleController::class, 'products'])->name('products');
+        Route::get('products', [SaleController::class, 'products'])->middleware('throttle:60,1')->name('products');
         Route::post('/', [SaleController::class, 'store'])->name('store');
         Route::get('{sale}', [SaleController::class, 'show'])->name('show');
     });

@@ -5,6 +5,7 @@ import AppLayout from '../../Components/Layouts/AppLayout.vue';
 import VBadge from '../../Components/ui/VBadge.vue';
 import VButton from '../../Components/ui/VButton.vue';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { paymentMethodLabels, statusLabels, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     sale: { type: Object, required: true },
@@ -13,25 +14,6 @@ const props = defineProps({
 const route = inject('route');
 const page = usePage();
 const appName = computed(() => page.props.app?.name ?? 'Sistem Inventori & Penjualan');
-
-const statusLabels = {
-    draft: 'Draft',
-    completed: 'Selesai',
-    cancelled: 'Dibatalkan',
-};
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
-
-const paymentMethodLabels = {
-    cash: 'Tunai',
-    transfer: 'Transfer',
-    qris: 'QRIS',
-    card: 'Kartu',
-};
 </script>
 
 <template>

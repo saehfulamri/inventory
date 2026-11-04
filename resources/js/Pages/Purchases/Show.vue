@@ -6,26 +6,16 @@ import VBadge from '../../Components/ui/VBadge.vue';
 import VButton from '../../Components/ui/VButton.vue';
 import VConfirmDialog from '../../Components/ui/VConfirmDialog.vue';
 import { formatCurrency, formatDate } from '../../utils/format';
+import { statusLabels, statusVariants } from '../../utils/statuses.js';
 
 const props = defineProps({
     purchase: { type: Object, required: true },
+    canFinalize: { type: Boolean, default: false },
 });
 
 const route = inject('route');
 const page = usePage();
 const can = computed(() => page.props.can ?? {});
-
-const statusLabels = {
-    draft: 'Draft',
-    completed: 'Selesai',
-    cancelled: 'Dibatalkan',
-};
-
-const statusVariants = {
-    draft: 'warning',
-    completed: 'success',
-    cancelled: 'danger',
-};
 
 const confirmFinalize = ref(false);
 
@@ -90,7 +80,7 @@ function finalize() {
         </div>
 
         <div
-            v-if="can.viewAnyPurchases && purchase.status === 'draft'"
+            v-if="can.viewAnyPurchases && canFinalize"
             class="form__actions"
         >
             <VButton @click="confirmFinalize = true">Finalisasi Penerimaan</VButton>

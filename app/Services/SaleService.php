@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\DocumentType;
 use App\Enums\MovementType;
 use App\Enums\PaymentMethod;
 use App\Enums\SaleStatus;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\SaleItemRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -21,8 +21,9 @@ class SaleService
     public function __construct(
         protected SaleRepositoryInterface $sales,
         protected SaleItemRepositoryInterface $items,
+        protected ProductService $products,
         protected StockService $stockService,
-        protected ProductRepositoryInterface $products,
+        protected DocumentNumberService $documentNumbers,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -39,6 +40,7 @@ class SaleService
     {
         return DB::transaction(function () use ($data, $user) {
             $date = Carbon::parse($data['sale_date']);
+            $saleNumber = $this->documentNumbers->next(DocumentType::Sale, $date);
             $lines = $this->normalizeLines($data['items']);
 
             $subtotal = array_sum(array_column($lines, 'subtotal'));
@@ -57,7 +59,7 @@ class SaleService
 
             $sale = $this->sales->create([
                 'user_id' => $user->getKey(),
-                'sale_number' => $this->sales->nextSaleNumber($date),
+                'sale_number' => $saleNumber,
                 'sale_date' => $date->toDateString(),
                 'subtotal' => $subtotal,
                 'discount_amount' => 0,
@@ -92,7 +94,7 @@ class SaleService
             }
 
             return $this->sales->findById($sale->getKey()) ?? $sale;
-        });
+        }, attempts: 5);
     }
 
     /**

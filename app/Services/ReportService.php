@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Product;
-use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\PurchaseRepositoryInterface;
 use App\Repositories\Contracts\SaleRepositoryInterface;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
@@ -18,7 +16,7 @@ class ReportService
     public function __construct(
         protected SaleRepositoryInterface $sales,
         protected PurchaseRepositoryInterface $purchases,
-        protected ProductRepositoryInterface $products,
+        protected ProductService $products,
         protected StockMovementRepositoryInterface $movements,
     ) {}
 
@@ -34,7 +32,7 @@ class ReportService
 
     public function paginateSales(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->sales->paginate($this->salesFilters($filters), $perPage);
+        return $this->sales->paginate($this->dateFilters($filters), $perPage);
     }
 
     /**
@@ -49,15 +47,15 @@ class ReportService
 
     public function paginatePurchases(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->purchases->paginate($this->purchaseFilters($filters), $perPage);
+        return $this->purchases->paginate($this->dateFilters($filters), $perPage);
     }
 
     /**
-     * @return array{total_units: float, total_value: float, active_count: int, low_stock_count: int}
+     * @return array{units_total: float, value_total: float, active_count: int, low_stock_count: int}
      */
     public function stockSummary(array $filters = []): array
     {
-        return $this->products->stockSummary();
+        return $this->products->stockSummary($filters);
     }
 
     public function paginateStock(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -80,10 +78,7 @@ class ReportService
 
     public function productOptions(): Collection
     {
-        return Product::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        return $this->products->productOptions();
     }
 
     /**
@@ -100,7 +95,7 @@ class ReportService
         $lastPage = 1;
 
         do {
-            $page = $this->sales->paginate($this->salesFilters($filters), $perPage, $pageNumber);
+            $page = $this->sales->paginate($this->dateFilters($filters), $perPage, $pageNumber);
             $lastPage = $page->lastPage();
 
             foreach ($page->items() as $sale) {
@@ -172,15 +167,7 @@ class ReportService
         return [$from, $to];
     }
 
-    private function salesFilters(array $filters): array
-    {
-        return array_filter([
-            'date_from' => $filters['date_from'] ?? null,
-            'date_to' => $filters['date_to'] ?? null,
-        ], fn ($value) => $value !== null);
-    }
-
-    private function purchaseFilters(array $filters): array
+    private function dateFilters(array $filters): array
     {
         return array_filter([
             'date_from' => $filters['date_from'] ?? null,

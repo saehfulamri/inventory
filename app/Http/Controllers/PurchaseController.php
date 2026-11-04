@@ -8,6 +8,7 @@ use App\Models\Purchase;
 use App\Services\ProductService;
 use App\Services\PurchaseService;
 use App\Services\SupplierService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +69,7 @@ class PurchaseController extends Controller
 
         return Inertia::render('Purchases/Show', [
             'purchase' => $purchase->load(['supplier', 'user', 'items.product']),
+            'canFinalize' => $purchase->status === PurchaseStatus::Draft,
         ]);
     }
 
@@ -84,10 +86,10 @@ class PurchaseController extends Controller
 
     private function filters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'supplier_id' => $request->filled('supplier_id') ? $request->input('supplier_id') : null,
-            'status' => $request->filled('status') ? $request->input('status') : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'supplier_id' => RequestFilters::CAST_STRING,
+            'status' => RequestFilters::CAST_STRING,
+        ]);
     }
 }

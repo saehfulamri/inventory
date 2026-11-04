@@ -9,6 +9,10 @@ Terima kasih sudah ingin berkontribusi! 🎉 Proyek ini adalah aplikasi monolith
 - 🔧 **Pull request** — perbaikan bug, fitur kecil, perbaikan dokumentasi, atau peningkatan test.
 - 📚 **Dokumentasi** — perbaikan typo, penjelasan yang kurang jelas, atau contoh penggunaan.
 
+Dengan berpartisipasi, Anda diharapkan mematuhi
+[Code of Conduct](CODE_OF_CONDUCT.md). Untuk masalah keamanan, jangan buka issue
+publik — ikuti [SECURITY.md](SECURITY.md).
+
 ## Persiapan Lingkungan Development
 
 Prasyarat: PHP ≥ 8.4, Composer, dan Node.js & npm (untuk membangun aset frontend Vue/Inertia).
@@ -51,7 +55,7 @@ Akun demo (hanya tersedia di env `local`/`testing`, password: `password`):
 
 ## Arsitektur & Struktur
 
-Sebelum mengubah kode, pahami lapisan arsitektur (detail lengkap: [`04-architecture.md`](04-architecture.md)):
+Sebelum mengubah kode, pahami lapisan arsitektur (detail lengkap: [`docs/04-architecture.md`](docs/04-architecture.md)):
 
 ```text
 Controller (tipis)
@@ -89,7 +93,7 @@ app/
 
 ## Konvensi Coding
 
-Ikuti [`06-coding-rules.md`](06-coding-rules.md) secara penuh. Ringkasannya:
+Ikuti ringkasan berikut; aturan agent/konvensi framework ada di `AGENTS.md`, aturan arsitektur detail di [`docs/04-architecture.md`](docs/04-architecture.md):
 
 - **Nama**: gunakan nama deskriptif (`$product`, `$grandTotal`); hindari `$x`, `$temp`.
 - **Wire repository**: tambahkan binding interface → implementasi di `AppServiceProvider` bila Anda menambah repository baru.
@@ -99,7 +103,7 @@ Ikuti [`06-coding-rules.md`](06-coding-rules.md) secara penuh. Ringkasannya:
 
 ### Menambahkan fitur baru
 
-Ikuti alur dependensi (lihat juga `07-task-backlog.md`):
+Ikuti alur dependensi (lihat juga `docs/07-task-backlog.md`):
 
 ```text
 Migration → Model → Repository → Service → Controller → Vue (Inertia Page) → Test
@@ -135,7 +139,7 @@ php artisan test
 php artisan test --filter=SaleServiceTest
 ```
 
-Setiap perubahan **harus** menyertakan/update test yang relevan. Prioritas test sesuai `04-architecture.md`: Sale → Stock → Purchase/Receiving → Authorization → Product validation.
+Setiap perubahan **harus** menyertakan/update test yang relevan. Prioritas test sesuai `docs/04-architecture.md`: Sale → Stock → Purchase/Receiving → Authorization → Product validation.
 
 ## Alur Kerja Git (GitHub Flow)
 
@@ -203,7 +207,7 @@ chore: update dependencies
 - [ ] Authorization (Policy/Gate) sudah ditambahkan/konsisten bila halaman/menu baru
 - [ ] Perubahan stok/transaksi memakai Service + transaction + stock movement
 - [ ] Tidak ada perubahan file yang tidak relevan
-- [ ] Dokumentasi (README / `08-changelog.md`) diperbarui bila diperlukan
+- [ ] Dokumentasi (README / `docs/08-changelog.md`) diperbarui bila diperlukan
 - [ ] Dampak deployment, migrasi, backup, atau rollback dijelaskan bila ada
 - [ ] Tidak ada secret, `.env`, atau artefak build yang ditambahkan
 
@@ -229,14 +233,14 @@ terjadi kesalahan, buat PR perbaikan baru dan rilis tag berikutnya.
 
 Proyek ini dirancang agar mudah dikerjakan bersama AI coding agent (mis. Codex, Claude Code, Cursor). Jika Anda memakai agent:
 
-- Baca dulu: `01-project-brief.md`, requirement terkait, `04-architecture.md`, `05-database.md` (bila menyentuh data), dan `06-coding-rules.md`.
+- Baca dulu: `docs/01-project-brief.md`, requirement terkait, `docs/04-architecture.md`, dan `AGENTS.md` (bila menyentuh data, skema acuan adalah migrasi di `database/migrations/`).
 - Kerjakan satu task dalam satu waktu; jangan ubah file yang tidak terkait.
-- `AGENTS.md` & `CLAUDE.md` di repo berisi instruksi bootstrap bagi agent.
+- `AGENTS.md` di repo berisi instruksi bootstrap bagi agent.
 - Ikuti format output: Plan → Implementation → Verification → Result.
 
 ## Definition of Done
 
-A task dianggap selesai bila (dari `06-coding-rules.md`):
+A task dianggap selesai bila:
 
 - Requirement terpenuhi.
 - Arsitektur tetap konsisten.

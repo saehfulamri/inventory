@@ -21,13 +21,25 @@ const chartTotal = computed(() => formatCurrency(
 ));
 const chartMax = computed(() => Math.max(1, ...props.summary.chart.map((point) => point.total ?? 0)));
 
-function barHeight(point) {
-    if (!(point.total > 0)) {
-        return '2px';
-    }
+/**
+ * Pre-compute bar heights and formatted currency values to avoid repeated
+ * inline function calls during re-render.
+ *
+ * @type {import('vue').ComputedRef<Array<{date: string, label: string, day: string, total: number, formattedTotal: string, barHeight: string}>>}
+ */
+const chartPoints = computed(() =>
+    props.summary.chart.map((point) => {
+        const height = (point.total > 0)
+            ? `${Math.max(6, Math.round((point.total / chartMax.value) * 100))}%`
+            : '2px';
 
-    return `${Math.max(6, Math.round((point.total / chartMax.value) * 100))}%`;
-}
+        return {
+            ...point,
+            formattedTotal: formatCurrency(point.total),
+            barHeight: height,
+        };
+    }),
+);
 </script>
 
 <template>
@@ -35,36 +47,47 @@ function barHeight(point) {
 
     <AppLayout>
         <div class="page-header">
-            <h1 class="page-title">Dashboard</h1>
-            <p class="muted">Selamat datang, {{ user?.name }}.</p>
+            <div class="page-title-group">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="muted">Selamat datang, {{ user?.name }}.</p>
+            </div>
         </div>
 
-        <section class="summary-grid" aria-label="Ringkasan">
-            <div class="summary-card">
-                <span class="summary-card__label">Penjualan Hari Ini</span>
+        <!-- ======================================================
+             Summary cards (#6 semantic wrappers, #7 responsive grid)
+             ====================================================== -->
+        <section
+            class="summary-grid"
+            aria-label="Ringkasan Kinerja"
+        >
+            <article class="summary-card" aria-labelledby="card-sales-today">
+                <h3 id="card-sales-today" class="summary-card__label">Penjualan Hari Ini</h3>
                 <span class="summary-card__value">{{ todayTotal }}</span>
                 <span class="summary-card__meta">{{ summary.today_count }} transaksi</span>
-            </div>
+            </article>
 
-            <div class="summary-card">
-                <span class="summary-card__label">Transaksi Hari Ini</span>
+            <article class="summary-card" aria-labelledby="card-transactions-today">
+                <h3 id="card-transactions-today" class="summary-card__label">Transaksi Hari Ini</h3>
                 <span class="summary-card__value">{{ summary.today_count }}</span>
                 <span class="summary-card__meta">Selesai</span>
-            </div>
+            </article>
 
-            <div class="summary-card">
-                <span class="summary-card__label">Produk Aktif</span>
+            <article class="summary-card" aria-labelledby="card-active-products">
+                <h3 id="card-active-products" class="summary-card__label">Produk Aktif</h3>
                 <span class="summary-card__value">{{ summary.active_products }}</span>
                 <span class="summary-card__meta">Nama produk terdaftar</span>
-            </div>
+            </article>
 
-            <div class="summary-card">
-                <span class="summary-card__label">Stok Menipis</span>
+            <article class="summary-card" aria-labelledby="card-low-stock">
+                <h3 id="card-low-stock" class="summary-card__label">Stok Menipis</h3>
                 <span class="summary-card__value">{{ summary.low_stock_count }}</span>
                 <span class="summary-card__meta">Stok ≤ minimum</span>
-            </div>
+            </article>
         </section>
 
+        <!-- ======================================================
+             Dashboard panels (#6 semantic, #7 responsive grid)
+             ====================================================== -->
         <div class="dashboard-grid">
             <section class="dashboard-panel" aria-labelledby="chart-title">
                 <div class="dashboard-panel__header">
@@ -73,13 +96,20 @@ function barHeight(point) {
 
                 <p class="muted chart-summary">Total: {{ chartTotal }}</p>
 
-                <ul class="chart" aria-label="Grafik penjualan 7 hari terakhir">
-                    <li v-for="point in summary.chart" :key="point.date" class="chart__col">
-                        <span class="chart__value">{{ formatCurrency(point.total) }}</span>
-                        <span class="chart__track">
-                            <span class="chart__bar" :style="{ height: barHeight(point) }"></span>
+                <!-- Chart — #13 (Sprint 3): keyboard nav & aria-label per bar -->
+                <ul class="chart" aria-label="Grafik batang penjualan 7 hari terakhir">
+                    <li
+                        v-for="point in chartPoints"
+                        :key="point.date"
+                        class="chart__col"
+                        tabindex="0"
+                        :aria-label="`${point.label}: ${point.formattedTotal}`"
+                    >
+                        <span class="chart__value" aria-hidden="true">{{ point.formattedTotal }}</span>
+                        <span class="chart__track" aria-hidden="true">
+                            <span class="chart__bar" :style="{ height: point.barHeight }"></span>
                         </span>
-                        <span class="chart__label">{{ point.label }}<br>{{ point.day }}</span>
+                        <span class="chart__label" aria-hidden="true">{{ point.label }}<br>{{ point.day }}</span>
                     </li>
                 </ul>
             </section>
@@ -100,7 +130,9 @@ function barHeight(point) {
                             <span class="low-stock-item__name">{{ product.name }}</span>
                             <span class="low-stock-item__meta">{{ product.sku }}</span>
                         </span>
-                        <VBadge variant="danger">Stok {{ product.stock }} / min {{ product.minimum_stock }}</VBadge>
+                        <VBadge variant="danger" :aria-label="`Stok rendah: ${product.stock} dari minimum ${product.minimum_stock}`">
+                            Stok {{ product.stock }} / min {{ product.minimum_stock }}
+                        </VBadge>
                     </li>
                 </ul>
                 <p v-else class="muted">Semua produk berada di atas stok minimum.</p>

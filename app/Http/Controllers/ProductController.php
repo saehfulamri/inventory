@@ -9,6 +9,7 @@ use App\Services\CategoryService;
 use App\Services\ProductImageService;
 use App\Services\ProductService;
 use App\Services\UnitService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -93,12 +94,12 @@ class ProductController extends Controller
 
     private function filters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'category_id' => $request->filled('category_id') ? $request->input('category_id') : null,
-            'is_active' => $request->filled('is_active') ? (int) $request->input('is_active') : null,
-            'low_stock' => $request->boolean('low_stock') ? true : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'category_id' => RequestFilters::CAST_STRING,
+            'is_active' => RequestFilters::CAST_INT,
+            'low_stock' => RequestFilters::CAST_BOOLEAN,
+        ]);
     }
 
     private function formData(?Product $product = null): array

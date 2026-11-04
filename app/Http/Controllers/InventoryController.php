@@ -10,6 +10,7 @@ use App\Services\CategoryService;
 use App\Services\ProductService;
 use App\Services\StockAdjustmentService;
 use App\Services\StockMovementService;
+use App\Support\RequestFilters;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -84,20 +85,20 @@ class InventoryController extends Controller
 
     private function stockFilters(Request $request): array
     {
-        return array_filter([
-            'keyword' => trim((string) $request->input('keyword')) !== '' ? trim($request->input('keyword')) : null,
-            'category_id' => $request->filled('category_id') ? $request->input('category_id') : null,
-            'low_stock' => $request->boolean('low_stock') ? true : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'keyword' => RequestFilters::CAST_TRIM,
+            'category_id' => RequestFilters::CAST_STRING,
+            'low_stock' => RequestFilters::CAST_BOOLEAN,
+        ]);
     }
 
     private function movementFilters(Request $request): array
     {
-        return array_filter([
-            'product_id' => $request->filled('product_id') ? $request->input('product_id') : null,
-            'movement_type' => $request->filled('movement_type') ? $request->input('movement_type') : null,
-            'date_from' => $request->filled('date_from') ? $request->input('date_from') : null,
-            'date_to' => $request->filled('date_to') ? $request->input('date_to') : null,
-        ], fn ($value) => $value !== null);
+        return RequestFilters::from($request, [
+            'product_id' => RequestFilters::CAST_STRING,
+            'movement_type' => RequestFilters::CAST_STRING,
+            'date_from' => RequestFilters::CAST_STRING,
+            'date_to' => RequestFilters::CAST_STRING,
+        ]);
     }
 }

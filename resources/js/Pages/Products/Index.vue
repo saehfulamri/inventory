@@ -9,6 +9,7 @@ import VPagination from '../../Components/ui/VPagination.vue';
 import VSelect from '../../Components/ui/VSelect.vue';
 import VTable from '../../Components/ui/VTable.vue';
 import { formatCurrency } from '../../utils/format.js';
+import { activeStatusOptions, buildParams, filterString } from '../../utils/filters.js';
 
 const props = defineProps({
     products: { type: Object, required: true },
@@ -22,12 +23,8 @@ const can = computed(() => page.props.can ?? {});
 
 const filters = ref({
     keyword: props.filters.keyword ?? '',
-    category_id: props.filters.category_id !== undefined && props.filters.category_id !== null
-        ? String(props.filters.category_id)
-        : '',
-    is_active: props.filters.is_active !== undefined && props.filters.is_active !== null
-        ? String(props.filters.is_active)
-        : '',
+    category_id: filterString(props.filters.category_id),
+    is_active: filterString(props.filters.is_active),
     low_stock: Boolean(props.filters.low_stock),
 });
 
@@ -36,11 +33,7 @@ const categoryOptions = computed(() => [
     ...props.categories.map((category) => ({ value: String(category.id), label: category.name })),
 ]);
 
-const statusOptions = [
-    { value: '', label: 'Semua' },
-    { value: '1', label: 'Aktif' },
-    { value: '0', label: 'Nonaktif' },
-];
+const statusOptions = activeStatusOptions();
 
 const columns = [
     { key: 'photo', label: 'Foto' },
@@ -65,17 +58,8 @@ const deactivateMessage = computed(() => deactivating.value
     : '');
 
 function applyFilters() {
-    const params = {};
+    const params = buildParams(filters.value);
 
-    if (filters.value.keyword) {
-        params.keyword = filters.value.keyword;
-    }
-    if (filters.value.category_id) {
-        params.category_id = filters.value.category_id;
-    }
-    if (filters.value.is_active !== '') {
-        params.is_active = filters.value.is_active;
-    }
     if (filters.value.low_stock) {
         params.low_stock = 1;
     }
