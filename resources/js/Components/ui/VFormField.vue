@@ -1,10 +1,13 @@
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
     id: { type: String, required: true },
     label: { type: String, default: null },
     type: { type: String, default: 'text' },
     modelValue: { type: [String, Number], default: '' },
     error: { type: String, default: null },
+    hint: { type: String, default: null },
     required: { type: Boolean, default: false },
     autocomplete: { type: String, default: null },
     autofocus: { type: Boolean, default: false },
@@ -15,11 +18,16 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue']);
+
+const describedBy = computed(() => [
+    props.hint ? `${props.id}-hint` : null,
+    props.error ? `${props.id}-error` : null,
+].filter(Boolean).join(' ') || undefined);
 </script>
 
 <template>
     <div class="form__group">
-        <label v-if="label" :for="id">{{ label }}</label>
+        <label v-if="label" :for="id">{{ label }}<span v-if="required" class="form__required" aria-hidden="true"> *</span></label>
 
         <textarea
             v-if="type === 'textarea'"
@@ -29,7 +37,7 @@ const emit = defineEmits(['update:modelValue']);
             :required="required"
             :rows="rows"
             :aria-invalid="error ? 'true' : 'false'"
-            :aria-describedby="error ? `${id}-error` : undefined"
+            :aria-describedby="describedBy"
             @input="emit('update:modelValue', $event.target.value)"
         />
 
@@ -45,9 +53,11 @@ const emit = defineEmits(['update:modelValue']);
             :autocomplete="autocomplete ?? undefined"
             :autofocus="autofocus"
             :aria-invalid="error ? 'true' : 'false'"
-            :aria-describedby="error ? `${id}-error` : undefined"
+            :aria-describedby="describedBy"
             @input="emit('update:modelValue', $event.target.value)"
         />
+
+        <span v-if="hint" :id="`${id}-hint`" class="form__hint">{{ hint }}</span>
 
         <span v-if="error" :id="`${id}-error`" class="form__error">{{ error }}</span>
     </div>

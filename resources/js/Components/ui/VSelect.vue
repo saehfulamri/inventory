@@ -13,7 +13,7 @@ const emit = defineEmits(['update:modelValue']);
 
 <template>
     <div class="form__group">
-        <label v-if="label" :for="id">{{ label }}</label>
+        <label v-if="label" :for="id">{{ label }}<span v-if="required" class="form__required" aria-hidden="true"> *</span></label>
 
         <select
             :id="id"
