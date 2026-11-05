@@ -106,8 +106,8 @@ class ProductController extends Controller
     {
         return [
             'product' => $product,
-            'categories' => $this->categoryService->findActive(),
-            'units' => $this->unitService->findActive(),
+            'categories' => $this->categoryService->findActive($product?->category_id),
+            'units' => $this->unitService->findActive($product?->unit_id),
         ];
     }
 }

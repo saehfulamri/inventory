@@ -12,7 +12,7 @@ interface UnitRepositoryInterface
 
     public function findById(int $id): ?Unit;
 
-    public function findActive(): Collection;
+    public function findActive(?int $includeId = null): Collection;
 
     public function create(array $data): Unit;
 

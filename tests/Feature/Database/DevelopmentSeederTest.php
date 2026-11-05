@@ -41,10 +41,10 @@ class DevelopmentSeederTest extends TestCase
     {
         $this->seed(DevelopmentSeeder::class);
 
-        $this->assertSame(4, Category::count());
-        $this->assertSame(4, Unit::count());
-        $this->assertSame(1, Supplier::count());
-        $this->assertSame(5, Product::count());
+        $this->assertSame(8, Category::count());
+        $this->assertSame(7, Unit::count());
+        $this->assertSame(3, Supplier::count());
+        $this->assertSame(27, Product::count());
     }
 
     public function test_seeder_is_idempotent(): void
@@ -53,6 +53,9 @@ class DevelopmentSeederTest extends TestCase
         $this->seed(DevelopmentSeeder::class);
 
         $this->assertSame(4, User::count());
-        $this->assertSame(5, Product::count());
+        $this->assertSame(8, Category::count());
+        $this->assertSame(7, Unit::count());
+        $this->assertSame(3, Supplier::count());
+        $this->assertSame(27, Product::count());
     }
 }

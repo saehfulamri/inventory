@@ -21,9 +21,9 @@ class CategoryService
         return $this->repository->findById($id);
     }
 
-    public function findActive(): Collection
+    public function findActive(?int $includeId = null): Collection
     {
-        return $this->repository->findActive();
+        return $this->repository->findActive($includeId);
     }
 
     public function create(array $data): Category

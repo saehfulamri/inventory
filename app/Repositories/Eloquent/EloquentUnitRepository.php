@@ -27,9 +27,13 @@ class EloquentUnitRepository implements UnitRepositoryInterface
         return Unit::find($id);
     }
 
-    public function findActive(): Collection
+    public function findActive(?int $includeId = null): Collection
     {
-        return Unit::where('is_active', true)->orderBy('name')->get();
+        return Unit::query()
+            ->where('is_active', true)
+            ->when($includeId !== null, fn ($query) => $query->orWhereKey($includeId))
+            ->orderBy('name')
+            ->get();
     }
 
     public function create(array $data): Unit

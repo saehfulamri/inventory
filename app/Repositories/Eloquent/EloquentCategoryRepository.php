@@ -27,9 +27,13 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         return Category::find($id);
     }
 
-    public function findActive(): Collection
+    public function findActive(?int $includeId = null): Collection
     {
-        return Category::where('is_active', true)->orderBy('name')->get();
+        return Category::query()
+            ->where('is_active', true)
+            ->when($includeId !== null, fn ($query) => $query->orWhereKey($includeId))
+            ->orderBy('name')
+            ->get();
     }
 
     public function create(array $data): Category

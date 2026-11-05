@@ -12,7 +12,7 @@ interface CategoryRepositoryInterface
 
     public function findById(int $id): ?Category;
 
-    public function findActive(): Collection;
+    public function findActive(?int $includeId = null): Collection;
 
     public function create(array $data): Category;
 

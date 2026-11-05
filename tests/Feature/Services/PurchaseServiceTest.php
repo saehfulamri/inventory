@@ -9,8 +9,8 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\User;
-use App\Services\ProductService;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
+use App\Services\ProductService;
 use App\Services\PurchaseService;
 use App\Services\StockService;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +79,32 @@ class PurchaseServiceTest extends TestCase
             'sequence_date' => now()->toDateString(),
             'current_value' => 2,
         ]);
+    }
+
+    public function test_create_continues_purchase_numbers_after_existing_documents(): void
+    {
+        $this->freezeTime();
+
+        $admin = User::factory()->withRole(Role::Admin)->create();
+        $supplier = Supplier::factory()->create();
+        $product = Product::factory()->create(['stock' => 10]);
+        Purchase::factory()->create([
+            'purchase_number' => 'PO-'.now()->format('Ymd').'-0001',
+            'purchase_date' => now()->toDateString(),
+        ]);
+        Purchase::factory()->create([
+            'purchase_number' => 'PO-'.now()->format('Ymd').'-0003',
+            'purchase_date' => now()->toDateString(),
+        ]);
+
+        $purchase = app(PurchaseService::class)->create([
+            'supplier_id' => $supplier->id,
+            'purchase_date' => now()->toDateString(),
+            'items' => [['product_id' => $product->id, 'quantity' => 1, 'unit_price' => 1000]],
+        ], $admin);
+
+        $this->assertSame('PO-'.now()->format('Ymd').'-0004', $purchase->purchase_number);
+        $this->assertDatabaseCount('purchases', 3);
     }
 
     public function test_finalize_increases_stock_and_records_purchase_in_movement(): void

@@ -250,6 +250,29 @@ class ProductManagementTest extends TestCase
             );
     }
 
+    public function test_edit_form_includes_inactive_category_and_unit_assigned_to_product(): void
+    {
+        $category = Category::factory()->create(['is_active' => false]);
+        $unit = Unit::factory()->create(['is_active' => false]);
+        Category::factory()->create(['is_active' => false]);
+        Unit::factory()->create(['is_active' => false]);
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'unit_id' => $unit->id,
+        ]);
+
+        $this->actingAs($this->admin())
+            ->get(route('products.edit', $product))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Products/Edit')
+                ->has('categories', 1)
+                ->where('categories.0.id', $category->id)
+                ->has('units', 1)
+                ->where('units.0.id', $unit->id)
+            );
+    }
+
     public function test_admin_can_update_product(): void
     {
         $product = Product::factory()->create();

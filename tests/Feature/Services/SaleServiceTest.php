@@ -9,8 +9,8 @@ use App\Enums\SaleStatus;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\User;
-use App\Services\ProductService;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
+use App\Services\ProductService;
 use App\Services\SaleService;
 use App\Services\StockService;
 use Illuminate\Database\Eloquent\Model;
@@ -207,6 +207,32 @@ class SaleServiceTest extends TestCase
             'sequence_date' => now()->toDateString(),
             'current_value' => 2,
         ]);
+    }
+
+    public function test_complete_continues_sale_numbers_after_existing_documents(): void
+    {
+        $this->freezeTime();
+
+        $cashier = User::factory()->withRole(Role::Cashier)->create();
+        $product = Product::factory()->create(['stock' => 10, 'selling_price' => 1000]);
+        Sale::factory()->create([
+            'sale_number' => 'SO-'.now()->format('Ymd').'-0001',
+            'sale_date' => now()->toDateString(),
+        ]);
+        Sale::factory()->create([
+            'sale_number' => 'SO-'.now()->format('Ymd').'-0003',
+            'sale_date' => now()->toDateString(),
+        ]);
+
+        $sale = app(SaleService::class)->complete([
+            'sale_date' => now()->toDateString(),
+            'payment_method' => PaymentMethod::Cash->value,
+            'paid_amount' => 1000,
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+        ], $cashier);
+
+        $this->assertSame('SO-'.now()->format('Ymd').'-0004', $sale->sale_number);
+        $this->assertDatabaseCount('sales', 3);
     }
 
     public function test_complete_is_atomic_when_stock_decrease_fails(): void
