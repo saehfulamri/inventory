@@ -174,6 +174,7 @@ tests/
 - Controller mengembalikan `Inertia::render('PageName', [...props])`, bukan `view()`.
 - Data yang dibagi lintas halaman (user login, flash message) dibagikan lewat middleware `HandleInertiaRequests` (shared props), tidak diulang per controller.
 - Navigasi internal memakai Inertia (`<Link>` / `router`), bukan `location.href`/`fetch`; route memakai named route + Ziggy.
+- Navigasi aplikasi (`AppLayout.vue`) berasal dari satu daftar item yang difilter `can.*`, dirender sebagai sidebar (≥ `lg`/64rem) dan bottom nav (< `lg`). `VTable` merender tabel di ≥ `lg` dan card di bawahnya; tabel berisi input memakai `table--stack`.
 - Form memakai `useForm` dari `@inertiajs/vue3` — CSRF/XSRF dan error handling otomatis, error validasi server diasosiasikan ke input.
 - Jangan render konten user dengan `v-html` tanpa sanitasi; binding teks biasa agar terhindar dari XSS.
 - Pertahankan aksesibilitas WCAG 2.2 AA: label programatik, indikator fokus, error terkait input, `aria-live` untuk flash message.

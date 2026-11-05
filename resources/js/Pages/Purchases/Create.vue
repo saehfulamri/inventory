@@ -137,7 +137,7 @@ function submit() {
             </VFlash>
 
             <div class="table-wrap">
-                <table class="table">
+                <table class="table table--stack">
                     <thead>
                         <tr>
                             <th>Produk</th>
@@ -149,7 +149,7 @@ function submit() {
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in form.items" :key="index" class="item-row">
-                            <td>
+                            <td data-label="Produk">
                                 <select
                                     v-model="item.product_id"
                                     :aria-label="`Produk baris ${index + 1}`"
@@ -163,7 +163,7 @@ function submit() {
                                     {{ itemErrors[index].product_id }}
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Jumlah">
                                 <input
                                     v-model="item.quantity"
                                     type="number"
@@ -175,7 +175,7 @@ function submit() {
                                     {{ itemErrors[index].quantity }}
                                 </span>
                             </td>
-                            <td>
+                            <td data-label="Harga Beli">
                                 <input
                                     v-model="item.unit_price"
                                     type="number"
@@ -187,7 +187,7 @@ function submit() {
                                     {{ itemErrors[index].unit_price }}
                                 </span>
                             </td>
-                            <td class="item-subtotal">{{ formatCurrency(subtotal(item)) }}</td>
+                            <td class="item-subtotal" data-label="Subtotal">{{ formatCurrency(subtotal(item)) }}</td>
                             <td>
                                 <VButton variant="ghost" size="sm" @click="removeRow(index)">Hapus</VButton>
                             </td>

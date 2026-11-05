@@ -41,7 +41,7 @@ const typeLabels = computed(() => labelMapFrom(props.movementTypes));
 
 const columns = [
     { key: 'created_at', label: 'Waktu' },
-    { key: 'product', label: 'Produk' },
+    { key: 'product', label: 'Produk', primary: true },
     { key: 'movement_type', label: 'Tipe' },
     { key: 'delta', label: 'Perubahan' },
     { key: 'stock', label: 'Stok' },

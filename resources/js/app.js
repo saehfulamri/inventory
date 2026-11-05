@@ -5,7 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
 import { Ziggy as ziggyConfig } from './ziggy';
 
-const appName = 'Sistem Inventori & Penjualan';
+const appName = import.meta.env.VITE_APP_NAME || 'PRESMA MART';
 
 createInertiaApp({
     title: (title) => (title ? `${title} — ${appName}` : appName),

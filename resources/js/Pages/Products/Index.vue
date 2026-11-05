@@ -39,7 +39,7 @@ const columns = [
     { key: 'photo', label: 'Foto' },
     { key: 'sku', label: 'SKU' },
     { key: 'barcode', label: 'Barcode' },
-    { key: 'name', label: 'Nama' },
+    { key: 'name', label: 'Nama', primary: true },
     { key: 'category', label: 'Kategori' },
     { key: 'purchase_price', label: 'Harga Beli' },
     { key: 'selling_price', label: 'Harga Jual' },

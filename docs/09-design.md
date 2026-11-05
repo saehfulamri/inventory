@@ -429,6 +429,8 @@ Apple's whitespace is the product's pedestal. Every tile begins with at least 64
 
 ### Top Navigation
 
+> **Implementasi aplikasi ini:** nav global hitam dipakai sebagai sidebar tetap 15rem pada ≥ 64rem, dan sebagai bottom navigation bar (hanya ikon SVG 24px dengan `aria-label` dan tooltip, target sentuh ≥ 44px, safe-area inset) di bawahnya. Deskripsi di bawah adalah referensi gaya.
+
 **`global-nav`** — Persistent, ultra-thin black nav bar pinned to the top of every page. Background `{colors.surface-black}`, height 44px, text `{colors.on-dark}` in `{typography.nav-link}` (12px / 400 / -0.12px tracking). Links are quiet, spaced ~20px apart, running edge-to-edge across the top. Right-aligned cluster: Search, Bag icons — always visible. On mobile, collapses to hamburger at ~834px and the Apple logo centers.
 
 **`sub-nav-frosted`** — Surface-specific nav that sticks below the global nav. Background `{colors.canvas-parchment}` at 80% opacity with backdrop-filter blur, creating a frosted-glass effect. Height 52px. Content on left: product category name ("iPhone", "Store", "Accessories") in `{typography.tagline}` (21px / 600). Content right: inline nav links in `{typography.button-utility}` (14px), ending in a persistent `{component.button-primary}` ("Buy") or a utility link.

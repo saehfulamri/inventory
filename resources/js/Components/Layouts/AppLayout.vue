@@ -1,26 +1,79 @@
 <script setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, nextTick } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import VFlash from '../ui/VFlash.vue';
+import VNavIcon from '../ui/VNavIcon.vue';
 
 // injected Ziggy route helper
 const route = inject('route');
 const page = usePage();
 
-// Mobile navigation drawer state
-const isMobileNavOpen = ref(false);
-function toggleMobileNav() { isMobileNavOpen.value = !isMobileNavOpen.value; }
-function closeMobileNav() { isMobileNavOpen.value = false; }
-
-// Helper to determine active route (Ziggy integration)
-function isActive(name) {
-    return typeof page.component === 'string' && page.component.toLowerCase().includes(name.toLowerCase());
-}
-
-const appName = computed(() => page.props.app?.name ?? 'Sistem Inventori & Penjualan');
+const brandName = 'PRESMA MART';
 const user = computed(() => page.props.auth?.user ?? null);
 const can = computed(() => page.props.can ?? {});
 const flash = computed(() => page.props.flash ?? {});
+
+// Single source of truth for sidebar and bottom navigation.
+// `primary` items are pinned to the bottom bar; the rest go under "Lainnya".
+const navItems = computed(() => [
+    { label: 'Dashboard', icon: 'dashboard', route: 'dashboard', match: 'dashboard', primary: true, show: true },
+    { label: 'Penjualan', icon: 'sales', route: 'sales.index', match: 'sales.*', primary: true, show: can.value.viewAnySales },
+    { label: 'Produk', icon: 'products', route: 'products.index', match: 'products.*', primary: true, show: can.value.viewAnyProducts },
+    { label: 'Stok', icon: 'inventory', route: 'inventory.index', match: 'inventory.*', primary: true, show: can.value.viewAnyProducts },
+    { label: 'Penerimaan', icon: 'purchases', route: 'purchases.index', match: 'purchases.*', show: can.value.viewAnyPurchases },
+    { label: 'Supplier', icon: 'suppliers', route: 'suppliers.index', match: 'suppliers.*', show: can.value.viewAnySuppliers },
+    { label: 'Kategori', icon: 'categories', route: 'categories.index', match: 'categories.*', show: can.value.viewAnyCategories },
+    { label: 'Satuan', icon: 'units', route: 'units.index', match: 'units.*', show: can.value.viewAnyUnits },
+    { label: 'Laporan', icon: 'reports', route: 'reports.index', match: 'reports.*', show: can.value.viewReports },
+    { label: 'Pengguna', icon: 'users', route: 'users.index', match: 'users.*', show: can.value.manageUsers },
+].filter((item) => item.show));
+
+const MAX_BOTTOM_ITEMS = 5;
+const hasMoreMenu = computed(() => navItems.value.length > MAX_BOTTOM_ITEMS);
+const bottomItems = computed(() => (hasMoreMenu.value
+    ? navItems.value.filter((item) => item.primary).slice(0, MAX_BOTTOM_ITEMS - 1)
+    : navItems.value));
+const moreItems = computed(() => navItems.value.filter((item) => !bottomItems.value.includes(item)));
+const isMoreActive = computed(() => moreItems.value.some((item) => isActive(item)));
+
+function isActive(item) {
+    return route().current(item.match);
+}
+
+// "Lainnya" sheet (bottom navigation, below lg)
+const isMoreOpen = ref(false);
+const moreButton = ref(null);
+const moreSheet = ref(null);
+
+async function openMore() {
+    isMoreOpen.value = true;
+    await nextTick();
+    moreSheet.value?.focus();
+}
+
+function closeMore() {
+    if (!isMoreOpen.value) {
+        return;
+    }
+    isMoreOpen.value = false;
+    moreButton.value?.focus();
+}
+
+function trapFocus(event) {
+    const focusable = moreSheet.value?.querySelectorAll('a[href], button:not([disabled])');
+    if (!focusable?.length) {
+        return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === moreSheet.value)) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
+}
 
 function logout() {
     router.post(route('logout'));
@@ -30,69 +83,98 @@ function logout() {
 <template>
     <a href="#main" class="skip-link">Lewati ke konten utama</a>
 
-    <header class="topbar">
-        <div class="container topbar__inner">
-            <Link :href="route('dashboard')" class="brand">
-                {{ appName }}
-            </Link>
+    <aside v-if="user" class="sidebar hidden lg:flex">
+        <Link :href="route('dashboard')" class="brand">{{ brandName }}</Link>
 
-            <!-- Hamburger: visible only below md breakpoint (768px) -->
-            <button
-                type="button"
-                class="btn--nav md:hidden"
-                aria-label="Toggle navigation"
-                :aria-expanded="isMobileNavOpen"
-                aria-controls="mobile-nav"
-                @click="toggleMobileNav"
-            >☰</button>
+        <nav class="sidebar__nav" aria-label="Navigasi utama">
+            <Link
+                v-for="item in navItems"
+                :key="item.route"
+                :href="route(item.route)"
+                class="nav-link"
+                :class="{ 'nav-link--active': isActive(item) }"
+                :aria-current="isActive(item) ? 'page' : undefined"
+            >{{ item.label }}</Link>
+        </nav>
 
-            <nav v-if="user" class="topnav" aria-label="Navigasi utama">
-                <div class="topnav__links hidden md:flex">
-                    <Link :href="route('dashboard')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('dashboard') }">Dashboard</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('products.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('products') }">Produk</Link>
-                    <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('suppliers') }">Supplier</Link>
-                    <Link v-if="can.viewAnyCategories" :href="route('categories.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('categories') }">Kategori</Link>
-                    <Link v-if="can.viewAnyUnits" :href="route('units.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('units') }">Satuan</Link>
-                    <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('purchases') }">Penerimaan</Link>
-                    <Link v-if="can.viewAnySales" :href="route('sales.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('sales') }">Penjualan</Link>
-                    <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('inventory') }">Stok</Link>
-                    <Link v-if="can.viewReports" :href="route('reports.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('reports') }">Laporan</Link>
-                    <Link v-if="can.manageUsers" :href="route('users.index')" :class="{ 'text-primary font-medium border-b-2 border-primary': isActive('users') }">Pengguna</Link>
-                </div>
-
-                <span class="topnav__user">{{ user.name }}</span>
-                <button type="button" class="btn--nav" @click="logout">Keluar</button>
-            </nav>
+        <div class="sidebar__user">
+            <div class="sidebar__user-info">
+                <p class="sidebar__user-name">{{ user.name }}</p>
+                <p class="sidebar__user-role">{{ user.role?.label }}</p>
+            </div>
+            <button type="button" class="btn--nav" @click="logout">Keluar</button>
         </div>
-    </header>
+    </aside>
 
-    <!-- Mobile navigation drawer -->
-  <div v-if="isMobileNavOpen" class="fixed inset-0 z-40 flex" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Navigation drawer" tabindex="-1" @keydown.escape="closeMobileNav">
-  <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeMobileNav"></div>
-  <nav class="bg-white w-64 p-4 overflow-y-auto">
-    <div class="flex flex-col space-y-2">
-      <Link :href="route('dashboard')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('dashboard') }">Dashboard</Link>
-      <Link v-if="can.viewAnyProducts" :href="route('products.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('products') }">Produk</Link>
-      <Link v-if="can.viewAnySuppliers" :href="route('suppliers.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('suppliers') }">Supplier</Link>
-      <Link v-if="can.viewAnyCategories" :href="route('categories.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('categories') }">Kategori</Link>
-      <Link v-if="can.viewAnyUnits" :href="route('units.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('units') }">Satuan</Link>
-      <Link v-if="can.viewAnyPurchases" :href="route('purchases.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('purchases') }">Penerimaan</Link>
-      <Link v-if="can.viewAnySales" :href="route('sales.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('sales') }">Penjualan</Link>
-      <Link v-if="can.viewAnyProducts" :href="route('inventory.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('inventory') }">Stok</Link>
-      <Link v-if="can.viewReports" :href="route('reports.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('reports') }">Laporan</Link>
-      <Link v-if="can.manageUsers" :href="route('users.index')" @click="closeMobileNav" :class="{ 'text-primary font-medium': isActive('users') }">Pengguna</Link>
-    </div>
-  </nav>
-</div>
-<div v-if="flash.success" class="container" role="status" aria-live="polite">
-        <VFlash type="success">{{ flash.success }}</VFlash>
+    <div class="app-content lg:pl-60">
+        <div v-if="flash.success" class="container" role="status" aria-live="polite">
+            <VFlash type="success">{{ flash.success }}</VFlash>
+        </div>
+
+        <div v-if="flash.error" class="container" role="alert" aria-live="assertive">
+            <VFlash type="error">{{ flash.error }}</VFlash>
+        </div>
+
+        <main id="main" class="container" tabindex="-1">
+            <slot />
+        </main>
     </div>
 
-    <div v-if="flash.error" class="container" role="alert" aria-live="assertive">
-        <VFlash type="error">{{ flash.error }}</VFlash>
-    </div>
+    <nav v-if="user" class="bottom-nav lg:hidden" aria-label="Navigasi bawah">
+        <Link
+            v-for="item in bottomItems"
+            :key="item.route"
+            :href="route(item.route)"
+            class="bottom-nav__item"
+            :class="{ 'bottom-nav__item--active': isActive(item) }"
+            :aria-current="isActive(item) ? 'page' : undefined"
+            :aria-label="item.label"
+            :data-tooltip="item.label"
+        ><VNavIcon :name="item.icon" /></Link>
 
-    <main id="main" class="container" tabindex="-1">
-        <slot />
-    </main>
+        <button
+            v-if="hasMoreMenu"
+            ref="moreButton"
+            type="button"
+            class="bottom-nav__item"
+            :class="{ 'bottom-nav__item--active': isMoreActive }"
+            aria-haspopup="dialog"
+            aria-controls="more-nav"
+            :aria-expanded="isMoreOpen"
+            aria-label="Lainnya"
+            data-tooltip="Lainnya"
+            @click="openMore"
+        ><VNavIcon name="more" /></button>
+    </nav>
+
+    <div
+        v-if="isMoreOpen"
+        id="more-nav"
+        class="more-sheet lg:hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu lainnya"
+        @keydown.escape="closeMore"
+        @keydown.tab="trapFocus"
+    >
+        <div class="more-sheet__overlay" @click="closeMore"></div>
+        <div ref="moreSheet" class="more-sheet__panel" tabindex="-1">
+            <nav aria-label="Menu lainnya">
+                <Link
+                    v-for="item in moreItems"
+                    :key="item.route"
+                    :href="route(item.route)"
+                    class="nav-link"
+                    :class="{ 'nav-link--active': isActive(item) }"
+                    :aria-current="isActive(item) ? 'page' : undefined"
+                    @click="closeMore"
+                ><VNavIcon :name="item.icon" />{{ item.label }}</Link>
+            </nav>
+            <div class="more-sheet__user">
+                <p class="sidebar__user-name">{{ user?.name }} <span class="sidebar__user-role">· {{ user?.role?.label }}</span></p>
+                <button type="button" class="btn--nav" @click="logout">Keluar</button>
+            </div>
+            <button type="button" class="btn--nav" @click="closeMore">Tutup</button>
+        </div>
+    </div>
 </template>

@@ -13,7 +13,7 @@ const props = defineProps({
 
 const route = inject('route');
 const page = usePage();
-const appName = computed(() => page.props.app?.name ?? 'Sistem Inventori & Penjualan');
+const appName = computed(() => page.props.app?.name ?? 'PRESMA MART');
 </script>
 
 <template>

@@ -53,7 +53,7 @@ function finalize() {
         </div>
 
         <div class="table-wrap">
-            <table class="table">
+            <table class="table table--stack">
                 <thead>
                     <tr>
                         <th>Produk</th>
@@ -64,10 +64,10 @@ function finalize() {
                 </thead>
                 <tbody>
                     <tr v-for="item in purchase.items ?? []" :key="item.id">
-                        <td>{{ item.product?.name ?? '—' }} ({{ item.product?.sku ?? '—' }})</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ formatCurrency(item.unit_price) }}</td>
-                        <td>{{ formatCurrency(item.subtotal) }}</td>
+                        <td data-label="Produk">{{ item.product?.name ?? '—' }} ({{ item.product?.sku ?? '—' }})</td>
+                        <td data-label="Jumlah">{{ item.quantity }}</td>
+                        <td data-label="Harga Beli">{{ formatCurrency(item.unit_price) }}</td>
+                        <td data-label="Subtotal">{{ formatCurrency(item.subtotal) }}</td>
                     </tr>
                 </tbody>
                 <tfoot>

@@ -28,6 +28,22 @@ Format:
 - ...
 ```
 
+## 2026-11-05
+
+### Changed
+- Top navbar diganti sidebar (≥ 64rem) dan bottom navigation bar (< 64rem) di semua halaman terautentikasi; daftar menu kini satu sumber dan status aktif memakai `route().current()`.
+- Bottom navigation memakai ikon saja dengan tooltip (hover/fokus) dan `aria-label`; ikon via komponen `VNavIcon`.
+- `VTable` menampilkan card per baris di bawah 64rem (tabel hanya di ≥ 64rem); tabel berisi input (Penerimaan, POS) ditumpuk per baris.
+
+### Fixed
+- `DocumentNumberService` kini memulai sequence dari nomor tertinggi yang sudah
+  tercatat pada tanggal yang sama, sehingga dokumen lama tidak menyebabkan
+  nomor penjualan atau pembelian bentrok setelah deployment.
+- Form edit produk tetap menyediakan kategori dan satuan nonaktif yang sedang
+  digunakan produk tersebut.
+- Ekspektasi tes seeder disesuaikan dengan dataset demo terkini; tes halaman
+  utama kini memverifikasi landing page sesuai route aktif.
+
 ## 2026-10-22
 
 ### Added

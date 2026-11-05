@@ -206,7 +206,7 @@ onMounted(searchProducts);
                     <h2 class="section-title">Keranjang</h2>
 
                     <div class="table-wrap">
-                        <table class="table">
+                        <table class="table table--stack">
                             <thead>
                                 <tr>
                                     <th>Produk</th>
@@ -226,12 +226,12 @@ onMounted(searchProducts);
                                     </td>
                                 </tr>
                                 <tr v-for="(item, index) in cart" :key="item.id">
-                                    <td>
+                                    <td data-label="Produk">
                                         <img v-if="item.image" :src="item.image" alt="" class="cart-thumb" />
                                         {{ item.name }}
                                     </td>
-                                    <td class="cart-price">{{ formatCurrency(item.price) }}</td>
-                                    <td>
+                                    <td class="cart-price" data-label="Harga">{{ formatCurrency(item.price) }}</td>
+                                    <td data-label="Qty">
                                         <input
                                             v-model.number="item.qty"
                                             class="cart-qty"
@@ -243,7 +243,7 @@ onMounted(searchProducts);
                                             @input="clampQty(item)"
                                         />
                                     </td>
-                                    <td class="cart-line-total">{{ formatCurrency(item.price * item.qty) }}</td>
+                                    <td class="cart-line-total" data-label="Subtotal">{{ formatCurrency(item.price * item.qty) }}</td>
                                     <td>
                                         <VButton
                                             variant="danger"

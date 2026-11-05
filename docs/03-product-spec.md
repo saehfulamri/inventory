@@ -25,6 +25,8 @@ Tampilan frontend harus memenuhi kriteria WCAG 2.2 level AA, minimal:
 
 ## 2. Struktur Navigasi
 
+Pola navigasi mengikuti viewport: sidebar tetap di kiri pada lebar ≥ 64rem (1024px), dan bottom navigation bar di bawahnya (maks. 4 item utama + "Lainnya"; hanya ikon dengan `aria-label` dan tooltip saat hover/fokus, sehingga nama tekstual tetap tersedia bagi teknologi bantu). Tabel data hanya tampil pada lebar ≥ 64rem; di bawahnya setiap baris tampil sebagai card. Item menu di bawah berlaku untuk kedua pola.
+
 ### Admin
 - Dashboard
 - Produk

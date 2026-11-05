@@ -32,7 +32,7 @@ const categoryOptions = computed(() => [
 
 const columns = [
     { key: 'sku', label: 'SKU' },
-    { key: 'name', label: 'Nama' },
+    { key: 'name', label: 'Nama', primary: true },
     { key: 'category', label: 'Kategori' },
     { key: 'unit', label: 'Satuan' },
     { key: 'stock', label: 'Stok' },
