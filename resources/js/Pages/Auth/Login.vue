@@ -43,7 +43,7 @@ function submit() {
         </aside>
 
         <main class="login-panel" id="main">
-            <div class="login-panel__inner login-glass">
+            <div class="login-panel__inner">
                 <h1 class="auth-card__title">Masuk</h1>
                 <p class="muted login-panel__intro">Masuk untuk mengelola stok dan penjualan.</p>
 

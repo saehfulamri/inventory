@@ -34,6 +34,7 @@ Format:
 - Top navbar diganti sidebar (≥ 64rem) dan bottom navigation bar (< 64rem) di semua halaman terautentikasi; daftar menu kini satu sumber dan status aktif memakai `route().current()`.
 - Bottom navigation memakai ikon saja dengan tooltip (hover/fokus) dan `aria-label`; ikon via komponen `VNavIcon`.
 - Tema warna aplikasi diganti ke oranye (dominan) dan ungu (aksen) di semua halaman; landing page memakai efek glassmorphism oranye–ungu.
+- Form Pengguna memakai pola form standar (`form__grid`, `VSelect`, tombol Batal, `autocomplete`); `VFormField`/`VSelect` menandai kolom wajib dengan `*`, mendukung `hint`, dan menampilkan state invalid.
 - Halaman login dibagi dua (≥ 64rem): panel branding PRESMA MART dengan logo yayasan, SMA, dan SMK di satu sisi dan form masuk di sisi lain; di bawah 64rem ditumpuk.
 - `VTable` menampilkan card per baris di bawah 64rem (tabel hanya di ≥ 64rem); tabel berisi input (Penerimaan, POS) ditumpuk per baris.
 

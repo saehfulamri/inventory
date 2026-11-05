@@ -89,7 +89,7 @@ const chartPoints = computed(() =>
              Dashboard panels (#6 semantic, #7 responsive grid)
              ====================================================== -->
         <div class="dashboard-grid">
-            <section class="dashboard-panel" aria-labelledby="chart-title">
+            <section class="dashboard-panel dashboard-panel--chart" aria-labelledby="chart-title">
                 <div class="dashboard-panel__header">
                     <h2 class="section-title" id="chart-title">Penjualan 7 Hari Terakhir</h2>
                 </div>

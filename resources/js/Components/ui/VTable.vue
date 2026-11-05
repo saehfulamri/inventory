@@ -21,11 +21,11 @@ const detailColumns = computed(() => props.columns.filter((column) => ![
 
 <template>
     <div v-if="!rows.length" class="table-wrap">
-        <slot name="empty">
-            <div class="empty-state">
+        <div class="empty-state">
+            <slot name="empty">
                 <p>Belum ada data.</p>
-            </div>
-        </slot>
+            </slot>
+        </div>
     </div>
 
     <template v-else>

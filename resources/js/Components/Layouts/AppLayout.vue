@@ -94,7 +94,7 @@ function logout() {
                 class="nav-link"
                 :class="{ 'nav-link--active': isActive(item) }"
                 :aria-current="isActive(item) ? 'page' : undefined"
-            >{{ item.label }}</Link>
+            ><VNavIcon :name="item.icon" />{{ item.label }}</Link>
         </nav>
 
         <div class="sidebar__user">
