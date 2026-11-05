@@ -273,6 +273,9 @@ components:
     padding: 64px
 ---
 
+> **Tema aplikasi PRESMA MART:** dokumen ini adalah referensi gaya. Implementasi memakai oranye sebagai warna dominan (`--color-primary` #c2410c, `#fdba74` di permukaan gelap) dan ungu sebagai aksen (`--color-accent` #6d28d9), dengan navigasi `--color-surface-nav` (#7c2d12). Landing dan login memakai efek glassmorphism (gradien oranye–ungu, `backdrop-filter`) dengan fallback hampir solid agar kontras AA terjaga. Nilai biru di bawah tidak lagi berlaku.
+
+
 ## Overview
 
 Apple's web presence is a masterclass in **reverent product photography framed by near-invisible UI**. Every page is a stack of edge-to-edge product "tiles" — alternating light and dark canvases, each centered on a hero headline, a one-line tagline, two tiny blue pill CTAs, and an impossibly crisp product render. Nothing competes with the product. Typography is confident but quiet; color is either pure white, an off-white parchment, or a near-black tile; interactive elements are a single, quiet blue.

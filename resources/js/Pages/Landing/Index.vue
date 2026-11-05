@@ -14,14 +14,14 @@ const categories = ['Alat Tulis', 'Perlengkapan Sekolah', 'Mewarnai & Kreatif', 
 </script>
 
 <template>
-    <Head title="School Mart - Toko Alat Perlengkapan Sekolah & Supermarket" />
+    <Head title="PRESMA MART - Toko Alat Perlengkapan Sekolah & Supermarket" />
 
     <div class="landing">
         <header class="landing__header">
             <div class="landing__container landing__nav">
                 <div class="landing__brand">
-                    <span class="landing__brand-mark">SM</span>
-                    <span class="landing__brand-name">School Mart</span>
+                    <span class="landing__brand-mark">PM</span>
+                    <span class="landing__brand-name">PRESMA MART</span>
                 </div>
                 <nav class="landing__links">
                     <a href="#fitur">Fitur</a>
@@ -39,7 +39,7 @@ const categories = ['Alat Tulis', 'Perlengkapan Sekolah', 'Mewarnai & Kreatif', 
                         <p class="landing__eyebrow">Toko Alat Perlengkapan Sekolah & Supermarket</p>
                         <h1 class="landing__title">Kelola Toko Sekolah & Supermarket Lebih Praktis</h1>
                         <p class="landing__subtitle">
-                            School Mart membantu kasir, gudang, dan pemilik toko mengelola penjualan, pembelian, stok, dan laporan dalam satu aplikasi sederhana.
+                            PRESMA MART membantu kasir, gudang, dan pemilik toko mengelola penjualan, pembelian, stok, dan laporan dalam satu aplikasi sederhana.
                         </p>
                         <div class="landing__actions">
                             <Link :href="route('login')" class="landing__btn landing__btn--primary">Masuk ke Aplikasi</Link>
@@ -111,67 +111,116 @@ const categories = ['Alat Tulis', 'Perlengkapan Sekolah', 'Mewarnai & Kreatif', 
         <footer class="landing__footer">
             <div class="landing__container landing__footer-inner">
                 <div class="landing__brand">
-                    <span class="landing__brand-mark">SM</span>
-                    <span class="landing__brand-name">School Mart</span>
+                    <span class="landing__brand-mark">PM</span>
+                    <span class="landing__brand-name">PRESMA MART</span>
                 </div>
-                <p>© {{ new Date().getFullYear() }} School Mart. Sistem Informasi Inventory Toko Alat Perlengkapan Sekolah & Supermarket.</p>
+                <p>© {{ new Date().getFullYear() }} PRESMA MART. Sistem Informasi Inventory Toko Alat Perlengkapan Sekolah & Supermarket.</p>
             </div>
         </footer>
     </div>
 </template>
 
 <style scoped>
-.landing { background: #f8fafc; color: #0f172a; }
+.landing {
+    --purple: #6d28d9;
+    --orange: #c2410c;
+    --orange-dark: #7c2d12;
+    --orange-light: #fb923c;
+    --glass-bg: rgba(255, 255, 255, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --glass-shadow: 0 12px 40px rgba(124, 45, 18, 0.16);
+    position: relative;
+    overflow: hidden;
+    color: #2b1408;
+    background: linear-gradient(135deg, #fff0e3 0%, #ffe8d6 55%, #f5eeff 100%);
+}
+.landing::before,
+.landing::after {
+    content: '';
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+}
+.landing::before { width: 520px; height: 520px; top: -120px; left: -140px; background: rgba(251, 146, 60, 0.5); }
+.landing::after { width: 480px; height: 480px; top: 220px; right: -140px; background: rgba(139, 92, 246, 0.3); }
+.landing > * { position: relative; z-index: 1; }
+
+.landing__glass,
+.landing__card,
+.landing__feature,
+.landing__chip {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+@supports (backdrop-filter: blur(1px)) {
+    .landing__glass,
+    .landing__card,
+    .landing__feature,
+    .landing__chip { backdrop-filter: blur(16px) saturate(160%); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+    .landing__glass,
+    .landing__card,
+    .landing__feature,
+    .landing__chip { background: rgba(255, 255, 255, 0.94); }
+}
+
 .landing__container { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
-.landing__header { position: sticky; top: 0; background: rgba(248,250,252,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid #e2e8f0; z-index: 10; }
+.landing__header { position: sticky; top: 0; z-index: 10; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(14px); border-bottom: 1px solid var(--glass-border); }
 .landing__nav { display: flex; align-items: center; justify-content: space-between; padding-top: 0.9rem; padding-bottom: 0.9rem; }
 .landing__brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
-.landing__brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: #0f766e; color: #fff; }
+.landing__brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: linear-gradient(135deg, var(--orange), var(--orange-light)); color: #fff; }
 .landing__brand-name { font-size: 1rem; }
 .landing__links { display: flex; align-items: center; gap: 1.2rem; font-size: 0.98rem; }
-.landing__links a { color: #334155; text-decoration: none; }
-.landing__links a:hover { color: #0f766e; }
-.landing__cta { padding: 0.55rem 1rem; border-radius: 999px; background: #0f766e; color: #fff !important; }
+.landing__links a { color: #4a2a1a; text-decoration: none; }
+.landing__links a:hover { color: var(--orange); }
+.landing__cta { padding: 0.55rem 1rem; border-radius: 999px; background: var(--orange); color: #fff !important; }
+.landing__cta:hover { background: var(--orange-dark); color: #fff !important; }
+.landing a:focus-visible { outline: 2px solid var(--orange-dark); outline-offset: 3px; }
 .landing__hero { padding: 4rem 0 3rem; }
 .landing__hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; align-items: center; }
-.landing__eyebrow { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem; color: #0f766e; font-weight: 600; }
+.landing__eyebrow { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem; color: var(--purple); font-weight: 700; }
 .landing__title { font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.05; margin: 0.8rem 0; }
-.landing__subtitle { font-size: 1.05rem; color: #475569; max-width: 560px; }
+.landing__subtitle { font-size: 1.05rem; color: #5a3a28; max-width: 560px; }
 .landing__actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
 .landing__btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.7rem 1.4rem; border-radius: 999px; text-decoration: none; font-weight: 600; }
-.landing__btn--primary { background: #0f766e; color: #fff; }
-.landing__btn--ghost { border: 1px solid #cbd5f5; color: #0f172a; background: #fff; }
+.landing__btn--primary { background: linear-gradient(135deg, var(--orange), #ea580c); color: #fff; }
+.landing__btn--primary:hover { background: var(--orange-dark); }
+.landing__btn--ghost { border: 1px solid rgba(194, 65, 12, 0.4); color: var(--orange-dark); background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); }
 .landing__btn--full { width: 100%; margin-top: 1rem; }
 .landing__btn--large { padding: 0.9rem 1.8rem; }
 .landing__stats { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 2rem; }
 .landing__stats div { display: flex; flex-direction: column; }
-.landing__stats span { color: #475569; font-size: 0.95rem; }
-.landing__card { background: #fff; border-radius: 1rem; box-shadow: 0 40px 60px -40px rgba(15,118,110,0.4); border: 1px solid #e2e8f0; overflow: hidden; }
-.landing__card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.6rem; background: linear-gradient(90deg, rgba(15,118,110,0.08), transparent); }
-.landing__pill { padding: 0.25rem 0.7rem; border-radius: 999px; background: rgba(15,118,110,0.12); color: #0f766e; font-size: 0.9rem; }
+.landing__stats span { color: #5a3a28; font-size: 0.95rem; }
+.landing__card { border-radius: 1.2rem; overflow: hidden; }
+.landing__card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.6rem; background: linear-gradient(90deg, rgba(234, 88, 12, 0.16), rgba(109, 40, 217, 0.1)); }
+.landing__pill { padding: 0.25rem 0.7rem; border-radius: 999px; background: rgba(109, 40, 217, 0.12); color: var(--purple); font-size: 0.9rem; font-weight: 600; }
 .landing__card-body { display: flex; flex-direction: column; gap: 0.8rem; padding: 1.4rem 1.6rem; }
-.landing__row { display: flex; align-items: center; justify-content: space-between; color: #475569; }
-.landing__row--total { font-weight: 700; color: #0f172a; font-size: 1.1rem; }
-.landing__divider { height: 1px; background: #e2e8f0; }
+.landing__row { display: flex; align-items: center; justify-content: space-between; color: #5a3a28; }
+.landing__row--total { font-weight: 700; color: #2b1408; font-size: 1.1rem; }
+.landing__divider { height: 1px; background: rgba(194, 65, 12, 0.2); }
 .landing__section { padding: 3rem 0; }
-.landing__section--alt { background: #fff; }
+.landing__section--alt { background: rgba(255, 255, 255, 0.35); }
 .landing__section-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
 .landing__section-title { font-size: clamp(1.8rem, 3vw, 2.8rem); margin: 0; }
-.landing__section-subtitle { color: #475569; max-width: 640px; }
+.landing__section-subtitle { color: #5a3a28; max-width: 640px; }
 .landing__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 2.4rem; }
-.landing__feature { background: #fff; border-radius: 0.9rem; border: 1px solid #e2e8f0; padding: 1.6rem; display: flex; flex-direction: column; gap: 0.6rem; }
-.landing__section--alt .landing__feature { background: #f8fafc; }
-.landing__feature h3 { margin: 0; }
-.landing__feature p { margin: 0; color: #475569; }
+.landing__feature { border-radius: 1rem; padding: 1.6rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.landing__feature h3 { margin: 0; color: var(--orange); }
+.landing__feature p { margin: 0; color: #5a3a28; }
 .landing__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem; margin-top: 2rem; }
-.landing__chip { padding: 0.6rem 1.2rem; border-radius: 999px; background: #f1f5f9; border: 1px solid #e2e8f0; }
+.landing__chip { padding: 0.6rem 1.2rem; border-radius: 999px; }
 .landing__cta-section { padding: 3rem 0 4rem; }
-.landing__cta-box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.6rem; background: radial-gradient(circle at top right, rgba(15,118,110,0.16), transparent), #0f766e; color: #fff; border-radius: 1.2rem; padding: clamp(2rem, 6vw, 3.2rem); }
+.landing__cta-box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.6rem; background: linear-gradient(135deg, #7c2d12 0%, #c2410c 55%, #ea580c 100%); color: #fff; border-radius: 1.4rem; padding: clamp(2rem, 6vw, 3.2rem); box-shadow: var(--glass-shadow); }
 .landing__cta-box .landing__section-title { color: #fff; }
-.landing__cta-box .landing__section-subtitle { color: rgba(255,255,255,0.85); }
-.landing__cta-box .landing__btn--primary { background: #fff; color: #0f766e; }
-.landing__footer { border-top: 1px solid #e2e8f0; background: #fff; }
-.landing__footer-inner { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; text-align: center; padding-top: 1.6rem; padding-bottom: 1.6rem; color: #475569; }
+.landing__cta-box .landing__section-subtitle { color: rgba(255, 255, 255, 0.92); }
+.landing__cta-box .landing__btn--primary { background: rgba(255, 255, 255, 0.92); color: var(--orange-dark); }
+.landing__cta-box .landing__btn--primary:hover { background: #fff; }
+.landing__footer { border-top: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); }
+.landing__footer-inner { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; text-align: center; padding-top: 1.6rem; padding-bottom: 1.6rem; color: #5a3a28; }
 @media (max-width: 720px) {
     .landing__links { display: none; }
 }
